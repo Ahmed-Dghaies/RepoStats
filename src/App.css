@@ -1,0 +1,20 @@
+:root {
+  /* Fonts */
+  --base-font: black;
+  --navbar-font: white;
+  /* Fillers */
+  --body-background: white;
+  --navbar-background: gray;
+}
+
+body {
+  color: var(--base-font);
+  min-height: 100vh;
+  background: var(--body-background);
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

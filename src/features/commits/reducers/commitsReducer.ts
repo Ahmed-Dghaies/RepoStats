@@ -1,20 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import moment from "moment";
 
-interface commit {
+interface Commit {
   id: string;
   author: string;
   date: string;
 }
-interface commitsState {
+interface CommitsState {
   startDate: string;
   endDate: string;
-  data: Array<commit>;
+  data: Array<Commit>;
   commitsPerPage: number;
   currentPage: number;
 }
 
-const initialState: commitsState = {
+const initialState: CommitsState = {
   startDate: moment().subtract(7, "days").format(),
   endDate: moment().format(),
   data: [],
@@ -32,7 +32,7 @@ const commitsSlice = createSlice({
     ) => {
       state[action.payload.name] = action.payload.value;
     },
-    setCommits: (state, action: PayloadAction<Array<commit>>) => {
+    setCommits: (state, action: PayloadAction<Array<Commit>>) => {
       state.data = action.payload;
     },
     resetState: () => initialState,
