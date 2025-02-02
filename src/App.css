@@ -1,16 +1,19 @@
+/* https://colorhunt.co/palette/dbd8e35c5470352f442a2438 */
+
 :root {
   /* Fonts */
-  --base-font: black;
-  --navbar-font: white;
+  --base-font: white;
   /* Fillers */
-  --body-background: white;
-  --navbar-background: gray;
+  --body-background: #54515a;
+  --modules-background: #34303d;
+  --navbar-background: #131119;
 }
 
 body {
   color: var(--base-font);
   min-height: 100vh;
   background: var(--body-background);
+  margin: 0;
 }
 
 #root {

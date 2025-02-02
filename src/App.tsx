@@ -1,21 +1,26 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import "./App.css";
 
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
+import NotFound from "./pages/NotFound";
+import Stats from "./pages/Stats";
 
 const App: React.FC = () => {
+  function MultiRoute(el: JSX.Element, paths: string[]): JSX.Element[] {
+    return paths.map((p) => <Route key={p} element={el} path={p} />);
+  }
+
   return (
     <>
       <Navbar />
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="*" element={<Home />} />
-        </Routes>
-      </Router>
+      <Routes>
+        {MultiRoute(<Home />, ["/", "/home"])}
+        <Route path="stats" element={<Stats />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </>
   );
 };

@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["Avenir", "evenodd", "nivo", "svgrepo"]
+  "cSpell.words": ["Avenir", "evenodd", "nivo", "svgrepo"],
+  "css.customData": [".vscode/css_custom_data.json"]
 }
