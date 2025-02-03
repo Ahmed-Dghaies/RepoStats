@@ -8,6 +8,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faAnglesLeft,
+  faAnglesRight,
+  faChevronLeft,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 
 interface TableProps<T> {
   data: Array<T>;
@@ -24,7 +31,7 @@ const MyTable = <T,>({
 }: TableProps<T>) => {
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 20,
   });
 
   const table = useReactTable({
@@ -43,89 +50,97 @@ const MyTable = <T,>({
 
   return (
     <>
-      <table className={tableClassName ?? ""}>
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <th
-                    key={header.id}
-                    colSpan={header.colSpan}
-                    className="text-left"
-                  >
-                    <div
-                      {...{
-                        className: header.column.getCanSort()
-                          ? "cursor-pointer select-none"
-                          : "",
-                        onClick: header.column.getToggleSortingHandler(),
-                      }}
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                      {{
-                        asc: " 🔼",
-                        desc: " 🔽",
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </div>
-                  </th>
-                );
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => {
-            return (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell) => {
+      <div className="flex-grow overflow-auto pr-1">
+        <table className={tableClassName ?? ""}>
+          <thead className="sticky top-0 z-10 bg-[var(--modules-background)]">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
                   return (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
+                    <th
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      className="text-left h-8"
+                    >
+                      <div
+                        {...{
+                          className: header.column.getCanSort()
+                            ? "cursor-pointer select-none"
+                            : "",
+                          onClick: header.column.getToggleSortingHandler(),
+                        }}
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {{
+                          asc: " 🔼",
+                          desc: " 🔽",
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                    </th>
                   );
                 })}
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      <div className="h-2" />
-      <div className={`flex items-center gap-2 ${paginationClassName}`}>
-        <button
-          className="border rounded p-1"
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row, index) => {
+              return (
+                <tr
+                  key={row.id}
+                  className={`h-8 ${
+                    index % 2 === 0
+                      ? "bg-[var(--modules-background-darker)]"
+                      : ""
+                  }`}
+                >
+                  {row.getVisibleCells().map((cell) => {
+                    return (
+                      <td key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div
+        className={`flex items-center pt-2 gap-2 justify-end ${
+          paginationClassName ?? ""
+        }`}
+      >
+        <FontAwesomeIcon
+          className="cursor-pointer"
+          icon={faAnglesLeft}
           onClick={() => table.firstPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<<"}
-        </button>
-        <button
-          className="border rounded p-1"
+          aria-disabled={!table.getCanPreviousPage()}
+        />
+        <FontAwesomeIcon
+          className="cursor-pointer"
+          icon={faChevronLeft}
           onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<"}
-        </button>
-        <button
-          className="border rounded p-1"
+          aria-disabled={!table.getCanPreviousPage()}
+        />
+        <FontAwesomeIcon
+          className="cursor-pointer"
+          icon={faChevronRight}
           onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          {">"}
-        </button>
-        <button
-          className="border rounded p-1"
+          aria-disabled={!table.getCanNextPage()}
+        />
+        <FontAwesomeIcon
+          className="cursor-pointer"
+          icon={faAnglesRight}
           onClick={() => table.lastPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          {">>"}
-        </button>
+          aria-disabled={!table.getCanNextPage()}
+        />
         <span className="flex items-center gap-1">
           <div>Page</div>
           <strong>

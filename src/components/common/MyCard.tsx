@@ -9,9 +9,9 @@ interface MyCardProps {
 const MyCard = ({ className, children, title }: MyCardProps) => {
   return (
     <div
-      className={`rounded-[10px] bg-[var(--modules-background)] p-2 ${className}`}
+      className={`rounded-[10px] bg-[var(--modules-background)] p-2 overflow-hidden ${className}`}
     >
-      {title && <div className="w-full">{title}</div>}
+      {title && <div className="w-full h-8">{title}</div>}
       {children}
     </div>
   );

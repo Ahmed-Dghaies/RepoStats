@@ -13,6 +13,16 @@
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
+.links-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1rem;
+  background-color: var(--navbar-background);
+  margin-right: -1.5rem;
+  margin-left: -1.5rem;
+}
+
 @media (min-width: 1024px) {
   .navbar {
     padding-left: 4rem;
@@ -22,14 +32,4 @@
   .links-container {
     flex-direction: row !important;
   }
-}
-
-.links-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 1rem;
-  background-color: var(--navbar-background);
-  margin-right: -1.5rem;
-  margin-left: -1.5rem;
 }

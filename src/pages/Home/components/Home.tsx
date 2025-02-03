@@ -21,7 +21,7 @@ const Home: React.FC = () => {
 
   return (
     <div className="grow overflow-x-hidden overflow-y-auto p-5">
-      <MyCard className="w-3/4 h-[400px]" title={"Repositories"}>
+      <MyCard className="w-3/4 h-[400px] flex flex-col" title={"Repositories"}>
         <ReposTable />
       </MyCard>
     </div>

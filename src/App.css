@@ -4,8 +4,9 @@
   /* Fonts */
   --base-font: white;
   /* Fillers */
-  --body-background: #54515a;
-  --modules-background: #34303d;
+  --body-background: #34303d;
+  --modules-background: #54515a;
+  --modules-background-darker: #424047;
   --navbar-background: #131119;
 }
 
@@ -20,4 +21,13 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--base-font);
+  border-radius: 10px;
 }

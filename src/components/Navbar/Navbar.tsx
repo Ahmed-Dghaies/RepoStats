@@ -2,7 +2,7 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import styles from "./assets/styles/Navbar.module.css";
+import styles from "./styles/Navbar.module.css";
 import globalStyles from "../../assets/styles/globalStyles.module.css";
 
 const Navbar: React.FC = () => {

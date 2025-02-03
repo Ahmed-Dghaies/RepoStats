@@ -4,26 +4,12 @@ import MyTable from "../../../components/common/MyTable";
 import RepoActions from "./RepoActions";
 
 const ReposTable: React.FC = () => {
-  const repos: Repository[] = [
-    {
-      name: "cli",
-      owner: "cli",
-      lastUpdated: "2023-01-01",
-      url: "https://github.com/cli/cli",
-    },
-    {
-      name: "repo",
-      owner: "owner",
-      lastUpdated: "2024-01-01",
-      url: "https://github.com/owner/repo",
-    },
-    {
-      name: "repo 2",
-      owner: "owner",
-      lastUpdated: "2024-01-01",
-      url: "https://github.com/owner/repo_2",
-    },
-  ];
+  const repos: Repository[] = Array.from({ length: 200 }, () => ({
+    name: "cli",
+    owner: "cli",
+    lastUpdated: "2023-01-01",
+    url: "https://github.com/cli/cli",
+  }));
   const columns = useMemo(
     () => [
       {
@@ -57,7 +43,16 @@ const ReposTable: React.FC = () => {
     []
   );
 
-  return <MyTable {...{ data: repos, columns, tableClassName: "w-full" }} />;
+  return (
+    <MyTable
+      {...{
+        data: repos,
+        columns,
+        tableClassName: "w-full flex-grow overflow-auto",
+        paginationClassName: "w-full h-8",
+      }}
+    />
+  );
 };
 
 export default ReposTable;
