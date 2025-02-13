@@ -2,12 +2,18 @@
 
 :root {
   /* Fonts */
-  --base-font: white;
+  --base-font: black;
   /* Fillers */
-  --body-background: #34303d;
-  --modules-background: #54515a;
-  --modules-background-darker: #424047;
+  --body-background: #eceff180;
+  --modules-background: white;
+
+  /* Navbar */
+  --navbar-font: white;
   --navbar-background: #131119;
+
+  /* Colors */
+  --selected-item: #a8c0d2;
+  --placeholder: #dbd8e3;
 }
 
 body {
@@ -30,4 +36,8 @@ body {
 ::-webkit-scrollbar-thumb {
   background-color: var(--base-font);
   border-radius: 10px;
+}
+
+.tooltip-container {
+  border-radius: 5px !important;
 }

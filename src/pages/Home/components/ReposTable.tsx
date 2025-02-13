@@ -1,15 +1,9 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Repository } from "../../../types/repository";
 import MyTable from "../../../components/common/MyTable";
 import RepoActions from "./RepoActions";
 
-const ReposTable: React.FC = () => {
-  const repos: Repository[] = Array.from({ length: 200 }, () => ({
-    name: "cli",
-    owner: "cli",
-    lastUpdated: "2023-01-01",
-    url: "https://github.com/cli/cli",
-  }));
+const ReposTable = ({ repositories }: { repositories: Repository[] }) => {
   const columns = useMemo(
     () => [
       {
@@ -46,10 +40,10 @@ const ReposTable: React.FC = () => {
   return (
     <MyTable
       {...{
-        data: repos,
+        data: repositories,
         columns,
         tableClassName: "w-full flex-grow overflow-auto",
-        paginationClassName: "w-full h-8",
+        paginationClassName: "w-full h-8 my-2",
       }}
     />
   );

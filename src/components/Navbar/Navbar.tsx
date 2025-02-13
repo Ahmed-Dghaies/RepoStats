@@ -28,7 +28,7 @@ const Navbar: React.FC = () => {
 
   return (
     <header className={styles.navbar}>
-      <div className="flex items-center justify-between flex-1 h-[50px]">
+      <div className="flex items-center justify-between flex-1 h-[50px] text-[var(--navbar-font)]">
         <a href="/home">RepoStats</a>
       </div>
 

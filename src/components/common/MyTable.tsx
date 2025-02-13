@@ -15,6 +15,7 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
+import style from "../../assets/styles/globalStyles.module.css";
 
 interface TableProps<T> {
   data: Array<T>;
@@ -45,14 +46,13 @@ const MyTable = <T,>({
     state: {
       pagination,
     },
-    // autoResetPageIndex: false, // turn off page index reset when sorting or filtering
   });
 
   return (
     <>
       <div className="flex-grow overflow-auto pr-1">
         <table className={tableClassName ?? ""}>
-          <thead className="sticky top-0 z-10 bg-[var(--modules-background)]">
+          <thead className="sticky top-0 z-1 bg-[var(--modules-background)]">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -60,7 +60,7 @@ const MyTable = <T,>({
                     <th
                       key={header.id}
                       colSpan={header.colSpan}
-                      className="text-left h-8"
+                      className="text-left h-8 pl-2"
                     >
                       <div
                         {...{
@@ -86,19 +86,12 @@ const MyTable = <T,>({
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.map((row, index) => {
+            {table.getRowModel().rows.map((row) => {
               return (
-                <tr
-                  key={row.id}
-                  className={`h-8 ${
-                    index % 2 === 0
-                      ? "bg-[var(--modules-background-darker)]"
-                      : ""
-                  }`}
-                >
+                <tr key={row.id} className={`${style["table-row"]}`}>
                   {row.getVisibleCells().map((cell) => {
                     return (
-                      <td key={cell.id}>
+                      <td key={cell.id} className="pl-2">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()

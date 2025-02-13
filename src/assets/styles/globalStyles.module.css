@@ -10,11 +10,17 @@
   left: 50%;
   width: 0;
   height: 2px;
-  background-color: #a8c0d2;
+  background-color: var(--selected-item);
   transition: width 0.3s ease, left 0.3s ease;
 }
 
 .custom-underline-hover:hover::after {
   left: 0;
   width: 100%;
+}
+
+.table-row {
+  height: 40px;
+  max-height: 40px;
+  border-bottom: 1px solid var(--placeholder);
 }

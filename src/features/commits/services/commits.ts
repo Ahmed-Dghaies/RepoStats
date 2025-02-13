@@ -5,7 +5,7 @@ import GitHub, { getHeaders } from "../../../utils/axios/axios";
 export const fetchAllCommits =
   () => async (dispatch: AppDispatch, getState: () => RootState) => {
     const headers = getHeaders();
-    const selectedRepo = getState().repository;
+    const selectedRepo = getState().repositories.selectedRepository;
     const { startDate, endDate, commitsPerPage, currentPage } =
       getState().commits;
     let queryParams: string = `?since=${startDate}&until=${endDate}`;
