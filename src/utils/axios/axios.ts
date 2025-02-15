@@ -5,9 +5,13 @@ const GitHub: any = axios.create({
   responseType: "json",
 });
 
-export const getHeaders: any = () => {
+export const getHeaders = () => {
   return {
-    "Content-Type": "application/json",
+    headers: {
+      Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
+      Accept: "application/vnd.github.v3+json",
+      "Content-Type": "application/json",
+    },
   };
 };
 

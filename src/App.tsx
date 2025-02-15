@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Stats from "./pages/Stats";
 import { Tooltip } from "react-tooltip";
+import RepoStats from "./pages/RepoStats";
 
 const App: React.FC = () => {
   function MultiRoute(el: JSX.Element, paths: string[]): JSX.Element[] {
@@ -21,7 +22,8 @@ const App: React.FC = () => {
       <Routes>
         {MultiRoute(<Home />, ["/", "/home"])}
         <Route path="stats" element={<Stats />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="/repository/:owner/:repository" element={<RepoStats />} />
+        {MultiRoute(<NotFound />, ["/404", "*"])}
       </Routes>
       <Tooltip id="global-tooltip" className="z-50 tooltip-container" />
     </>

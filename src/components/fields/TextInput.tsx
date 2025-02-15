@@ -10,6 +10,7 @@ interface TextInputProps {
   labelClassName?: string;
   containerClassName?: string;
   width?: string;
+  errorMessage?: string;
 }
 
 const TextInput = ({
@@ -21,10 +22,11 @@ const TextInput = ({
   labelClassName,
   containerClassName,
   width,
+  errorMessage,
 }: TextInputProps) => {
   return (
     <>
-      {label && <Typography>{label}</Typography>}
+      {label && <Typography className="text-sm">{label}</Typography>}
       <Input
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -37,6 +39,11 @@ const TextInput = ({
         crossOrigin={undefined}
         containerProps={{ className: `${containerClassName} ${width}` }}
       />
+      {errorMessage && (
+        <Typography color="red" className="pl-1 text-sm">
+          {errorMessage}
+        </Typography>
+      )}
     </>
   );
 };

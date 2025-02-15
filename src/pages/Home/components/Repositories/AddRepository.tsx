@@ -7,9 +7,18 @@ import {
   DialogHeader,
   Typography,
 } from "@material-tailwind/react";
-import TextInput from "../../../components/fields/TextInput";
+import { useState } from "react";
+import TextInput from "@/components/fields/TextInput";
 
 const AddRepository = ({ closeModal }: { closeModal: () => void }) => {
+  const [repositoryUrl, setRepositoryUrl] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  function changeUrl(url: string) {
+    setRepositoryUrl(url);
+    setErrorMessage("");
+  }
+
   return (
     <>
       <DialogHeader className="justify-between">
@@ -25,11 +34,12 @@ const AddRepository = ({ closeModal }: { closeModal: () => void }) => {
       </DialogHeader>
       <DialogBody className="overflow-y-scroll">
         <TextInput
-          value=""
-          onChange={() => {}}
+          value={repositoryUrl}
+          onChange={changeUrl}
           placeholder="Repository URL ..."
           containerClassName="min-w-[400px]"
           label="Repository URL"
+          errorMessage={errorMessage}
         />
       </DialogBody>
       <DialogFooter className="justify-center">

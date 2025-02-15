@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { Repository } from "../../../types/repository";
-import MyTable from "../../../components/common/MyTable";
+import { Repository } from "../../../../types/repository";
+import MyTable from "../../../../components/common/MyTable";
 import RepoActions from "./RepoActions";
 
 const ReposTable = ({ repositories }: { repositories: Repository[] }) => {

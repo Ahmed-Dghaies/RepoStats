@@ -1,4 +1,17 @@
 {
-  "cSpell.words": ["Avenir", "evenodd", "nivo", "svgrepo"],
+  "cSpell.words": [
+    "apexcharts",
+    "Avenir",
+    "evenodd",
+    "linestep",
+    "nivo",
+    "PLSVF",
+    "stepline",
+    "svgrepo",
+    "VITE",
+    "xaxis",
+    "yaxis",
+    "Ysxbn"
+  ],
   "css.customData": [".vscode/css_custom_data.json"]
 }
