@@ -16,17 +16,22 @@
   --placeholder: #dbd8e3;
 }
 
+html,
+body {
+  height: 100%;
+  margin: 0; /* Ensures no extra space around body */
+}
+
 body {
   color: var(--base-font);
-  min-height: 100vh;
   background: var(--body-background);
   margin: 0;
   overflow: hidden;
 }
 
 #root {
-  min-height: 100vh;
   display: flex;
+  height: 100%;
   flex-direction: column;
 }
 
