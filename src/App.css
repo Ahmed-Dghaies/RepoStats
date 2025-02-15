@@ -21,6 +21,7 @@ body {
   min-height: 100vh;
   background: var(--body-background);
   margin: 0;
+  overflow: hidden;
 }
 
 #root {

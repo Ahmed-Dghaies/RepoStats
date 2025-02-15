@@ -16,7 +16,7 @@ export const fetchAllRepositories = () => async (dispatch: AppDispatch) => {
   dispatch(setRepositories(result));
 };
 
-interface formattedGraphComparisonData {
+export interface formattedGraphComparisonData {
   keys: string[];
   maximumValue: number;
   count: graphData;

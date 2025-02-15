@@ -2,8 +2,8 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import styles from "./styles/Navbar.module.css";
-import globalStyles from "../../assets/styles/globalStyles.module.css";
+import styles from "../styles/Navbar.module.css";
+import globalStyles from "@/assets/styles/globalStyles.module.css";
 
 const Navbar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
@@ -36,7 +36,10 @@ const Navbar: React.FC = () => {
         className="block pointer-cursor lg:hidden"
         onClick={toggleExpanded}
       >
-        <FontAwesomeIcon icon={faBars} className="hover:cursor-pointer" />
+        <FontAwesomeIcon
+          icon={faBars}
+          className="hover:cursor-pointer text-[var(--navbar-font)]"
+        />
       </button>
 
       <div
