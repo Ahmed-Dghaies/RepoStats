@@ -1,1 +1,1 @@
-export { default } from "./components/RepoStats";
+export { default } from "./components/StatsContainer";

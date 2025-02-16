@@ -25,6 +25,8 @@ interface SearchParams {
 
 interface MyCardProps {
   title: string;
+  className?: string;
+  bodyClassName?: string;
   searchParams?: SearchParams;
   actionParams?: ActionParams;
   children: React.ReactNode;
@@ -32,16 +34,18 @@ interface MyCardProps {
 
 const MyCard = ({
   title,
+  className,
+  bodyClassName,
   searchParams,
   actionParams,
   children,
 }: MyCardProps) => {
   return (
-    <Card className="w-full lg:w-3/4 mt-3">
+    <Card className={className}>
       <CardHeader
         variant="gradient"
         color="gray"
-        className="mb-8 p-6 flex justify-between"
+        className="mb-4 p-6 flex justify-between flex-shrink-0"
       >
         <Typography variant="h6" color="white">
           <div>{title}</div>
@@ -59,7 +63,7 @@ const MyCard = ({
           {actionParams && (
             <div
               className="h-full flex items-center"
-              data-tooltip-content="Add Repository"
+              data-tooltip-content={actionParams.tip}
               data-tooltip-id="global-tooltip"
             >
               <FontAwesomeIcon
@@ -71,9 +75,7 @@ const MyCard = ({
           )}
         </div>
       </CardHeader>
-      <CardBody className="overflow-hidden px-0 pt-0 pb-2 h-[400px] max-h-[400px] mx-2 flex flex-col">
-        {children}
-      </CardBody>
+      <CardBody className={bodyClassName}>{children}</CardBody>
     </Card>
   );
 };

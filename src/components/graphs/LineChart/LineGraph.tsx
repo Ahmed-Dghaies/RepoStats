@@ -22,7 +22,10 @@ interface LineChartProps {
   keys: string[];
   className: string;
   description?: string;
-  maximumValue: number;
+  yAxis: {
+    maximumValue: number;
+    minimumValue: number;
+  };
 }
 
 const LineGraph = ({
@@ -31,9 +34,8 @@ const LineGraph = ({
   keys,
   className,
   description,
-  maximumValue,
+  yAxis: { maximumValue, minimumValue },
 }: LineChartProps) => {
-  console.log(data, keys, maximumValue);
   const chartConfig: ChartOptions = {
     type: "line",
     height: 260,
@@ -82,6 +84,7 @@ const LineGraph = ({
           },
         },
         max: Math.ceil(maximumValue + maximumValue * 0.2),
+        min: minimumValue ?? undefined,
       },
       grid: {
         show: true,

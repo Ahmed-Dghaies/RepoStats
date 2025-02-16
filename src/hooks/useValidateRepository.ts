@@ -1,36 +1,30 @@
+import { Repository } from "@/types/repository";
+import GitHub, { getHeaders } from "@/utils/axios/axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-interface useValidateRepositoryProps {
-  owner: string | undefined;
-  repository: string | undefined;
-}
-
-const useValidateRepository = ({
-  owner,
-  repository,
-}: useValidateRepositoryProps) => {
+const useValidateRepository = ({ owner, name }: Partial<Repository>) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!owner || !repository) return;
+    if (!owner || !name) return;
 
     const checkRepository = async () => {
       try {
-        const response = await fetch(
-          `https://api.github.com/repos/${owner}/${repository}`
+        await GitHub.get(`/repos/${owner}/${name}`, getHeaders()).catch(
+          (error: any) => {
+            console.log(error);
+            navigate("/404", { replace: false });
+          }
         );
-        if (!response.ok) {
-          navigate("/404", { replace: true });
-        }
       } catch (err) {
         console.error(err);
-        navigate("/404", { replace: true });
+        navigate("/404", { replace: false });
       }
     };
 
     checkRepository();
-  }, [owner, repository, navigate]);
+  }, [owner, name, navigate]);
 };
 
 export default useValidateRepository;

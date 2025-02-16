@@ -1,15 +1,11 @@
 import LineGraph from "@/components/graphs/LineChart/LineGraph";
-import useValidateRepository from "@/hooks/useValidateRepository";
 import useRepositoryStats from "../hooks/useRepositoryStats";
-import { useParams } from "react-router-dom";
+import { Repository } from "@/types/repository";
 
-const RepoStats = () => {
-  const { owner, repository } = useParams();
-  useValidateRepository({ owner, repository });
-
+const RepositoryGraphs = ({ owner, name }: Partial<Repository>) => {
   const { clones, repositoryViews, punchCard } = useRepositoryStats(
     owner,
-    repository
+    name
   );
 
   return (
@@ -21,7 +17,10 @@ const RepoStats = () => {
           keys={clones.keys}
           className="w-full md:w-1/2"
           description="Number of clones for the last 14 days"
-          maximumValue={clones.maximumValue}
+          yAxis={{
+            maximumValue: clones.maximumValue,
+            minimumValue: 0,
+          }}
         />
         <LineGraph
           title="Views"
@@ -29,7 +28,10 @@ const RepoStats = () => {
           keys={repositoryViews.keys}
           className="w-full md:w-1/2"
           description="Repository views for the last 14 days"
-          maximumValue={repositoryViews.maximumValue}
+          yAxis={{
+            maximumValue: repositoryViews.maximumValue,
+            minimumValue: 0,
+          }}
         />
       </div>
       <LineGraph
@@ -38,10 +40,13 @@ const RepoStats = () => {
         keys={punchCard.keys}
         className="w-full xl:w-1/3"
         description="Commits count per hour"
-        maximumValue={punchCard.maximumValue}
+        yAxis={{
+          maximumValue: punchCard.maximumValue,
+          minimumValue: 0,
+        }}
       />
     </div>
   );
 };
 
-export default RepoStats;
+export default RepositoryGraphs;

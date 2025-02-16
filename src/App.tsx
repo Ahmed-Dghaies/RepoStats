@@ -23,10 +23,7 @@ const App: React.FC = () => {
         <Routes>
           {MultiRoute(<Home />, ["/", "/home"])}
           <Route path="stats" element={<Stats />} />
-          <Route
-            path="/repository/:owner/:repository"
-            element={<RepoStats />}
-          />
+          <Route path="/repository/:owner/:name" element={<RepoStats />} />
           {MultiRoute(<NotFound />, ["/404", "*"])}
         </Routes>
         <Tooltip id="global-tooltip" className="z-50 tooltip-container" />

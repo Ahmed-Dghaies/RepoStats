@@ -11,7 +11,8 @@
     "VITE",
     "xaxis",
     "yaxis",
-    "Ysxbn"
+    "Ysxbn",
+    "zipball"
   ],
   "css.customData": [".vscode/css_custom_data.json"]
 }
