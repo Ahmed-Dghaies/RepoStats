@@ -10,12 +10,12 @@ function isValidRepoUrl({ value }: { value: string }): {
   };
 }
 
-interface validatorsInput {
+interface ValidatorsInput {
   value: string;
 }
 
 interface FormValidators {
-  [key: string]: (value: validatorsInput) => {
+  [key: string]: (input: ValidatorsInput) => {
     isValid: boolean;
     errorMessage: string;
   };

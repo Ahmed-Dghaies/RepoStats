@@ -7,7 +7,7 @@ import {
   formatGraphViewsData,
   formatPunchCardData,
 } from "@/utils/graphs/lineGraph";
-import { formattedGraphData, graphData } from "@/types/graphs";
+import { FormattedGraphData, GraphData } from "@/types/graphs";
 import {
   Contributor,
   RepositoryInfo,
@@ -20,17 +20,17 @@ export const fetchAllRepositories = () => async (dispatch: AppDispatch) => {
   dispatch(setRepositories(result));
 };
 
-export interface formattedGraphComparisonData {
+export interface FormattedGraphComparisonData {
   keys: string[];
   maximumValue: number;
-  count: graphData;
-  uniquesCount: graphData;
+  count: GraphData;
+  uniquesCount: GraphData;
 }
 
 export const fetchClonesStatistics = async ({
   owner,
   name,
-}: Partial<Repository>): Promise<formattedGraphComparisonData> => {
+}: Partial<Repository>): Promise<FormattedGraphComparisonData> => {
   const headers = getHeaders();
   console.log(headers);
   const result = await GitHub.get(
@@ -50,7 +50,7 @@ export const fetchClonesStatistics = async ({
 export const fetchRepositoryViews = async ({
   owner,
   name,
-}: Partial<Repository>): Promise<formattedGraphComparisonData> => {
+}: Partial<Repository>): Promise<FormattedGraphComparisonData> => {
   const headers = getHeaders();
   const result = await GitHub.get(
     `/repos/${owner}/${name}/traffic/views`,
@@ -69,7 +69,7 @@ export const fetchRepositoryViews = async ({
 export const fetchRepositoryPunchCard = async ({
   owner,
   name,
-}: Partial<Repository>): Promise<formattedGraphData> => {
+}: Partial<Repository>): Promise<FormattedGraphData> => {
   const headers = getHeaders();
   const result = await GitHub.get(
     `/repos/${owner}/${name}/stats/punch_card`,

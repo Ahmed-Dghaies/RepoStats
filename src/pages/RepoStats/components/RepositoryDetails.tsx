@@ -43,7 +43,7 @@ const RepositoryDetails = ({ owner, name }: Partial<Repository>) => {
         onClick: handleDownload,
         tip: "Download repository (zip)",
       }}
-      className="w-full sm:w-1/2 md:w-1/4 flex flex-col h-[300px] mt-3"
+      className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 flex flex-col h-[300px] mt-3"
       bodyClassName="p-2 overflow-y-auto"
     >
       {repositoryDetails !== null && (

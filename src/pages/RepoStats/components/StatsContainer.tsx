@@ -10,7 +10,7 @@ const StatsContainer = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-col md:flex-row gap-3">
+      <div className="flex flex-col sm:flex-row gap-6 sm:gap-3">
         <RepositoryDetails owner={owner} name={name} />
         <RepositoryContributors owner={owner} name={name} />
       </div>

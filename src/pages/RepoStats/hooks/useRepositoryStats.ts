@@ -3,15 +3,15 @@ import {
   fetchClonesStatistics,
   fetchRepositoryPunchCard,
   fetchRepositoryViews,
-  formattedGraphComparisonData,
+  FormattedGraphComparisonData,
 } from "@/features/repositories/services/repositories";
-import { formattedGraphData } from "@/types/graphs";
+import { FormattedGraphData } from "@/types/graphs";
 
 const useRepositoryStats = (
   owner: string | undefined,
   name: string | undefined
 ) => {
-  const [stats, setStats] = useState<{ [key: string]: formattedGraphData }>({
+  const [stats, setStats] = useState<{ [key: string]: FormattedGraphData }>({
     clones: { data: [], keys: [], maximumValue: 0 },
     repositoryViews: { data: [], keys: [], maximumValue: 0 },
     punchCard: { data: [], keys: [], maximumValue: 0 },
@@ -22,9 +22,9 @@ const useRepositoryStats = (
 
     const fetchStats = async () => {
       const [clonesResult, viewsResult, punchCardResult]: [
-        formattedGraphComparisonData,
-        formattedGraphComparisonData,
-        formattedGraphData
+        FormattedGraphComparisonData,
+        FormattedGraphComparisonData,
+        FormattedGraphData
       ] = await Promise.all([
         fetchClonesStatistics({ owner, name }),
         fetchRepositoryViews({ owner, name }),

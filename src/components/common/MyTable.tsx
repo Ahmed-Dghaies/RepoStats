@@ -142,7 +142,7 @@ const MyTable = <T,>({
           </strong>
         </span>
         <span className="flex items-center gap-1">
-          | Go to page:
+          | Go to page:{" "}
           <input
             type="number"
             min="1"

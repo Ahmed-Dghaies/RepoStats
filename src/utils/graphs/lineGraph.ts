@@ -1,7 +1,7 @@
 import { GraphStep } from "@/types/graphs";
 import { formatDateLabelByStep } from "../general/time";
 
-interface singleDayData {
+interface SingleDayData {
   timestamp: string;
   count: number;
   uniques: number;
@@ -10,7 +10,7 @@ interface singleDayData {
 interface CloneResponse {
   count: number;
   uniques: number;
-  clones: singleDayData[];
+  clones: SingleDayData[];
 }
 
 export const formatClonesData = (response: CloneResponse) => {
@@ -107,7 +107,7 @@ export function formatGitHubStats(
 interface ViewsResponse {
   count: number;
   uniques: number;
-  views: singleDayData[];
+  views: SingleDayData[];
 }
 
 export function formatGraphViewsData(response: ViewsResponse) {

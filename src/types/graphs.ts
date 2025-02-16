@@ -1,11 +1,11 @@
 import { ApexOptions } from "apexcharts";
 
-export interface graphData {
+export interface GraphData {
   name: string;
   data: number[];
 }
 
-export interface formattedGraphData {
+export interface FormattedGraphData {
   data: ApexOptions["series"];
   keys: string[];
   maximumValue: number;

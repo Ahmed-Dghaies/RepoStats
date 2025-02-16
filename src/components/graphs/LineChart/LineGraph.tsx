@@ -6,8 +6,7 @@ import {
   CardHeader,
   Typography,
 } from "@material-tailwind/react";
-import Chart from "react-apexcharts";
-import { Props as ChartOptions } from "react-apexcharts";
+import ReactApexChart, { Props as ChartOptions } from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
 import "./style.css";
 
@@ -137,7 +136,7 @@ const LineGraph = ({
         </div>
       </CardHeader>
       <CardBody className="p-2 px-2 pb-0">
-        <Chart {...chartConfig} />
+        <ReactApexChart {...chartConfig} />
       </CardBody>
     </Card>
   );

@@ -19,7 +19,7 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen h-full">
       <Navbar />
-      <div className="flex-grow p-4 overflow-y-auto">
+      <div className="flex-grow p-4 overflow-y-auto mr-1 pr-3">
         <Routes>
           {MultiRoute(<Home />, ["/", "/home"])}
           <Route path="stats" element={<Stats />} />

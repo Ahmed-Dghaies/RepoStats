@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Repository } from "../../../types/repository";
 
 interface RepositoriesState {
-  repositoriesList: Array<Repository>;
+  repositoriesList: Repository[];
   selectedRepository: Repository;
 }
 

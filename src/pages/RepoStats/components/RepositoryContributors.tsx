@@ -15,12 +15,12 @@ const RepositoryContributors = ({ owner, name }: Partial<Repository>) => {
   return (
     <MyCard
       title="Contributors"
-      className="w-full sm:w-1/2 md:w-1/4 h-[300px] mt-3 flex flex-col"
+      className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 h-[300px] mt-3 flex flex-col"
       bodyClassName="px-3 overflow-y-auto mr-2 mb-2 divide-y divide-gray-200 py-0"
     >
-      {contributors.map(({ login, email, contributions, avatarUrl }, index) => (
+      {contributors.map(({ login, email, contributions, avatarUrl }) => (
         <div
-          key={index}
+          key={login}
           className="flex items-center justify-between pb-3 pt-3 last:pb-0 first:pt-0"
         >
           <div className="flex items-center gap-x-3">
