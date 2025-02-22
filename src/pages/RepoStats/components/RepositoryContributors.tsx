@@ -15,7 +15,7 @@ const RepositoryContributors = ({ owner, name }: Partial<Repository>) => {
   return (
     <MyCard
       title="Contributors"
-      className="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 h-[300px] mt-3 flex flex-col"
+      className="w-full sm:w-1/2 h-[300px] mt-3 flex flex-col"
       bodyClassName="px-3 overflow-y-auto mr-2 mb-2 divide-y divide-gray-200 py-0"
     >
       {contributors.map(({ login, email, contributions, avatarUrl }) => (

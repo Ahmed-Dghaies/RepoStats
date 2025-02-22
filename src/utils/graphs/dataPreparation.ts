@@ -1,5 +1,37 @@
+//data preparation
 import { GraphStep } from "@/types/graphs";
-import { formatDateLabelByStep } from "../general/time";
+import { TreeNode } from "@/types/repository";
+import { formatDateLabelByStep } from "@/utils/general/time";
+
+export function createTreeStructure(
+  node: TreeNode,
+  prefix: string = "",
+  isLast: boolean = true
+): string {
+  let tree = "";
+
+  if (node.name) {
+    const currentPrefix = isLast ? "└── " : "├── ";
+    tree +=
+      prefix +
+      currentPrefix +
+      (node.type === "directory" ? node.name + "/" : node.name) +
+      "\n";
+  }
+
+  if (node.type === "directory") {
+    const newPrefix = prefix + (isLast ? "    " : "│   ");
+    node.children.forEach((child, index) => {
+      tree += createTreeStructure(
+        child,
+        newPrefix,
+        index === node.children!.length - 1
+      );
+    });
+  }
+
+  return tree;
+}
 
 interface SingleDayData {
   timestamp: string;

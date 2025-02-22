@@ -1,17 +1,17 @@
 import GitHub, { getHeaders } from "@/utils/axios/axios";
 import { AppDispatch } from "../../../store";
-import { Repository } from "@/types/repository";
+import { Repository, TreeNode } from "@/types/repository";
 import { setRepositories } from "../reducers/repositoriesReducer";
-import {
-  formatClonesData,
-  formatGraphViewsData,
-  formatPunchCardData,
-} from "@/utils/graphs/lineGraph";
 import { FormattedGraphData, GraphData } from "@/types/graphs";
 import {
   Contributor,
   RepositoryInfo,
 } from "@/pages/RepoStats/types/repository";
+import {
+  formatClonesData,
+  formatGraphViewsData,
+  formatPunchCardData,
+} from "@/utils/graphs/dataPreparation";
 
 export const fetchAllRepositories = () => async (dispatch: AppDispatch) => {
   const result: Array<Repository> = JSON.parse(
@@ -32,7 +32,6 @@ export const fetchClonesStatistics = async ({
   name,
 }: Partial<Repository>): Promise<FormattedGraphComparisonData> => {
   const headers = getHeaders();
-  console.log(headers);
   const result = await GitHub.get(
     `/repos/${owner}/${name}/traffic/clones`,
     headers
@@ -41,7 +40,7 @@ export const fetchClonesStatistics = async ({
       return response.data;
     })
     .catch((error: any) => {
-      console.log(error);
+      console.error(error);
       return [];
     });
   return formatClonesData(result);
@@ -60,7 +59,7 @@ export const fetchRepositoryViews = async ({
       return response.data;
     })
     .catch((error: any) => {
-      console.log(error);
+      console.error(error);
       return [];
     });
   return formatGraphViewsData(result);
@@ -79,7 +78,7 @@ export const fetchRepositoryPunchCard = async ({
       return response.data;
     })
     .catch((error: any) => {
-      console.log(error);
+      console.error(error);
       return [];
     });
   return formatPunchCardData(result);
@@ -95,7 +94,7 @@ export const fetchRepositoryDetails = async ({
       return response.data;
     })
     .catch((error: any) => {
-      console.log(error);
+      console.error(error);
       return [];
     });
   const releases = await GitHub.get(`/repos/${owner}/${name}/releases`, headers)
@@ -103,7 +102,7 @@ export const fetchRepositoryDetails = async ({
       return response.data;
     })
     .catch((error: any) => {
-      console.log(error);
+      console.error(error);
       return [];
     });
   return {
@@ -205,3 +204,75 @@ export const fetchRepositoryContributors = async ({
     return [];
   }
 };
+
+interface GitHubTreeItem {
+  path: string;
+  type: "tree" | "blob";
+}
+
+export async function fetchGitHubRepoTree({
+  owner,
+  name,
+  branch,
+}: {
+  owner: string;
+  name: string;
+  branch?: string;
+}): Promise<TreeNode | null> {
+  const headers = getHeaders();
+  if (!branch) {
+    const repository = await GitHub.get(`/repos/${owner}/${name}`, headers)
+      .then((response: any) => {
+        return response.data;
+      })
+      .catch((error: any) => {
+        console.error(error);
+        return [];
+      });
+    branch = repository.default_branch;
+  }
+  return await GitHub.get(
+    `https://api.github.com/repos/${owner}/${name}/git/trees/${branch}?recursive=1`,
+    headers
+  )
+    .then((response: { data: { tree: any; GitHubTreeItem: any } }) => {
+      try {
+        if (!response.data.tree) {
+          throw new Error("Invalid repository structure");
+        }
+        const { tree }: { tree: GitHubTreeItem[] } = response.data;
+        const root: TreeNode = { name, type: "directory", children: [] };
+        tree.forEach((item) => {
+          const parts = item.path.split("/");
+          let current = root;
+
+          for (let i = 0; i < parts.length; i++) {
+            const part = parts[i];
+            const isLast = i === parts.length - 1;
+            let existing = current.children?.find(
+              (child) => child.name === part
+            );
+            if (!existing) {
+              existing = {
+                name: part,
+                type: isLast && item.type === "blob" ? "file" : "directory",
+                children: [],
+              };
+              current.children?.push(existing);
+            }
+
+            if (!isLast) {
+              current = existing;
+            }
+          }
+        });
+        return root;
+      } catch (error: any) {
+        console.error(`Error fetching repository structure: ${error}`);
+        return null;
+      }
+    })
+    .catch((error: any) => {
+      console.error(`Github API error: ${error}`);
+    });
+}
