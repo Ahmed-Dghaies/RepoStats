@@ -62,7 +62,7 @@ const MyTable = <T,>({
                       colSpan={header.colSpan}
                       className="text-left h-8 pl-2"
                     >
-                      <div
+                      <button
                         {...{
                           className: header.column.getCanSort()
                             ? "cursor-pointer select-none"
@@ -78,7 +78,7 @@ const MyTable = <T,>({
                           asc: " 🔼",
                           desc: " 🔽",
                         }[header.column.getIsSorted() as string] ?? null}
-                      </div>
+                      </button>
                     </th>
                   );
                 })}
