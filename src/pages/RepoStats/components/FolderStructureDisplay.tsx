@@ -16,7 +16,10 @@ const FolderStructureDisplay = ({ node }: { node: TreeNode }) => {
       {node.children && (
         <div>
           {node.children.map((child, index) => (
-            <FolderStructureDisplay key={index} node={child} />
+            <FolderStructureDisplay
+              key={`${child.name}-${index}`}
+              node={child}
+            />
           ))}
         </div>
       )}

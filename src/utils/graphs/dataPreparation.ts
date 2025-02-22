@@ -25,7 +25,7 @@ export function createTreeStructure(
       tree += createTreeStructure(
         child,
         newPrefix,
-        index === node.children!.length - 1
+        index === node.children.length - 1
       );
     });
   }

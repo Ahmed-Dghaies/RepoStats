@@ -26,15 +26,6 @@ const RepositoryDetails = ({ owner, name }: Partial<Repository>) => {
     });
   }
 
-  const Property = ({ title, value }: { title: string; value: string }) => (
-    <div className="flex px-3">
-      <Typography variant="h6" className="mr-2">
-        {title}:
-      </Typography>
-      <Typography>{value}</Typography>
-    </div>
-  );
-
   return (
     <MyCard
       title="Repository"
@@ -85,5 +76,14 @@ const RepositoryDetails = ({ owner, name }: Partial<Repository>) => {
     </MyCard>
   );
 };
+
+const Property = ({ title, value }: { title: string; value: string }) => (
+  <div className="flex px-3">
+    <Typography variant="h6" className="mr-2">
+      {title}:
+    </Typography>
+    <Typography>{value}</Typography>
+  </div>
+);
 
 export default RepositoryDetails;
