@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Repository } from "../../../../types/repository";
 import MyTable from "../../../../components/common/MyTable";
 import RepoActions from "./RepoActions";
+import { CellContext } from "@tanstack/react-table";
 
 const ReposTable = ({ repositories }: { repositories: Repository[] }) => {
   const columns = useMemo(
@@ -28,9 +29,7 @@ const ReposTable = ({ repositories }: { repositories: Repository[] }) => {
         accessorKey: "actions",
         header: "Actions",
         enableSorting: false,
-        cell: (props: { row: { original: Repository } }) => (
-          <RepoActions row={props.row.original} />
-        ),
+        cell: RepoActionsCell,
         className: "text-center",
       },
     ],
@@ -47,6 +46,10 @@ const ReposTable = ({ repositories }: { repositories: Repository[] }) => {
       }}
     />
   );
+};
+
+const RepoActionsCell = ({ row }: CellContext<Repository, unknown>) => {
+  return <RepoActions row={row.original} />;
 };
 
 export default ReposTable;
