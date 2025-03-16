@@ -59,7 +59,7 @@ export const fetchRepositoryPunchCard = async ({
   name,
 }: Partial<Repository>): Promise<FormattedGraphData> => {
   const result = await backendApi
-    .get(`/repository/${owner}/${name}/stats/punch-card`)
+    .get(`/repository/${owner}/${name}/punch-card`)
     .then((response: any) => {
       return response.data;
     })

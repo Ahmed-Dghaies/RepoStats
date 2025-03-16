@@ -1,6 +1,5 @@
 import express from "express";
 import { RepositoryController } from "./controller.js";
-import { RepositoryServices } from "./services.js";
 
 const router = express.Router();
 
@@ -11,6 +10,6 @@ router.get("/:owner/:repository/traffic/clones", RepositoryController.getClones)
 router.get("/:owner/:repository/traffic/views", RepositoryController.getViews);
 router.get("/:owner/:repository/:branch/download", RepositoryController.download);
 router.get("/:owner/:repository/contributors", RepositoryController.getContributors);
-router.get("/:owner/:repository/:branch/source-tree", RepositoryServices.getSourceTree);
+router.get("/:owner/:repository/:branch/source-tree", RepositoryController.getSourceTree);
 
 export default router;
