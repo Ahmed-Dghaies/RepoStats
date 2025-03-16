@@ -6,8 +6,8 @@ import { GithubUser } from "../user/types";
 interface getCommitsPayload {
   owner: string;
   repository: string;
-  startDate: string;
-  endDate: string;
+  since: string;
+  until: string;
   commitsPerPage: number;
   currentPage: number;
 }
@@ -15,6 +15,7 @@ interface getCommitsPayload {
 export class RepositoryServices {
   public static getSourceTree = async ({ owner, repository, branch }) => {
     try {
+      console.log(`/repos/${owner}/${repository}/git/trees/${branch}?recursive=1`);
       const response = await githubAPI.get(
         `/repos/${owner}/${repository}/git/trees/${branch}?recursive=1`
       );
@@ -23,9 +24,12 @@ export class RepositoryServices {
       throw new Error(`Error fetching repository source tree: ${err}`);
     }
   };
+
   public static getPunchCard = async (owner: string, repository: string) => {
     try {
-      const response = await githubAPI.get(`repo/${owner}/${repository}/punch_card`);
+      console.log(`/repos/${owner}/${repository}/stats/punch_card`);
+      const response = await githubAPI.get(`/repos/${owner}/${repository}/stats/punch_card`);
+      console.log("here");
       return response.data;
     } catch (err) {
       throw new Error(`Error fetching repository punch card: ${err}`);
@@ -61,8 +65,30 @@ export class RepositoryServices {
 
   public static getReleases = async (owner: string, repository: string) => {
     try {
-      const response = await githubAPI.get(`/repos/${owner}/${name}/releases`);
-      return response.data;
+      const releasesRequestUrl = `/repos/${owner}/${repository}/releases?per_page=100`;
+      const response = await githubAPI.get(releasesRequestUrl);
+      const linkHeader = response.headers.link;
+
+      let totalReleases = response.data.length;
+      let lastPage = 1;
+
+      if (linkHeader) {
+        const lastPageMatch = linkHeader.match(/&page=(\d+)>; rel="last"/);
+        if (lastPageMatch) {
+          lastPage = parseInt(lastPageMatch[1], 10);
+        }
+      }
+
+      if (lastPage > 1) {
+        const lastPageUrl = `${releasesRequestUrl}&page=${lastPage}`;
+        const lastPageResponse = await githubAPI.get(lastPageUrl);
+        totalReleases = (lastPage - 1) * 100 + lastPageResponse.data.length;
+      }
+      const formattedResponse = {
+        latest: response.data.length ? response.data[0] : null,
+        nbReleases: totalReleases,
+      };
+      return formattedResponse;
     } catch (err) {
       throw new Error(`Error fetching repository releases from GitHub: ${err}`);
     }
@@ -86,9 +112,9 @@ export class RepositoryServices {
     }
   };
 
-  public static getDetails = async (username: string, repository: string) => {
+  public static getDetails = async (owner: string, repository: string) => {
     try {
-      const response = await githubAPI.get(`/repos/${username}/${repository}`);
+      const response = await githubAPI.get(`/repos/${owner}/${repository}`);
       return response.data;
     } catch (err) {
       throw new Error(`Error fetching repository stats from GitHub: ${err}`);
@@ -97,9 +123,9 @@ export class RepositoryServices {
 
   public static getCommits = async (payload: getCommitsPayload) => {
     try {
-      const { owner, repository, commitsPerPage, currentPage, startDate, endDate } = payload;
+      const { owner, repository, commitsPerPage, currentPage, since, until } = payload;
 
-      let queryParams: string = `?since=${startDate}&until=${endDate}`;
+      let queryParams: string = `?since=${since}&until=${until}`;
       if (commitsPerPage) {
         queryParams += `&per_page=${commitsPerPage}`;
         if (currentPage) {

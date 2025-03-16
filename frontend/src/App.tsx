@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 
 import "react-tooltip/dist/react-tooltip.css";
+import "@/assets/styles/globalStyles.css";
 import "./App.css";
 
 import Navbar from "@/components/Navbar";

@@ -29,17 +29,18 @@ export class UserController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { username, repository } = req.params;
+      const { owner, repository } = req.params;
+      const { author } = req.query;
 
-      if (!username || !repository) {
+      if (!owner || !repository) {
         res.status(400).json({
           success: false,
-          message: "Missing required parameters: 'username' and 'repository' are required.",
+          message: "Missing required parameters: 'owner', 'author' and 'repository' are required.",
         });
         return;
       }
 
-      const lastCommit = await UserServices.getLastCommit(username, repository);
+      const lastCommit = await UserServices.getLastCommit({ owner, repository, author });
       res.json({ success: true, data: lastCommit });
     } catch (error) {
       next(error);

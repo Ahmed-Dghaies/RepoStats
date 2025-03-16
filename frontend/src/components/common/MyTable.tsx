@@ -15,7 +15,6 @@ import {
   faChevronLeft,
   faChevronRight,
 } from "@fortawesome/free-solid-svg-icons";
-import style from "../../assets/styles/globalStyles.module.css";
 
 interface TableProps<T> {
   data: Array<T>;
@@ -24,12 +23,7 @@ interface TableProps<T> {
   paginationClassName?: string;
 }
 
-const MyTable = <T,>({
-  data,
-  columns,
-  tableClassName,
-  paginationClassName,
-}: TableProps<T>) => {
+const MyTable = <T,>({ data, columns, tableClassName, paginationClassName }: TableProps<T>) => {
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 20,
@@ -57,23 +51,14 @@ const MyTable = <T,>({
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <th
-                      key={header.id}
-                      colSpan={header.colSpan}
-                      className="text-left h-8 pl-2"
-                    >
+                    <th key={header.id} colSpan={header.colSpan} className="text-left h-8 pl-2">
                       <button
                         {...{
-                          className: header.column.getCanSort()
-                            ? "cursor-pointer select-none"
-                            : "",
+                          className: header.column.getCanSort() ? "cursor-pointer select-none" : "",
                           onClick: header.column.getToggleSortingHandler(),
                         }}
                       >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        {flexRender(header.column.columnDef.header, header.getContext())}
                         {{
                           asc: " 🔼",
                           desc: " 🔽",
@@ -88,14 +73,11 @@ const MyTable = <T,>({
           <tbody>
             {table.getRowModel().rows.map((row) => {
               return (
-                <tr key={row.id} className={`${style["table-row"]}`}>
+                <tr key={row.id} className="table-row">
                   {row.getVisibleCells().map((cell) => {
                     return (
                       <td key={cell.id} className="pl-2">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     );
                   })}
@@ -105,11 +87,7 @@ const MyTable = <T,>({
           </tbody>
         </table>
       </div>
-      <div
-        className={`flex items-center pt-2 gap-2 justify-end ${
-          paginationClassName ?? ""
-        }`}
-      >
+      <div className={`flex items-center pt-2 gap-2 justify-end ${paginationClassName ?? ""}`}>
         <FontAwesomeIcon
           className="cursor-pointer"
           icon={faAnglesLeft}
@@ -137,8 +115,7 @@ const MyTable = <T,>({
         <span className="flex items-center gap-1">
           <div>Page</div>
           <strong>
-            {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount().toLocaleString()}
+            {table.getState().pagination.pageIndex + 1} of {table.getPageCount().toLocaleString()}
           </strong>
         </span>
         <span className="flex items-center gap-1">

@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "../styles/Navbar.module.css";
-import globalStyles from "@/assets/styles/globalStyles.module.css";
+import navBarStyles from "./Navbar.module.css";
 
 const Navbar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
@@ -32,21 +32,12 @@ const Navbar: React.FC = () => {
         <a href="/home">RepoStats</a>
       </div>
 
-      <button
-        className="block pointer-cursor lg:hidden"
-        onClick={toggleExpanded}
-      >
-        <FontAwesomeIcon
-          icon={faBars}
-          className="hover:cursor-pointer text-[var(--navbar-font)]"
-        />
+      <button className="block pointer-cursor lg:hidden" onClick={toggleExpanded}>
+        <FontAwesomeIcon icon={faBars} className="hover:cursor-pointer text-[var(--navbar-font)]" />
       </button>
 
       <div
-        className={
-          "w-full lg:flex lg:items-center lg:w-auto " +
-          (expanded ? "" : "hidden")
-        }
+        className={"w-full lg:flex lg:items-center lg:w-auto " + (expanded ? "" : "hidden")}
         id="menu"
       >
         <nav>
@@ -56,7 +47,7 @@ const Navbar: React.FC = () => {
                 <Link
                   key={link.name}
                   to={link.link}
-                  className={`px-2 my-2 flex items-center ${globalStyles["custom-underline-hover"]}`}
+                  className={`px-2 my-2 flex items-center ${navBarStyles["custom-underline-hover"]}`}
                 >
                   {link.name}
                 </Link>

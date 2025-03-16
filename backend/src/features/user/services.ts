@@ -11,21 +11,16 @@ export class UserServices {
     }
   };
 
-  public static getLastCommit = async (
-    username: string,
-    repository: string
-  ) => {
+  public static getLastCommit = async ({ owner, repository, author }) => {
     try {
-      const response = await githubAPI.get(
-        `/repos/${username}/${repository}/commits`
-      );
+      const authorFilter = author ? `?author=${author}` : "";
+      const response = await githubAPI.get(`/repos/${owner}/${repository}/commits${authorFilter}`);
       const commits = await response.data;
       if (commits.length === 0) {
         return null;
       }
       return commits[0];
     } catch (error) {
-      console.error(`[ERROR] Fetching user data failed: ${error.message}`);
       throw {
         error: {
           message: error.response?.data?.message || error.message,

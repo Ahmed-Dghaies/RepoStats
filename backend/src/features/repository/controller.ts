@@ -176,14 +176,13 @@ export class RepositoryController {
         },
         description: details.description,
         releases: {
-          latestRelease:
-            releases.length > 0
-              ? {
-                  tagName: releases[0].tag_name,
-                  releaseDate: releases[0].published_at,
-                }
-              : null,
-          nbReleases: releases.length,
+          latestRelease: releases.latest
+            ? {
+                tagName: releases.latest.tag_name,
+                releaseDate: releases.latest.published_at,
+              }
+            : null,
+          nbReleases: releases.nbReleases,
         },
         openIssues: details.open_issues_count,
         createdAt: new Date(details.created_at).toISOString().split("T")[0],
@@ -219,7 +218,12 @@ export class RepositoryController {
   ): Promise<void> => {
     try {
       const { owner, repository } = req.params;
-      const { startDate, endDate, commitsPerPage, currentPage } = req.body;
+      const { until, since, commitsPerPage, currentPage } = req.query as {
+        until: string;
+        since: string;
+        commitsPerPage: string;
+        currentPage: string;
+      };
 
       if (!owner || !repository) {
         res.status(400).json({
@@ -232,10 +236,10 @@ export class RepositoryController {
       let commits = await RepositoryServices.getCommits({
         owner,
         repository,
-        startDate,
-        endDate,
-        commitsPerPage,
-        currentPage,
+        since,
+        until,
+        commitsPerPage: parseInt(commitsPerPage),
+        currentPage: parseInt(currentPage),
       });
 
       if (commits) {
@@ -261,7 +265,7 @@ export class RepositoryController {
       const { owner, repository } = req.params;
 
       const response = await RepositoryServices.getPunchCard(owner, repository);
-      return response.data;
+      res.json({ success: true, data: response });
     } catch (err) {
       next(err);
     }
