@@ -5,7 +5,7 @@ import { setRepositories } from "../reducers/repositoriesReducer";
 import { FormattedGraphData, GraphData } from "@/types/graphs";
 import { Contributor, RepositoryInfo } from "@/pages/RepoStats/types/repository";
 import {
-  formatClonesData, 
+  formatClonesData,
   formatGraphViewsData,
   formatPunchCardData,
 } from "@/utils/graphs/dataPreparation";
@@ -16,6 +16,13 @@ export const fetchAllRepositories = () => async (dispatch: AppDispatch) => {
 };
 
 export interface FormattedGraphComparisonData {
+  keys: string[];
+  maximumValue: number;
+  count: GraphData;
+  uniquesCount: GraphData;
+}
+
+export const fetchClonesStatistics = async ({
   owner,
   name,
 }: Partial<Repository>): Promise<FormattedGraphComparisonData> => {
