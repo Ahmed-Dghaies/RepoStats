@@ -13,20 +13,13 @@ export function createTreeStructure(
   if (node.name) {
     const currentPrefix = isLast ? "└── " : "├── ";
     tree +=
-      prefix +
-      currentPrefix +
-      (node.type === "directory" ? node.name + "/" : node.name) +
-      "\n";
+      prefix + currentPrefix + (node.type === "directory" ? node.name + "/" : node.name) + "\n";
   }
 
   if (node.type === "directory") {
     const newPrefix = prefix + (isLast ? "    " : "│   ");
     node.children.forEach((child, index) => {
-      tree += createTreeStructure(
-        child,
-        newPrefix,
-        index === node.children.length - 1
-      );
+      tree += createTreeStructure(child, newPrefix, index === node.children.length - 1);
     });
   }
 

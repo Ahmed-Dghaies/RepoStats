@@ -1,36 +1,25 @@
 import { setCommits } from "../reducers/commitsReducer";
 import { AppDispatch, RootState } from "../../../store";
-import GitHub, { getHeaders } from "../../../utils/axios/axios";
+import backendApi from "../../../utils/axios/axios";
 
-export const fetchAllCommits =
-  () => async (dispatch: AppDispatch, getState: () => RootState) => {
-    const headers = getHeaders();
-    const selectedRepo = getState().repositories.selectedRepository;
-    const { startDate, endDate, commitsPerPage, currentPage } =
-      getState().commits;
-    let queryParams: string = `?since=${startDate}&until=${endDate}`;
-    if (commitsPerPage) {
-      queryParams += `&per_page=${commitsPerPage}`;
-      if (currentPage) {
-        queryParams += `&page=${currentPage}`;
-      }
+export const fetchAllCommits = () => async (dispatch: AppDispatch, getState: () => RootState) => {
+  const selectedRepo = getState().repositories.selectedRepository;
+  const { startDate, endDate, commitsPerPage, currentPage } = getState().commits;
+  let queryParams: string = `?since=${startDate}&until=${endDate}`;
+  if (commitsPerPage) {
+    queryParams += `&per_page=${commitsPerPage}`;
+    if (currentPage) {
+      queryParams += `&page=${currentPage}`;
     }
-    const result = await GitHub.get(
-      `/repos/${selectedRepo.owner}/${selectedRepo.name}/commits${queryParams}`,
-      headers
-    )
-      .then((response: any) => {
-        return response.data.map((commit: any) => {
-          return {
-            id: commit.sha,
-            author: commit.commit.author.name,
-            date: commit.commit.author.date,
-          };
-        });
-      })
-      .catch((error: any) => {
-        console.log(error);
-        return [];
-      });
-    dispatch(setCommits(result));
-  };
+  }
+  const result = await backendApi
+    .get(`/repository/${selectedRepo.owner}/${selectedRepo.name}/commits${queryParams}`)
+    .then((response: any) => {
+      return response.data;
+    })
+    .catch((error: any) => {
+      console.log(error);
+      return [];
+    });
+  dispatch(setCommits(result));
+};

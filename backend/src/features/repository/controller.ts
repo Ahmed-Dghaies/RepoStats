@@ -1,0 +1,269 @@
+import { Request, Response, NextFunction, RequestHandler } from "express";
+import { RepositoryServices } from "./services.js";
+import { UserServices } from "../user/services.js";
+
+interface GitHubTreeItem {
+  path: string;
+  type: "tree" | "blob";
+}
+
+interface TreeNode {
+  name: string;
+  type: "directory" | "file";
+  children?: TreeNode[];
+}
+
+export class RepositoryController {
+  public static getContributors: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+
+      const contributorsList = await RepositoryServices.getContributors(owner, repository);
+
+      const resolvedContributors = await Promise.all(
+        contributorsList.map(async (user: any) => {
+          try {
+            const userDataResponse = await UserServices.getDetails(user.login);
+            const userData = userDataResponse;
+
+            return {
+              login: user.login,
+              contributions: user.contributions,
+              avatarUrl: user.avatar_url,
+              email: userData.email,
+            };
+          } catch (error) {
+            console.error(`Error while retrieving user data for ${user.login}:`, error);
+            return {
+              login: user.login,
+              contributions: user.contributions,
+              avatarUrl: user.avatar_url,
+            };
+          }
+        })
+      );
+
+      res.json({ success: true, data: resolvedContributors });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public static download: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      let { owner, repository, branch } = req.params;
+
+      if (!owner || !repository) {
+        res.status(400).json({
+          success: false,
+          message: "Missing required parameters: 'owner' and/or 'repository' are missing",
+        });
+      }
+
+      if (!branch) {
+        const repositoryDetails = await RepositoryServices.getDetails(owner, repository);
+        branch = repositoryDetails.default_branch;
+      }
+
+      await RepositoryServices.download({ owner, repository, branch }, res);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public static getSourceTree = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      let { owner, repository, branch } = req.params;
+
+      if (!owner || !repository) {
+        res.status(400).json({
+          success: false,
+          message: "Missing required parameters: 'owner' and/or 'repository' are missing",
+        });
+      }
+
+      if (!branch) {
+        const repositoryDetails = await RepositoryServices.getDetails(owner, repository);
+        branch = repositoryDetails.default_branch;
+      }
+
+      const sourceTree = await RepositoryServices.getSourceTree({ owner, repository, branch });
+      const { tree }: { tree: GitHubTreeItem[] } = sourceTree;
+      const root: TreeNode = { name: repository, type: "directory", children: [] };
+      tree.forEach((item) => {
+        const parts = item.path.split("/");
+        let current = root;
+
+        for (let i = 0; i < parts.length; i++) {
+          const part = parts[i];
+          const isLast = i === parts.length - 1;
+          let existing = current.children?.find((child) => child.name === part);
+          if (!existing) {
+            existing = {
+              name: part,
+              type: isLast && item.type === "blob" ? "file" : "directory",
+              children: [],
+            };
+            current.children?.push(existing);
+          }
+
+          if (!isLast) {
+            current = existing;
+          }
+        }
+      });
+      res.json({ success: true, data: root });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public static getViews: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+
+      const views = await RepositoryServices.getViews(owner, repository);
+
+      res.json({ success: true, data: views });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public static getDetails: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+
+      if (!owner || !repository) {
+        res.status(400).json({
+          success: false,
+          error: "Missing required parameters: 'owner' or 'repository'",
+        });
+        return;
+      }
+
+      const details = await RepositoryServices.getDetails(owner, repository);
+      const releases = await RepositoryServices.getReleases(owner, repository);
+
+      const result = {
+        name: details.name,
+        fullName: details.full_name,
+        defaultBranch: details.default_branch,
+        owner: {
+          login: details.owner.login,
+          avatarUrl: details.owner.avatar_url,
+          contributions: 0,
+        },
+        description: details.description,
+        releases: {
+          latestRelease:
+            releases.length > 0
+              ? {
+                  tagName: releases[0].tag_name,
+                  releaseDate: releases[0].published_at,
+                }
+              : null,
+          nbReleases: releases.length,
+        },
+        openIssues: details.open_issues_count,
+        createdAt: new Date(details.created_at).toISOString().split("T")[0],
+        updatedAt: details.updated_at,
+      };
+
+      res.json({ success: true, data: result });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public static getClones: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+
+      const clonesData = await RepositoryServices.getClonesData(owner, repository);
+
+      res.json({ success: true, data: clonesData });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public static getCommits: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+      const { startDate, endDate, commitsPerPage, currentPage } = req.body;
+
+      if (!owner || !repository) {
+        res.status(400).json({
+          success: false,
+          error: "Missing required parameters: 'owner' or 'repository'",
+        });
+        return;
+      }
+
+      let commits = await RepositoryServices.getCommits({
+        owner,
+        repository,
+        startDate,
+        endDate,
+        commitsPerPage,
+        currentPage,
+      });
+
+      if (commits) {
+        commits = commits.map((commit: any) => ({
+          id: commit.sha,
+          author: commit.commit.author.name,
+          date: commit.commit.author.date,
+        }));
+      }
+
+      res.json({ success: true, data: commits });
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public static getPunchCard: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+
+      const response = await RepositoryServices.getPunchCard(owner, repository);
+      return response.data;
+    } catch (err) {
+      next(err);
+    }
+  };
+}

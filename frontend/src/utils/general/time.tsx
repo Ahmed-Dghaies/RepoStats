@@ -1,9 +1,6 @@
 import { GraphStep } from "@/types/graphs";
 
-export function formatDateLabelByStep(
-  timestamp: string,
-  step: GraphStep
-): string {
+export function formatDateLabelByStep(timestamp: string, step: GraphStep): string {
   const date = new Date(timestamp);
 
   switch (step) {
