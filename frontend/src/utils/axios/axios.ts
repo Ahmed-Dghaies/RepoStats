@@ -1,18 +1,11 @@
 import axios from "axios";
 
-const GitHub: any = axios.create({
-  baseURL: "https://api.github.com",
+const backendApi: any = axios.create({
+  baseURL: "http://localhost:3000",
   responseType: "json",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
-export const getHeaders = () => {
-  return {
-    headers: {
-      Authorization: `Bearer ${import.meta.env.VITE_GITHUB_TOKEN}`,
-      Accept: "application/vnd.github.v3+json",
-      "Content-Type": "application/json",
-    },
-  };
-};
-
-export default GitHub;
+export default backendApi;
