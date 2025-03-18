@@ -119,6 +119,11 @@ export async function fetchGitHubRepoTree({
   name: string;
   branch?: string;
 }): Promise<TreeNode | null> {
+  if (!branch) {
+    const repositoryDetails = await fetchRepositoryDetails({ owner, name });
+    console.log(repositoryDetails);
+    branch = repositoryDetails.defaultBranch;
+  }
   return await backendApi
     .get(`/repository/${owner}/${name}/${branch}/source-tree`)
     .then((response: { data: TreeNode }) => {

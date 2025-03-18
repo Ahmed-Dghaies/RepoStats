@@ -1,5 +1,6 @@
 import express from "express";
-import { RepositoryController } from "./controller.js";
+import { RepositoryController } from "./controller";
+
 
 const router = express.Router();
 

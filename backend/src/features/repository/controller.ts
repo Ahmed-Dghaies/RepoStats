@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
-import { RepositoryServices } from "./services.js";
-import { UserServices } from "../user/services.js";
+import { RepositoryServices } from "./services";
+import { UserServices } from "../user/services";
 
 interface GitHubTreeItem {
   path: string;
@@ -47,7 +47,7 @@ export class RepositoryController {
         })
       );
 
-      res.json({ success: true, data: resolvedContributors });
+      res.json(resolvedContributors);
     } catch (err) {
       next(err);
     }
@@ -124,7 +124,7 @@ export class RepositoryController {
           }
         }
       });
-      res.json({ success: true, data: root });
+      res.json(root);
     } catch (err) {
       next(err);
     }
@@ -140,7 +140,7 @@ export class RepositoryController {
 
       const views = await RepositoryServices.getViews(owner, repository);
 
-      res.json({ success: true, data: views });
+      res.json(views);
     } catch (err) {
       next(err);
     }
@@ -189,7 +189,7 @@ export class RepositoryController {
         updatedAt: details.updated_at,
       };
 
-      res.json({ success: true, data: result });
+      res.json(result);
     } catch (err) {
       next(err);
     }
@@ -205,7 +205,7 @@ export class RepositoryController {
 
       const clonesData = await RepositoryServices.getClonesData(owner, repository);
 
-      res.json({ success: true, data: clonesData });
+      res.json(clonesData);
     } catch (error) {
       next(error);
     }
@@ -250,7 +250,7 @@ export class RepositoryController {
         }));
       }
 
-      res.json({ success: true, data: commits });
+      res.json(commits);
     } catch (err) {
       next(err);
     }
@@ -265,7 +265,7 @@ export class RepositoryController {
       const { owner, repository } = req.params;
 
       const response = await RepositoryServices.getPunchCard(owner, repository);
-      res.json({ success: true, data: response });
+      res.json(response);
     } catch (err) {
       next(err);
     }
