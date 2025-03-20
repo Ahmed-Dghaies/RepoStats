@@ -5,17 +5,17 @@ import { useEffect, useState } from "react";
 import { Contributor } from "../types/repository";
 import { fetchRepositoryContributors } from "@/features/repositories/services/repositories";
 
-const RepositoryContributors = ({ owner, name }: Partial<Repository>) => {
+const RepositoryContributors = ({ owner, repository }: Partial<Repository>) => {
   const [contributors, setContributors] = useState<Contributor[]>([]);
 
   useEffect(() => {
-    fetchRepositoryContributors({ owner, name }).then(setContributors);
-  }, [owner, name]);
+    fetchRepositoryContributors({ owner, repository }).then(setContributors);
+  }, [owner, repository]);
 
   return (
     <MyCard
       title="Contributors"
-      className="w-full sm:w-1/2 h-[300px] mt-3 flex flex-col"
+      className="w-full sm:w-1/2 h-[300px] mt-6 flex flex-col"
       bodyClassName="px-3 overflow-y-auto mr-2 mb-2 divide-y divide-gray-200 py-0"
     >
       {contributors.map(({ login, email, contributions, avatarUrl }) => (

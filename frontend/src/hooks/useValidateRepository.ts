@@ -3,16 +3,16 @@ import backendApi from "@/utils/axios/axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const useValidateRepository = ({ owner, name }: Partial<Repository>) => {
+const useValidateRepository = ({ owner, repository }: Partial<Repository>) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!owner || !name) return;
+    if (!owner || !repository) return;
 
     const checkRepository = async () => {
       try {
-        await backendApi.get(`/repository/${owner}/${name}/details`).catch((error: any) => {
-          console.log(error);
+        await backendApi.get(`/repository/${owner}/${repository}/details`).catch((error: any) => {
+          console.error(error);
           navigate("/404", { replace: false });
         });
       } catch (err) {
@@ -22,7 +22,7 @@ const useValidateRepository = ({ owner, name }: Partial<Repository>) => {
     };
 
     checkRepository();
-  }, [owner, name, navigate]);
+  }, [owner, repository, navigate]);
 };
 
 export default useValidateRepository;

@@ -1,9 +1,8 @@
 import backendApi from "@/utils/axios/axios";
 import { AppDispatch } from "../../../store";
-import { Repository, TreeNode } from "@/types/repository";
+import { Repository, TreeNode, Contributor, RepositoryInfo } from "@/types/repository";
 import { setRepositories } from "../reducers/repositoriesReducer";
 import { FormattedGraphData, GraphData } from "@/types/graphs";
-import { Contributor, RepositoryInfo } from "@/pages/RepoStats/types/repository";
 import {
   formatClonesData,
   formatGraphViewsData,
@@ -24,10 +23,10 @@ export interface FormattedGraphComparisonData {
 
 export const fetchClonesStatistics = async ({
   owner,
-  name,
+  repository,
 }: Partial<Repository>): Promise<FormattedGraphComparisonData> => {
   const result = await backendApi
-    .get(`/repository/${owner}/${name}/traffic/clones`)
+    .get(`/repository/${owner}/${repository}/traffic/clones`)
     .then((response: any) => {
       return response.data;
     })
@@ -40,10 +39,10 @@ export const fetchClonesStatistics = async ({
 
 export const fetchRepositoryViews = async ({
   owner,
-  name,
+  repository,
 }: Partial<Repository>): Promise<FormattedGraphComparisonData> => {
   const result = await backendApi
-    .get(`/repository/${owner}/${name}/traffic/views`)
+    .get(`/repository/${owner}/${repository}/traffic/views`)
     .then((response: any) => {
       return response.data;
     })
@@ -56,10 +55,10 @@ export const fetchRepositoryViews = async ({
 
 export const fetchRepositoryPunchCard = async ({
   owner,
-  name,
+  repository,
 }: Partial<Repository>): Promise<FormattedGraphData> => {
   const result = await backendApi
-    .get(`/repository/${owner}/${name}/punch-card`)
+    .get(`/repository/${owner}/${repository}/punch-card`)
     .then((response: any) => {
       return response.data;
     })
@@ -72,10 +71,10 @@ export const fetchRepositoryPunchCard = async ({
 
 export const fetchRepositoryDetails = async ({
   owner,
-  name,
+  repository,
 }: Partial<Repository>): Promise<RepositoryInfo> => {
   return await backendApi
-    .get(`/repository/${owner}/${name}/details`)
+    .get(`/repository/${owner}/${repository}/details`)
     .then((response: any) => {
       return response.data;
     })
@@ -87,22 +86,22 @@ export const fetchRepositoryDetails = async ({
 
 export const downloadRepository = async ({
   owner,
-  name,
+  repository,
   branch,
 }: {
   owner: string;
-  name: string;
+  repository: string;
   branch: string;
 }): Promise<void> => {
-  await backendApi.get(`repository/${owner}/${name}/${branch}/download`);
+  await backendApi.get(`repository/${owner}/${repository}/${branch}/download`);
 };
 
 export const fetchRepositoryContributors = async ({
   owner,
-  name,
+  repository,
 }: Partial<Repository>): Promise<Contributor[]> => {
   try {
-    const contributors = await backendApi.get(`/repository/${owner}/${name}/contributors`);
+    const contributors = await backendApi.get(`/repository/${owner}/${repository}/contributors`);
     return contributors.data;
   } catch (error) {
     console.error(`Error fetching contributors:`, error);
@@ -112,20 +111,19 @@ export const fetchRepositoryContributors = async ({
 
 export async function fetchGitHubRepoTree({
   owner,
-  name,
+  repository,
   branch,
 }: {
   owner: string;
-  name: string;
+  repository: string;
   branch?: string;
 }): Promise<TreeNode | null> {
   if (!branch) {
-    const repositoryDetails = await fetchRepositoryDetails({ owner, name });
-    console.log(repositoryDetails);
+    const repositoryDetails = await fetchRepositoryDetails({ owner, repository });
     branch = repositoryDetails.defaultBranch;
   }
   return await backendApi
-    .get(`/repository/${owner}/${name}/${branch}/source-tree`)
+    .get(`/repository/${owner}/${repository}/${branch}/source-tree`)
     .then((response: { data: TreeNode }) => {
       return response.data;
     })

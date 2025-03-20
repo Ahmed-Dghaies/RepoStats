@@ -11,7 +11,6 @@ const UserDisplay = ({
   email?: string;
   className?: string;
 }) => {
-  console.log(image, name, email, className);
   return (
     <div className={`flex items-center gap-x-3 ${className}`}>
       <Avatar size="sm" src={image} alt={name} />

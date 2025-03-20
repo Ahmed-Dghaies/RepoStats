@@ -6,17 +6,17 @@ import { createTreeStructure } from "@/utils/graphs/dataPreparation";
 import FolderStructureDisplay from "./FolderStructureDisplay";
 import { fetchGitHubRepoTree } from "@/features/repositories/services/repositories";
 
-const RepositorySourceTree = ({ owner, name }: Partial<Repository>) => {
+const RepositorySourceTree = ({ owner, repository }: Partial<Repository>) => {
   const [sourceTree, setSourceTree] = useState<TreeNode | null>(null);
 
   useEffect(() => {
-    if (!owner || !name) return;
-    fetchGitHubRepoTree({ owner, name }).then((tree) => {
+    if (!owner || !repository) return;
+    fetchGitHubRepoTree({ owner, repository }).then((tree) => {
       if (tree) {
         setSourceTree(tree);
       }
     });
-  }, [owner, name]);
+  }, [owner, repository]);
 
   function copySourceTree() {
     if (!sourceTree) return;
@@ -32,7 +32,7 @@ const RepositorySourceTree = ({ owner, name }: Partial<Repository>) => {
         onClick: copySourceTree,
         tip: "Copy project structure",
       }}
-      className="w-full flex flex-col h-[300px] mt-3"
+      className="w-full flex flex-col h-[300px] mt-6"
       bodyClassName="p-2 overflow-y-auto mr-1"
     >
       {sourceTree && <FolderStructureDisplay node={sourceTree} />}

@@ -7,10 +7,7 @@ import {
 } from "@/features/repositories/services/repositories";
 import { FormattedGraphData } from "@/types/graphs";
 
-const useRepositoryStats = (
-  owner: string | undefined,
-  name: string | undefined
-) => {
+const useRepositoryStats = (owner: string | undefined, repository: string | undefined) => {
   const [stats, setStats] = useState<{ [key: string]: FormattedGraphData }>({
     clones: { data: [], keys: [], maximumValue: 0 },
     repositoryViews: { data: [], keys: [], maximumValue: 0 },
@@ -18,7 +15,7 @@ const useRepositoryStats = (
   });
 
   useEffect(() => {
-    if (!owner || !name) return;
+    if (!owner || !repository) return;
 
     const fetchStats = async () => {
       const [clonesResult, viewsResult, punchCardResult]: [
@@ -26,9 +23,9 @@ const useRepositoryStats = (
         FormattedGraphComparisonData,
         FormattedGraphData
       ] = await Promise.all([
-        fetchClonesStatistics({ owner, name }),
-        fetchRepositoryViews({ owner, name }),
-        fetchRepositoryPunchCard({ owner, name }),
+        fetchClonesStatistics({ owner, repository }),
+        fetchRepositoryViews({ owner, repository }),
+        fetchRepositoryPunchCard({ owner, repository }),
       ]);
 
       setStats({
@@ -47,7 +44,7 @@ const useRepositoryStats = (
     };
 
     fetchStats();
-  }, [owner, name]);
+  }, [owner, repository]);
 
   return stats;
 };

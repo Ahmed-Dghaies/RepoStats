@@ -13,12 +13,12 @@ export const fetchAllCommits = () => async (dispatch: AppDispatch, getState: () 
     }
   }
   const result = await backendApi
-    .get(`/repository/${selectedRepo.owner}/${selectedRepo.name}/commits${queryParams}`)
+    .get(`/repository/${selectedRepo.owner}/${selectedRepo.repository}/commits${queryParams}`)
     .then((response: any) => {
       return response.data;
     })
     .catch((error: any) => {
-      console.log(error);
+      console.error(error);
       return [];
     });
   dispatch(setCommits(result));

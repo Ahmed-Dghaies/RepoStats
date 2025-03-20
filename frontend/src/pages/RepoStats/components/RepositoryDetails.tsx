@@ -1,28 +1,24 @@
 import MyCard from "@/components/common/MyCard";
 import { Typography } from "@material-tailwind/react";
-import { useEffect, useState } from "react";
 import { RepositoryInfo } from "../types/repository";
-import {
-  downloadRepository,
-  fetchRepositoryDetails,
-} from "@/features/repositories/services/repositories";
-import { Repository } from "@/types/repository";
+import { downloadRepository } from "@/features/repositories/services/repositories";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 
-const RepositoryDetails = ({ owner, name }: Partial<Repository>) => {
-  const [repositoryDetails, setRepositoryDetails] =
-    useState<RepositoryInfo | null>(null);
-
-  useEffect(() => {
-    fetchRepositoryDetails({ owner, name }).then(setRepositoryDetails);
-  }, [owner, name]);
-
+const RepositoryDetails = ({
+  owner,
+  repository,
+  details,
+}: {
+  owner: string;
+  repository: string;
+  details: RepositoryInfo | null;
+}) => {
   function handleDownload() {
-    if (!owner || !name) return;
+    if (!owner || !repository) return;
     downloadRepository({
       owner,
-      name,
-      branch: repositoryDetails?.defaultBranch ?? "main",
+      repository,
+      branch: details?.defaultBranch ?? "main",
     });
   }
 
@@ -34,42 +30,28 @@ const RepositoryDetails = ({ owner, name }: Partial<Repository>) => {
         onClick: handleDownload,
         tip: "Download repository (zip)",
       }}
-      className="w-full sm:w-1/2 flex flex-col h-[300px] mt-3"
+      className="w-full sm:w-1/2 flex flex-col h-[300px] mt-6"
       bodyClassName="p-2 overflow-y-auto"
     >
-      {repositoryDetails !== null && (
+      {details !== null && (
         <>
-          <Property title="Owner" value={repositoryDetails.owner.login} />
-          <Property title="Name" value={repositoryDetails.fullName} />
-          <Property title="Created at" value={repositoryDetails.createdAt} />
-          {repositoryDetails.description && (
-            <Property
-              title="Description"
-              value={repositoryDetails.description}
-            />
-          )}
-          <Property
-            title="Default branch"
-            value={repositoryDetails.defaultBranch}
-          />
+          <Property title="Owner" value={details.owner.login} />
+          <Property title="Name" value={details.fullName} />
+          <Property title="Created at" value={details.createdAt} />
+          {details.description && <Property title="Description" value={details.description} />}
+          <Property title="Default branch" value={details.defaultBranch} />
 
-          {repositoryDetails.releases.nbReleases > 0 && (
+          {details.releases.nbReleases > 0 && (
             <>
-              <Property
-                title="Number of releases"
-                value={repositoryDetails.releases.nbReleases.toString()}
-              />
+              <Property title="Number of releases" value={details.releases.nbReleases.toString()} />
               <Property
                 title="Latest release"
-                value={repositoryDetails.releases.latestRelease?.tagName ?? ""}
+                value={details.releases.latestRelease?.tagName ?? ""}
               />
             </>
           )}
-          {repositoryDetails.openIssues > 0 && (
-            <Property
-              title="Open issues"
-              value={repositoryDetails.openIssues.toString()}
-            />
+          {details.openIssues > 0 && (
+            <Property title="Open issues" value={details.openIssues.toString()} />
           )}
         </>
       )}

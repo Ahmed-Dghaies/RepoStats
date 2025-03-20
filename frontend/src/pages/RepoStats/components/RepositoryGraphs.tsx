@@ -2,11 +2,8 @@ import LineGraph from "@/components/graphs/LineChart/LineGraph";
 import useRepositoryStats from "../hooks/useRepositoryStats";
 import { Repository } from "@/types/repository";
 
-const RepositoryGraphs = ({ owner, name }: Partial<Repository>) => {
-  const { clones, repositoryViews, punchCard } = useRepositoryStats(
-    owner,
-    name
-  );
+const RepositoryGraphs = ({ owner, repository }: Partial<Repository>) => {
+  const { clones, repositoryViews, punchCard } = useRepositoryStats(owner, repository);
 
   return (
     <div className="flex flex-col xl:flex-row gap-3">

@@ -11,9 +11,7 @@ import ReposTable from "./ReposTable";
 const Repositories = () => {
   const [filterValue, setFilterValue] = useState<string>("");
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const originalRepositories = useAppSelector(
-    (state) => state.repositories.repositoriesList
-  );
+  const originalRepositories = useAppSelector((state) => state.repositories.repositoriesList);
   const dispatch = useAppDispatch();
 
   const displayedRepositories: Repository[] = useMemo(
@@ -30,16 +28,12 @@ const Repositories = () => {
 
   return (
     <>
-      <ReactModal
-        isOpen={modalIsOpen}
-        className="modal-content"
-        overlayClassName="modal-overlay"
-      >
+      <ReactModal isOpen={modalIsOpen} className="modal-content" overlayClassName="modal-overlay">
         <AddRepository closeModal={() => setModalIsOpen(false)} />{" "}
       </ReactModal>
       <MyCard
         title="Repositories"
-        className="w-full lg:w-3/4 mt-3"
+        className="w-full lg:w-3/4 mt-6"
         bodyClassName="overflow-hidden px-0 pt-0 pb-2 h-[400px] max-h-[400px] mx-2 flex flex-col"
         searchParams={{
           value: filterValue,

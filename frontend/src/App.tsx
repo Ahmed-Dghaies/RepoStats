@@ -8,7 +8,6 @@ import "./App.css";
 import Navbar from "@/components/Navbar";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
-import Stats from "./pages/Stats";
 import { Tooltip } from "react-tooltip";
 import RepoStats from "./pages/RepoStats";
 
@@ -20,11 +19,10 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen h-full">
       <Navbar />
-      <div className="flex-grow p-4 overflow-y-auto mr-1 pr-3">
+      <div className="flex-grow overflow-y-auto">
         <Routes>
           {MultiRoute(<Home />, ["/", "/home"])}
-          <Route path="stats" element={<Stats />} />
-          <Route path="/repository/:owner/:name" element={<RepoStats />} />
+          <Route path="/repository/:owner/:repository" element={<RepoStats />} />
           {MultiRoute(<NotFound />, ["/404", "*"])}
         </Routes>
         <Tooltip id="global-tooltip" className="z-50 tooltip-container" />
