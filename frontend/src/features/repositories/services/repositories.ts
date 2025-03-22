@@ -131,3 +131,33 @@ export async function fetchGitHubRepoTree({
       console.error(`Github API error: ${error}`);
     });
 }
+
+export async function repositoryHasDependenciesFile(
+  repositoryDetails: RepositoryInfo
+): Promise<boolean> {
+  return await backendApi
+    .get(
+      `/repository/${repositoryDetails.owner.login}/${repositoryDetails.name}/has-dependencies-file`
+    )
+    .then((response: { data: boolean }) => {
+      return response.data;
+    })
+    .catch((error: any) => {
+      console.error(`Github API error: ${error}`);
+    });
+}
+
+export async function fetchFileContent({
+  repositoryDetails,
+  path,
+}: {
+  repositoryDetails: RepositoryInfo;
+  path: string;
+}): Promise<string> {
+  return await backendApi
+    .get(`/repository/${repositoryDetails.owner.login}/${repositoryDetails.name}/file/${path}`)
+    .then((response: { data: boolean }) => response.data)
+    .catch((error: any) => {
+      console.error(`Github API error: ${error}`);
+    });
+}

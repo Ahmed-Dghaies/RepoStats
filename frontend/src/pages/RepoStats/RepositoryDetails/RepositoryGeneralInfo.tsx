@@ -1,18 +1,12 @@
 import MyCard from "@/components/common/MyCard";
 import { Typography } from "@material-tailwind/react";
-import { RepositoryInfo } from "../types/repository";
 import { downloadRepository } from "@/features/repositories/services/repositories";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { RepositoryInfo } from "@/types/repository";
+import { useParams } from "react-router-dom";
 
-const RepositoryDetails = ({
-  owner,
-  repository,
-  details,
-}: {
-  owner: string;
-  repository: string;
-  details: RepositoryInfo | null;
-}) => {
+const RepositoryGeneralInfo = ({ details }: { details: RepositoryInfo | null }) => {
+  const { owner, repository } = useParams();
   function handleDownload() {
     if (!owner || !repository) return;
     downloadRepository({
@@ -68,4 +62,4 @@ const Property = ({ title, value }: { title: string; value: string }) => (
   </div>
 );
 
-export default RepositoryDetails;
+export default RepositoryGeneralInfo;

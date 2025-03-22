@@ -22,7 +22,7 @@ const App: React.FC = () => {
       <div className="flex-grow overflow-y-auto">
         <Routes>
           {MultiRoute(<Home />, ["/", "/home"])}
-          <Route path="/repository/:owner/:repository" element={<RepoStats />} />
+          <Route path="/repository/:owner/:repository/*" element={<RepoStats />} />
           {MultiRoute(<NotFound />, ["/404", "*"])}
         </Routes>
         <Tooltip id="global-tooltip" className="z-50 tooltip-container" />

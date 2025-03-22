@@ -12,9 +12,7 @@ const port = 3000;
 
 app.use(express.json());
 
-console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === "development") {
-  console.log("Running in development mode");
   app.use(
     cors({
       origin: "http://localhost:5173", // Frontend URL in dev

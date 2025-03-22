@@ -2,7 +2,7 @@ import MyCard from "@/components/common/MyCard";
 import { Repository } from "@/types/repository";
 import { Typography, Avatar } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
-import { Contributor } from "../types/repository";
+import { Contributor } from "@/types/repository";
 import { fetchRepositoryContributors } from "@/features/repositories/services/repositories";
 
 const RepositoryContributors = ({ owner, repository }: Partial<Repository>) => {

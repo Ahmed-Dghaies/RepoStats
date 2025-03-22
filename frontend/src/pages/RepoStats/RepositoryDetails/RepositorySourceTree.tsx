@@ -3,8 +3,8 @@ import { Repository, TreeNode } from "@/types/repository";
 import { useEffect, useState } from "react";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { createTreeStructure } from "@/utils/graphs/dataPreparation";
-import FolderStructureDisplay from "./FolderStructureDisplay";
 import { fetchGitHubRepoTree } from "@/features/repositories/services/repositories";
+import FolderStructureDisplay from "./FolderStructureDisplay";
 
 const RepositorySourceTree = ({ owner, repository }: Partial<Repository>) => {
   const [sourceTree, setSourceTree] = useState<TreeNode | null>(null);

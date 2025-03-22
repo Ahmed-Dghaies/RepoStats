@@ -14,7 +14,7 @@ const RepoActions = ({ row }: { row: Repository }) => {
 
   return (
     <>
-      <Link to={`https://github.com/${row.owner}/${row.name}`}>
+      <Link to={`https://github.com/${row.owner}/${row.repository}`}>
         <FontAwesomeIcon icon={faGithub} className="outline-none" />
       </Link>
       <FontAwesomeIcon
@@ -22,11 +22,8 @@ const RepoActions = ({ row }: { row: Repository }) => {
         className="outline-none ml-1 cursor-pointer"
         onClick={deleteRepository}
       />
-      <Link to={`/repository/${row.owner}/${row.name}`}>
-        <FontAwesomeIcon
-          icon={faChartSimple}
-          className="outline-none ml-1 cursor-pointer"
-        />
+      <Link to={`/repository/${row.owner}/${row.repository}`}>
+        <FontAwesomeIcon icon={faChartSimple} className="outline-none ml-1 cursor-pointer" />
       </Link>
     </>
   );

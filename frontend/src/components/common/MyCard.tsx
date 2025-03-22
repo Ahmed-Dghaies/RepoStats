@@ -1,9 +1,4 @@
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Typography,
-} from "@material-tailwind/react";
+import { Card, CardBody, CardHeader, Typography } from "@material-tailwind/react";
 import React from "react";
 import TextInput from "../fields/TextInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -75,7 +70,7 @@ const MyCard = ({
           )}
         </div>
       </CardHeader>
-      <CardBody className={bodyClassName}>{children}</CardBody>
+      <CardBody className={bodyClassName}>{children ?? ""}</CardBody>
     </Card>
   );
 };

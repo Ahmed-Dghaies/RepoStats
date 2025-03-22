@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { RepositoryServices } from "./services";
 import { UserServices } from "../user/services";
+import { formatRepositorySize } from "./utils";
 
 interface GitHubTreeItem {
   path: string;
@@ -164,6 +165,7 @@ export class RepositoryController {
 
       const details = await RepositoryServices.getDetails(owner, repository);
       const releases = await RepositoryServices.getReleases(owner, repository);
+      const languages = await RepositoryServices.getLanguages(owner, repository);
 
       const result = {
         name: details.name,
@@ -174,6 +176,8 @@ export class RepositoryController {
           avatarUrl: details.owner.avatar_url,
           contributions: 0,
         },
+        stars: details.stargazers_count,
+        license: details.license ? details.license.name : null,
         description: details.description,
         releases: {
           latestRelease: releases.latest
@@ -184,6 +188,8 @@ export class RepositoryController {
             : null,
           nbReleases: releases.nbReleases,
         },
+        size: formatRepositorySize(details.size),
+        languages: languages ?? {},
         openIssues: details.open_issues_count,
         createdAt: new Date(details.created_at).toISOString().split("T")[0],
         updatedAt: details.updated_at,
@@ -265,6 +271,46 @@ export class RepositoryController {
       const { owner, repository } = req.params;
 
       const response = await RepositoryServices.getPunchCard(owner, repository);
+      res.json(response);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public static checkDependenciesFile: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+      const response = await RepositoryServices.getFile({
+        owner,
+        repository,
+        path: "package.json",
+      });
+      if (response) {
+        res.json(true);
+        return;
+      }
+      res.json(false);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public static getFileContent: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository, path } = req.params;
+      const response = await RepositoryServices.getFile({
+        owner,
+        repository,
+        path,
+      });
       res.json(response);
     } catch (err) {
       next(err);

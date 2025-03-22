@@ -2,6 +2,7 @@ import axios from "axios";
 import { githubAPI } from "../../config/githubService";
 import { Response } from "express";
 import { GithubUser } from "../user/types";
+import { base64ToMarkdown } from "./utils";
 
 interface getCommitsPayload {
   owner: string;
@@ -15,7 +16,6 @@ interface getCommitsPayload {
 export class RepositoryServices {
   public static getSourceTree = async ({ owner, repository, branch }) => {
     try {
-      console.log(`/repos/${owner}/${repository}/git/trees/${branch}?recursive=1`);
       const response = await githubAPI.get(
         `/repos/${owner}/${repository}/git/trees/${branch}?recursive=1`
       );
@@ -27,9 +27,7 @@ export class RepositoryServices {
 
   public static getPunchCard = async (owner: string, repository: string) => {
     try {
-      console.log(`/repos/${owner}/${repository}/stats/punch_card`);
       const response = await githubAPI.get(`/repos/${owner}/${repository}/stats/punch_card`);
-      console.log("here");
       return response.data;
     } catch (err) {
       throw new Error(`Error fetching repository punch card: ${err}`);
@@ -121,6 +119,15 @@ export class RepositoryServices {
     }
   };
 
+  public static getLanguages = async (owner: string, repository: string) => {
+    try {
+      const response = await githubAPI.get(`/repos/${owner}/${repository}/languages`);
+      return response.data;
+    } catch (err) {
+      throw new Error(`Error fetching repository languages from GitHub: ${err}`);
+    }
+  };
+
   public static getCommits = async (payload: getCommitsPayload) => {
     try {
       const { owner, repository, commitsPerPage, currentPage, since, until } = payload;
@@ -136,6 +143,26 @@ export class RepositoryServices {
       return response.data;
     } catch (err) {
       throw new Error(`Error fetching repository commits from GitHub: ${err}`);
+    }
+  };
+
+  public static getFile = async ({
+    owner,
+    repository,
+    path,
+  }: {
+    owner: string;
+    repository: string;
+    path: string;
+  }) => {
+    try {
+      const response = await githubAPI.get(`/repos/${owner}/${repository}/contents/${path}`);
+      if (response.status === 200 && response.data?.content) {
+        return base64ToMarkdown(response.data.content);
+      }
+      return null;
+    } catch (err) {
+      return false;
     }
   };
 }
