@@ -27,7 +27,6 @@ export const useFetchDependencies = (repositoryDetails: RepositoryInfo) => {
             lockFileContent: packageLockFile,
           });
 
-          console.log("result", scoredDependencies);
           setDependenciesList(scoredDependencies);
           fetchedRepoRef.current = repositoryDetails; // Save reference to avoid duplicate fetches
           setLoading(false);

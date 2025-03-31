@@ -54,7 +54,6 @@ const MyTable = <T,>({ data, columns, tableClassName, paginationClassName }: Tab
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  console.log(header);
                   return (
                     <th
                       key={header.id}
@@ -83,7 +82,6 @@ const MyTable = <T,>({ data, columns, tableClassName, paginationClassName }: Tab
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => {
-              console.log(row);
               return (
                 <tr key={row.id} className="table-row">
                   {row.getVisibleCells().map((cell) => {

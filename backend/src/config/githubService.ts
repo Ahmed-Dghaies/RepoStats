@@ -9,4 +9,14 @@ const githubAPI = axios.create({
   },
 });
 
+githubAPI.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status || 500;
+    const message = error.response?.statusText || "Internal Server Error";
+
+    return Promise.reject({ status, message });
+  }
+);
+
 export { githubAPI };

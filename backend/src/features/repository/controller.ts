@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { RepositoryServices } from "./services";
 import { UserServices } from "../user/services";
-import { formatRepositorySize, isErrorResponse } from "./utils";
+import { formatRepositorySize } from "./utils";
 import { githubRepositoryDetails } from "../../types/repository";
 
 interface GitHubTreeItem {
@@ -25,11 +25,6 @@ export class RepositoryController {
       const { owner, repository } = req.params;
 
       const contributorsList = await RepositoryServices.getContributors(owner, repository);
-
-      if (isErrorResponse(contributorsList)) {
-        res.status(contributorsList.status).json({ message: contributorsList.message });
-        return;
-      }
 
       const resolvedContributors = await Promise.all(
         contributorsList.map(async (user: any) => {
@@ -77,12 +72,6 @@ export class RepositoryController {
 
       if (!branch) {
         const repositoryDetails = await RepositoryServices.getDetails(owner, repository);
-
-        if (isErrorResponse(repositoryDetails)) {
-          res.status(repositoryDetails.status).json({ message: repositoryDetails.message });
-          return;
-        }
-
         branch = repositoryDetails.default_branch;
       }
 
@@ -109,10 +98,6 @@ export class RepositoryController {
 
       if (!branch) {
         const repositoryDetails = await RepositoryServices.getDetails(owner, repository);
-        if (isErrorResponse(repositoryDetails)) {
-          res.status(repositoryDetails.status).json({ message: repositoryDetails.message });
-          return;
-        }
         branch = repositoryDetails.default_branch;
       }
 
@@ -187,13 +172,6 @@ export class RepositoryController {
         RepositoryServices.getReadmeFileName(owner, repository),
       ]);
 
-      const errorResponse = responses.find(isErrorResponse);
-
-      if (errorResponse) {
-        res.status(errorResponse.status).json({ message: errorResponse.message });
-        return;
-      }
-
       // TypeScript now knows these are not error responses
       const [details, releases, languages, projectType, readMeFilename] = responses as [
         githubRepositoryDetails,
@@ -234,6 +212,7 @@ export class RepositoryController {
         dependencyFile: projectType.dependencyFile,
       });
     } catch (err) {
+      console.error("error here", err);
       next(err);
     }
   };

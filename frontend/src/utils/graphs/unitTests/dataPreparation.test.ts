@@ -76,7 +76,6 @@ describe("formatGraphViewsData", () => {
       views: [{ timestamp: "2023-01-01", count: 20, uniques: 10 }],
     };
     const result = formatGraphViewsData(response);
-    console.log(result);
     expect(result.count.data).toContain(20);
     expect(result.uniquesCount.data).toContain(10);
   });

@@ -22,9 +22,9 @@ if (process.env.NODE_ENV === "development") {
   );
 }
 
-app.use(errorHandler);
-
 registerRoutes(app);
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Backend is running at http://localhost:${port}`);
