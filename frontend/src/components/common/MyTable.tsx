@@ -23,6 +23,10 @@ interface TableProps<T> {
   paginationClassName?: string;
 }
 
+interface MetaType {
+  className?: string;
+}
+
 const MyTable = <T,>({ data, columns, tableClassName, paginationClassName }: TableProps<T>) => {
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
@@ -50,8 +54,15 @@ const MyTable = <T,>({ data, columns, tableClassName, paginationClassName }: Tab
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
+                  console.log(header);
                   return (
-                    <th key={header.id} colSpan={header.colSpan} className="text-left h-8 pl-2">
+                    <th
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      className={`text-left h-8 pl-2 ${
+                        (header.column.columnDef.meta as MetaType)?.className
+                      }`}
+                    >
                       <button
                         {...{
                           className: header.column.getCanSort() ? "cursor-pointer select-none" : "",
@@ -72,11 +83,15 @@ const MyTable = <T,>({ data, columns, tableClassName, paginationClassName }: Tab
           </thead>
           <tbody>
             {table.getRowModel().rows.map((row) => {
+              console.log(row);
               return (
                 <tr key={row.id} className="table-row">
                   {row.getVisibleCells().map((cell) => {
                     return (
-                      <td key={cell.id} className="pl-2">
+                      <td
+                        key={cell.id}
+                        className={`${(cell.column.columnDef.meta as MetaType)?.className} pl-2`}
+                      >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     );

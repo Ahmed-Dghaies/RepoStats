@@ -3,6 +3,10 @@ import { GraphStep } from "@/types/graphs";
 export function formatDateLabelByStep(timestamp: string, step: GraphStep): string {
   const date = new Date(timestamp);
 
+  if (isNaN(date.getTime())) {
+    return "";
+  }
+
   switch (step) {
     case "hour":
       return `${date.toLocaleDateString(undefined, {

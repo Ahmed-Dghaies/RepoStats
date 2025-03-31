@@ -32,6 +32,9 @@ export interface RepositoryInfo {
   createdAt: string;
   updatedAt: string;
   openIssues: number;
+  projectType: string;
+  readme: string | null;
+  dependencyFile: string | null;
 }
 
 export interface TreeNode {

@@ -30,7 +30,7 @@ const Readme = ({ repositoryDetails }: { repositoryDetails: RepositoryInfo }) =>
       ) : (
         <MarkdownPreview
           source={readMeContent}
-          style={{ padding: "20px", marginBottom: "50px" }}
+          style={{ padding: "20px", marginBottom: "50px", height: "fit-content", maxWidth: "100%" }}
           wrapperElement={{
             "data-color-mode": "light",
           }}

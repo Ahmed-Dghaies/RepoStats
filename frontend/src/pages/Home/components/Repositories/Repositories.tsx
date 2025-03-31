@@ -28,7 +28,11 @@ const Repositories = () => {
 
   return (
     <>
-      <ReactModal isOpen={modalIsOpen} className="modal-content" overlayClassName="modal-overlay">
+      <ReactModal
+        isOpen={modalIsOpen}
+        className="modal-content !w-2/3"
+        overlayClassName="modal-overlay"
+      >
         <AddRepository closeModal={() => setModalIsOpen(false)} />{" "}
       </ReactModal>
       <MyCard

@@ -29,3 +29,11 @@
   margin: auto;
   height: fit-content;
 }
+
+.modal-content:focus-visible {
+  outline: none;
+}
+
+.hide-label label {
+  display: none;
+}

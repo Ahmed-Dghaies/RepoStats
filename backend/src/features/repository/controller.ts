@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { RepositoryServices } from "./services";
 import { UserServices } from "../user/services";
-import { formatRepositorySize } from "./utils";
+import { formatRepositorySize, isErrorResponse } from "./utils";
+import { githubRepositoryDetails } from "../../types/repository";
 
 interface GitHubTreeItem {
   path: string;
@@ -24,6 +25,11 @@ export class RepositoryController {
       const { owner, repository } = req.params;
 
       const contributorsList = await RepositoryServices.getContributors(owner, repository);
+
+      if (isErrorResponse(contributorsList)) {
+        res.status(contributorsList.status).json({ message: contributorsList.message });
+        return;
+      }
 
       const resolvedContributors = await Promise.all(
         contributorsList.map(async (user: any) => {
@@ -71,6 +77,12 @@ export class RepositoryController {
 
       if (!branch) {
         const repositoryDetails = await RepositoryServices.getDetails(owner, repository);
+
+        if (isErrorResponse(repositoryDetails)) {
+          res.status(repositoryDetails.status).json({ message: repositoryDetails.message });
+          return;
+        }
+
         branch = repositoryDetails.default_branch;
       }
 
@@ -97,6 +109,10 @@ export class RepositoryController {
 
       if (!branch) {
         const repositoryDetails = await RepositoryServices.getDetails(owner, repository);
+        if (isErrorResponse(repositoryDetails)) {
+          res.status(repositoryDetails.status).json({ message: repositoryDetails.message });
+          return;
+        }
         branch = repositoryDetails.default_branch;
       }
 
@@ -163,11 +179,31 @@ export class RepositoryController {
         return;
       }
 
-      const details = await RepositoryServices.getDetails(owner, repository);
-      const releases = await RepositoryServices.getReleases(owner, repository);
-      const languages = await RepositoryServices.getLanguages(owner, repository);
+      const responses = await Promise.all([
+        RepositoryServices.getDetails(owner, repository),
+        RepositoryServices.getReleases(owner, repository),
+        RepositoryServices.getLanguages(owner, repository),
+        RepositoryServices.getProjectType(owner, repository),
+        RepositoryServices.getReadmeFileName(owner, repository),
+      ]);
 
-      const result = {
+      const errorResponse = responses.find(isErrorResponse);
+
+      if (errorResponse) {
+        res.status(errorResponse.status).json({ message: errorResponse.message });
+        return;
+      }
+
+      // TypeScript now knows these are not error responses
+      const [details, releases, languages, projectType, readMeFilename] = responses as [
+        githubRepositoryDetails,
+        { latest: { tag_name: string; published_at: string } | null; nbReleases: number },
+        Record<string, number>,
+        { type: string; dependencyFile: string },
+        string | null
+      ];
+
+      res.json({
         name: details.name,
         fullName: details.full_name,
         defaultBranch: details.default_branch,
@@ -193,9 +229,10 @@ export class RepositoryController {
         openIssues: details.open_issues_count,
         createdAt: new Date(details.created_at).toISOString().split("T")[0],
         updatedAt: details.updated_at,
-      };
-
-      res.json(result);
+        readme: readMeFilename,
+        projectType: projectType.type,
+        dependencyFile: projectType.dependencyFile,
+      });
     } catch (err) {
       next(err);
     }

@@ -1,5 +1,7 @@
 {
   "cSpell.words": [
+    "achmadk",
+    "adoc",
     "apexcharts",
     "Avenir",
     "Dghaies",
@@ -7,7 +9,11 @@
     "evenodd",
     "linestep",
     "nivo",
+    "nodesecure",
+    "Npms",
+    "ossf",
     "PLSVF",
+    "pyproject",
     "stepline",
     "svgrepo",
     "VITE",
@@ -16,5 +22,7 @@
     "Ysxbn",
     "zipball"
   ],
-  "css.customData": [".vscode/css_custom_data.json"]
+  "css.customData": [".vscode/css_custom_data.json"],
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" }
 }

@@ -80,7 +80,7 @@ export const fetchRepositoryDetails = async ({
     })
     .catch((error: any) => {
       console.error(error);
-      return [];
+      return {};
     });
 };
 
