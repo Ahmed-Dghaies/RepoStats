@@ -52,7 +52,7 @@ describe("getLastNStepsDateArray", () => {
 });
 
 describe("formatGitHubStats", () => {
-  it("should correctly format GitHub statistics", () => {
+  it("should correctly format GitHub views statistics", () => {
     const response = {
       count: 10,
       uniques: 5,
@@ -61,21 +61,43 @@ describe("formatGitHubStats", () => {
         { timestamp: "2023-01-02", count: 15, uniques: 8 },
       ],
     };
-    const lastNDays = ["2023-01-01", "2023-01-02"];
+    const lastNDays = ["01/01", "01/02"];
     const result = formatGitHubStats(response, "views", GraphStep.day, lastNDays);
+    console.log(result);
     expect(result.formattedData[0].count).toBe(10);
     expect(result.formattedData[1].count).toBe(15);
+    expect(result.maximumValue).toBe(15);
+  });
+
+  it("should correctly format GitHub clones statistics", () => {
+    const response = {
+      count: 10,
+      uniques: 5,
+      clones: [
+        { timestamp: "2023-01-01", count: 10, uniques: 5 },
+        { timestamp: "2023-01-02", count: 15, uniques: 8 },
+      ],
+    };
+    const lastNDays = ["01/01", "01/02"];
+    const result = formatGitHubStats(response, "clones", GraphStep.day, lastNDays);
+    console.log(result);
+    expect(result.formattedData[0].count).toBe(10);
+    expect(result.formattedData[1].count).toBe(15);
+    expect(result.maximumValue).toBe(15);
   });
 });
 
 describe("formatGraphViewsData", () => {
   it("should correctly format graph views data", () => {
+    const formatDate = (date: Date) =>
+      `${String(date.getDate() + 1).padStart(2, "0")}/${String(date.getMonth()).slice(-2)}`;
     const response = {
       count: 20,
       uniques: 10,
-      views: [{ timestamp: "2023-01-01", count: 20, uniques: 10 }],
+      views: [{ timestamp: formatDate(new Date()), count: 20, uniques: 10 }],
     };
     const result = formatGraphViewsData(response);
+    console.log(result);
     expect(result.count.data).toContain(20);
     expect(result.uniquesCount.data).toContain(10);
   });

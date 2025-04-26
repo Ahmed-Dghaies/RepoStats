@@ -20,8 +20,6 @@
 }
 
 .navbar {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
   color: var(--navbar-font);
   background-color: var(--navbar-background);
   display: flex;

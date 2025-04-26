@@ -101,38 +101,41 @@ const MyTable = <T,>({ data, columns, tableClassName, paginationClassName }: Tab
         </table>
       </div>
       <div className={`flex items-center pt-2 gap-2 justify-end ${paginationClassName ?? ""}`}>
-        <FontAwesomeIcon
-          className="cursor-pointer"
-          icon={faAnglesLeft}
-          onClick={() => table.firstPage()}
-          aria-disabled={!table.getCanPreviousPage()}
-        />
-        <FontAwesomeIcon
-          className="cursor-pointer"
-          icon={faChevronLeft}
-          onClick={() => table.previousPage()}
-          aria-disabled={!table.getCanPreviousPage()}
-        />
-        <FontAwesomeIcon
-          className="cursor-pointer"
-          icon={faChevronRight}
-          onClick={() => table.nextPage()}
-          aria-disabled={!table.getCanNextPage()}
-        />
-        <FontAwesomeIcon
-          className="cursor-pointer"
-          icon={faAnglesRight}
-          onClick={() => table.lastPage()}
-          aria-disabled={!table.getCanNextPage()}
-        />
-        <span className="flex items-center gap-1">
-          <div>Page</div>
-          <strong>
-            {table.getState().pagination.pageIndex + 1} of {table.getPageCount().toLocaleString()}
-          </strong>
+        <span className="hidden sm:flex gap-2 items-center">
+          <FontAwesomeIcon
+            className="cursor-pointer"
+            icon={faAnglesLeft}
+            onClick={() => table.firstPage()}
+            aria-disabled={!table.getCanPreviousPage()}
+          />
+          <FontAwesomeIcon
+            className="cursor-pointer"
+            icon={faChevronLeft}
+            onClick={() => table.previousPage()}
+            aria-disabled={!table.getCanPreviousPage()}
+          />
+          <FontAwesomeIcon
+            className="cursor-pointer"
+            icon={faChevronRight}
+            onClick={() => table.nextPage()}
+            aria-disabled={!table.getCanNextPage()}
+          />
+          <FontAwesomeIcon
+            className="cursor-pointer"
+            icon={faAnglesRight}
+            onClick={() => table.lastPage()}
+            aria-disabled={!table.getCanNextPage()}
+          />
+          <span className="flex items-center gap-1">
+            <div>Page</div>
+            <strong>
+              {table.getState().pagination.pageIndex + 1} of {table.getPageCount().toLocaleString()}
+            </strong>
+          </span>
+          |
         </span>
         <span className="flex items-center gap-1">
-          | Go to page:{" "}
+          Go to page:{" "}
           <input
             type="number"
             min="1"

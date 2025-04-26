@@ -13,5 +13,8 @@ router.get("/:owner/:repository/contributors", RepositoryController.getContribut
 router.get("/:owner/:repository/:branch/source-tree", RepositoryController.getSourceTree);
 router.get("/:owner/:repository/has-dependencies-file", RepositoryController.checkDependenciesFile);
 router.get("/:owner/:repository/file/:path", RepositoryController.getFileContent);
+router.get("/:owner/:repository/languages", RepositoryController.getRepositoryLanguages);
+router.get("/:owner/:repository/heat-map", RepositoryController.getHeatMapData);
+router.get("/:owner/:repository/pr-details", RepositoryController.getPullRequestsDetails);
 
 export default router;

@@ -120,6 +120,8 @@ export function formatGitHubStats(
     })
   );
 
+  console.log(dataMap);
+
   const formattedData = lastNDays.map((date) => ({
     date,
     count: dataMap.get(date)?.count ?? 0,
@@ -186,5 +188,47 @@ export function formatPunchCardData(response: PunchCardResponse) {
     ],
     keys: keys,
     maximumValue: maximumValue,
+  };
+}
+
+export function formatLanguagesData(response: { [key: string]: number }) {
+  const total = Object.values(response).reduce((sum, value) => sum + value, 0);
+
+  const percentages = Object.entries(response).map(([language, count]) => ({
+    language,
+    percentage: (count / total) * 100,
+  }));
+
+  const mainLanguages = percentages.filter((lang) => lang.percentage >= 1);
+
+  const mainLanguagesPercentage = mainLanguages.reduce(
+    (sum, lang) => sum + Math.floor(lang.percentage),
+    0
+  );
+  const othersPercentage = 100 - mainLanguagesPercentage;
+
+  let formattedData = mainLanguages.map((lang) => ({
+    language: lang.language,
+    percentage: Math.round(lang.percentage * 100) / 100,
+  }));
+
+  if (othersPercentage > 0) {
+    formattedData = [
+      ...formattedData,
+      {
+        language: "Others",
+        percentage: othersPercentage,
+      },
+    ];
+  }
+
+  formattedData.sort((a, b) => b.percentage - a.percentage);
+
+  const keys = formattedData.map((item) => item.language);
+  const data = formattedData.map((item) => Math.floor(item.percentage));
+
+  return {
+    data,
+    keys,
   };
 }

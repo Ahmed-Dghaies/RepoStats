@@ -27,4 +27,7 @@ declare module "@material-tailwind/react" {
   export interface DialogHeaderProps extends EventCapture {
     placeholder?: unknown;
   }
+  export interface InputProps extends EventCapture {
+    placeholder?: unknown;
+  }
 }

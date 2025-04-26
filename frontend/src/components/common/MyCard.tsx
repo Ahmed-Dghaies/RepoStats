@@ -15,7 +15,8 @@ interface SearchParams {
   value: string;
   onChange: (data?: any) => void;
   placeholder: string;
-  fieldWidth?: string;
+  className?: string;
+  containerClassName?: string;
 }
 
 interface MyCardProps {
@@ -42,7 +43,7 @@ const MyCard = ({
         color="gray"
         className="mb-4 p-6 flex justify-between flex-shrink-0"
       >
-        <Typography variant="h6" color="white">
+        <Typography variant="h6" color="white" className="flex items-center pr-2">
           <div>{title}</div>
         </Typography>
         <div className="flex gap-3">
@@ -52,7 +53,8 @@ const MyCard = ({
               onChange={(value) => searchParams.onChange(value)}
               icon={<FontAwesomeIcon icon={faSearch} />}
               placeholder={searchParams.placeholder}
-              width={searchParams.fieldWidth ?? "w-full"}
+              className={searchParams.className ?? "w-full"}
+              containerClassName={searchParams.containerClassName ?? ""}
             />
           )}
           {actionParams && (

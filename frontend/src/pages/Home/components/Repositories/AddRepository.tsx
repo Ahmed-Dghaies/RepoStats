@@ -8,25 +8,24 @@ import {
   DialogHeader,
   Typography,
 } from "@material-tailwind/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TextInput from "@/components/fields/TextInput";
 import { extractRepositoryDetailsFromUrl } from "@/utils/general/url";
 import { fetchRepositoryDetails } from "@/features/repositories/services/repositories";
 import { RepositoryInfo } from "@/types/repository";
 import LoadingDots from "@/components/common/LoadingDots";
+import { refreshRepositories } from "@/features/repositories/reducers/repositoriesReducer";
+import { useAppDispatch } from "@/hooks";
+import RepositoryDetails from "./RepositoryDetails";
+import { NewRepositoryDetails } from "./types";
 
-interface NewRepositoryDetails {
-  isValid: boolean;
-  platform: string;
-  organization: string;
-  repository: string;
-  projectType: string;
-  defaultBranch: string;
-  dependencyFile: string | null;
-  readme: string | null;
-}
-
-const AddRepository = ({ closeModal }: { closeModal: () => void }) => {
+const AddRepository = ({
+  closeModal,
+  initialUrl = "",
+}: {
+  closeModal: () => void;
+  initialUrl?: string;
+}) => {
   const [repositoryUrl, setRepositoryUrl] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
@@ -40,10 +39,15 @@ const AddRepository = ({ closeModal }: { closeModal: () => void }) => {
     dependencyFile: null,
     readme: null,
   };
+  const dispatch = useAppDispatch();
   const [repositoryDetails, setRepositoryDetails] = useState<NewRepositoryDetails>({
     ...defaultRepositoryDetails,
   });
-  const couldNotBeFound = "Information could not be retrieved";
+
+  useEffect(() => {
+    changeUrl(initialUrl);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialUrl]);
 
   function resetDetails() {
     setRepositoryDetails({
@@ -70,6 +74,11 @@ const AddRepository = ({ closeModal }: { closeModal: () => void }) => {
       owner: newRepositoryDetails.organization,
       repository: newRepositoryDetails.repository,
     });
+    if (retrievedDetails === null) {
+      resetDetails();
+      setErrorMessage("Could not retrieve repository details");
+      return;
+    }
     setRepositoryDetails((prev) => {
       return {
         ...prev,
@@ -83,6 +92,25 @@ const AddRepository = ({ closeModal }: { closeModal: () => void }) => {
     });
     setDetailsLoading(false);
     setErrorMessage("");
+  }
+
+  function handleAddClick() {
+    const existingRepositories = JSON.parse(localStorage.getItem("repositories") || "[]");
+    const newRepository = {
+      url: repositoryUrl,
+      owner: repositoryDetails.organization,
+      platform: repositoryDetails.platform,
+      repository: repositoryDetails.repository,
+      defaultBranch: repositoryDetails.defaultBranch,
+      projectType: repositoryDetails.projectType,
+      readme: repositoryDetails.readme,
+      dependencyFile: repositoryDetails.dependencyFile,
+      lastUpdated: new Date().toISOString(),
+    };
+    existingRepositories.push(newRepository);
+    localStorage.setItem("repositories", JSON.stringify(existingRepositories));
+    dispatch(refreshRepositories());
+    closeModal();
   }
 
   const toggleTitle = (
@@ -119,36 +147,21 @@ const AddRepository = ({ closeModal }: { closeModal: () => void }) => {
           value={repositoryUrl}
           onChange={changeUrl}
           placeholder="Repository URL ..."
-          containerClassName="min-w-[400px] hide-label"
+          containerClassName="min-w-[400px]"
           label="Repository URL"
           errorMessage={errorMessage}
         />
         {detailsLoading ? toggleTitle : null}
-        {repositoryDetails.isValid && !detailsLoading && (
-          <Collapsible trigger={toggleTitle}>
-            <div className="flex flex-col gap-2 mx-1 mt-1 bg-gray-200 rounded-md p-2">
-              <Typography>Platform: {repositoryDetails.platform}</Typography>
-              <Typography>Organization: {repositoryDetails.organization}</Typography>
-              <Typography>Repository: {repositoryDetails.repository}</Typography>
-              <Typography>
-                Default branch: {repositoryDetails.defaultBranch ?? couldNotBeFound}
-              </Typography>
-              <Typography>
-                Project type: {repositoryDetails.projectType ?? couldNotBeFound}
-              </Typography>
-              <Typography>Readme: {repositoryDetails.readme ?? couldNotBeFound}</Typography>
-              <Typography>
-                Dependency file: {repositoryDetails.dependencyFile ?? couldNotBeFound}
-              </Typography>
-            </div>
-          </Collapsible>
-        )}
+        <Collapsible trigger={toggleTitle}>
+          <RepositoryDetails repositoryDetails={repositoryDetails} loading={detailsLoading} />
+        </Collapsible>
       </DialogBody>
       <DialogFooter className="justify-center">
         <Button
           color="gray"
-          className="w-full lg:max-w-[15rem]"
+          className="w-full lg:max-w-[15rem] hover:cursor-pointer"
           disabled={!repositoryDetails.isValid}
+          onClick={handleAddClick}
         >
           Add
         </Button>

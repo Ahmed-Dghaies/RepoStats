@@ -4,6 +4,7 @@ import { Response } from "express";
 import { GithubUser } from "../user/types";
 import { base64ToMarkdown } from "./utils";
 import { githubRepositoryDetails } from "../../types/repository";
+import { GitHubCommit, GitHubPR } from "../../types/github";
 
 interface getCommitsPayload {
   owner: string;
@@ -14,12 +15,129 @@ interface getCommitsPayload {
   currentPage: number;
 }
 
+interface RequestsPayload {
+  owner: string;
+  repository: string;
+  branch?: string;
+}
+
 export class RepositoryServices {
-  public static getSourceTree = async ({ owner, repository, branch }) => {
+  public static getSourceTree = async ({ owner, repository, branch }: RequestsPayload) => {
     const response = await githubAPI.get(
       `/repos/${owner}/${repository}/git/trees/${branch}?recursive=1`
     );
     return response.data;
+  };
+
+  public static getBranches = async ({ owner, repository }: RequestsPayload) => {
+    const response = await githubAPI.get(`/repos/${owner}/${repository}/branches`);
+    return response.data.map((branch: { name: string }) => branch.name);
+  };
+
+  public static getPRDetails = async ({ owner, repository }: RequestsPayload) => {
+    try {
+      const perPage = 30;
+      const response = await githubAPI.get(`/repos/${owner}/${repository}/pulls`, {
+        params: {
+          state: "closed",
+          sort: "updated",
+          direction: "desc",
+          per_page: perPage,
+        },
+      });
+
+      const mergedPRs = response.data.filter((pr: GitHubPR) => pr.merged_at).slice(0, 5);
+
+      interface formattedPR {
+        title: string;
+        author: string;
+        created_at: string;
+        merged_at: string;
+        duration_in_hours: string;
+        url: string;
+      }
+
+      const mergedWithDurations = mergedPRs.map((pr: GitHubPR) => {
+        const created = new Date(pr.created_at);
+        const merged = new Date(pr.merged_at);
+        const durationInHours = (merged.getTime() - created.getTime()) / (1000 * 60 * 60);
+        return {
+          title: pr.title,
+          author: pr.user.login,
+          created_at: pr.created_at,
+          merged_at: pr.merged_at,
+          duration_in_hours: durationInHours.toFixed(2),
+          url: pr.html_url,
+        };
+      });
+
+      const totalDuration = mergedWithDurations.reduce(
+        (sum: number, pr: formattedPR) => sum + parseFloat(pr.duration_in_hours),
+        0
+      );
+      const averageDuration =
+        mergedWithDurations.length > 0
+          ? (totalDuration / mergedWithDurations.length).toFixed(2)
+          : null;
+
+      return {
+        last5Merged: mergedWithDurations,
+        averageTimeToMergeHours: averageDuration,
+      };
+    } catch (error) {
+      return {
+        last5Merged: [],
+        averageTimeToMergeHours: null,
+      };
+    }
+  };
+
+  public static getHeatMapData = async ({ owner, repository, includeAllBranches = false }) => {
+    const since = new Date();
+    since.setDate(since.getDate() - 240);
+    const isoSince = since.toISOString();
+
+    const contributionsByDay = {};
+    const perPage = 100;
+
+    let branches: string[] = [];
+
+    if (includeAllBranches) {
+      branches = await RepositoryServices.getBranches({ owner, repository });
+    } else {
+      const repoResponse = await githubAPI.get(`/repos/${owner}/${repository}`);
+      branches = [repoResponse.data.default_branch];
+    }
+
+    for (const branch of branches) {
+      let page = 1;
+
+      while (true) {
+        const response = await githubAPI.get(`/repos/${owner}/${repository}/commits`, {
+          params: {
+            sha: branch,
+            since: isoSince,
+            per_page: perPage,
+            page,
+          },
+        });
+
+        const commits = response.data;
+
+        if (commits.length === 0) break;
+
+        commits.forEach((commit: GitHubCommit) => {
+          const date = new Date(commit.commit.author.date).toISOString().split("T")[0];
+          contributionsByDay[date] = (contributionsByDay[date] || 0) + 1;
+        });
+
+        if (commits.length < perPage) break;
+
+        page++;
+      }
+    }
+
+    return contributionsByDay;
   };
 
   public static getReadmeFileName = async (

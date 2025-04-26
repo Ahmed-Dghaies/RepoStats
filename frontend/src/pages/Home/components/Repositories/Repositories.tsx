@@ -2,11 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import MyCard from "@/components/common/MyCard";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { Repository } from "@/types/repository";
-import { fetchAllRepositories } from "@/features/repositories/services/repositories";
 import ReactModal from "react-modal";
 import AddRepository from "./AddRepository";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import ReposTable from "./ReposTable";
+import { refreshRepositories } from "@/features/repositories/reducers/repositoriesReducer";
 
 const Repositories = () => {
   const [filterValue, setFilterValue] = useState<string>("");
@@ -23,7 +23,7 @@ const Repositories = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchAllRepositories());
+    dispatch(refreshRepositories());
   }, [dispatch]);
 
   return (
@@ -43,14 +43,17 @@ const Repositories = () => {
           value: filterValue,
           onChange: setFilterValue,
           placeholder: "Search ...",
+          className: "max-w-[300px]",
+          containerClassName: "max-w-[300px] !min-w-[100px]",
         }}
         actionParams={{
           icon: faPlus,
           onClick: () => setModalIsOpen(true),
           tip: "Add Repository",
         }}
-        children={<ReposTable repositories={displayedRepositories} />}
-      />
+      >
+        <ReposTable repositories={displayedRepositories} />
+      </MyCard>
     </>
   );
 };

@@ -35,6 +35,7 @@ export interface RepositoryInfo {
   projectType: string;
   readme: string | null;
   dependencyFile: string | null;
+  lastUpdated?: string;
 }
 
 export interface TreeNode {

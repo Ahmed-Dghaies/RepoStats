@@ -1,18 +1,13 @@
 import backendApi from "@/utils/axios/axios";
-import { AppDispatch } from "../../../store";
 import { Repository, TreeNode, Contributor, RepositoryInfo } from "@/types/repository";
-import { setRepositories } from "../reducers/repositoriesReducer";
-import { FormattedGraphData, GraphData } from "@/types/graphs";
+import { FormattedGraphData, FormattedLanguageData, GraphData } from "@/types/graphs";
 import {
   formatClonesData,
   formatGraphViewsData,
+  formatLanguagesData,
   formatPunchCardData,
 } from "@/utils/graphs/dataPreparation";
-
-export const fetchAllRepositories = () => async (dispatch: AppDispatch) => {
-  const result: Array<Repository> = JSON.parse(localStorage.getItem("repositories") ?? "[]");
-  dispatch(setRepositories(result));
-};
+import { AxiosError } from "axios";
 
 export interface FormattedGraphComparisonData {
   keys: string[];
@@ -53,6 +48,23 @@ export const fetchRepositoryViews = async ({
   return formatGraphViewsData(result);
 };
 
+export const fetchRepositoryLanguages = async ({
+  owner,
+  repository,
+}: Partial<Repository>): Promise<FormattedLanguageData> => {
+  const result = await backendApi
+    .get(`/repository/${owner}/${repository}/languages`)
+    .then((response: any) => {
+      return response.data;
+    })
+    .catch((error: any) => {
+      console.error(error);
+      return [];
+    });
+  console.log(formatLanguagesData(result));
+  return formatLanguagesData(result);
+};
+
 export const fetchRepositoryPunchCard = async ({
   owner,
   repository,
@@ -78,9 +90,9 @@ export const fetchRepositoryDetails = async ({
     .then((response: any) => {
       return response.data;
     })
-    .catch((error: any) => {
+    .catch((error: AxiosError) => {
       console.error(error);
-      return {};
+      return null;
     });
 };
 
@@ -120,7 +132,7 @@ export async function fetchGitHubRepoTree({
 }): Promise<TreeNode | null> {
   if (!branch) {
     const repositoryDetails = await fetchRepositoryDetails({ owner, repository });
-    branch = repositoryDetails.defaultBranch;
+    if (repositoryDetails !== null) branch = repositoryDetails.defaultBranch;
   }
   return await backendApi
     .get(`/repository/${owner}/${repository}/${branch}/source-tree`)
@@ -129,6 +141,28 @@ export async function fetchGitHubRepoTree({
     })
     .catch((error: any) => {
       console.error(`Github API error: ${error}`);
+    });
+}
+
+export async function fetchHeatMapData({ owner, repository }: Partial<Repository>) {
+  let maximumValue = 0;
+  return await backendApi
+    .get(`/repository/${owner}/${repository}/heat-map`)
+    .then((response: { data: boolean }) => {
+      const formattedData: { date: string; count: number }[] = [];
+
+      Object.entries(response.data).forEach(([key, value]) => {
+        formattedData.push({
+          date: key,
+          count: value,
+        });
+        maximumValue = Math.max(maximumValue, value);
+      });
+      return { data: formattedData, maximumValue };
+    })
+    .catch((error: any) => {
+      console.error(`Github API error: ${error}`);
+      return { data: [], maximumValue };
     });
 }
 

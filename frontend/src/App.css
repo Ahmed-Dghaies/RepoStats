@@ -47,3 +47,8 @@ body {
 .tooltip-container {
   border-radius: 5px !important;
 }
+
+.center-btns .react-confirm-alert-body {
+  width: 100%;
+  justify-content: center;
+}

@@ -55,6 +55,34 @@ export class RepositoryController {
     }
   };
 
+  public static getHeatMapData: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+      const heatMapData = await RepositoryServices.getHeatMapData({ owner, repository });
+      res.json(heatMapData);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public static getPullRequestsDetails: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+      const details = await RepositoryServices.getPRDetails({ owner, repository });
+      res.json(details);
+    } catch (err) {
+      next(err);
+    }
+  };
+
   public static download: RequestHandler = async (
     req: Request,
     res: Response,
@@ -148,6 +176,22 @@ export class RepositoryController {
     }
   };
 
+  public static getRepositoryLanguages: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+
+      const languages = await RepositoryServices.getLanguages(owner, repository);
+
+      res.json(languages);
+    } catch (err) {
+      next(err);
+    }
+  };
+
   public static getDetails: RequestHandler = async (
     req: Request,
     res: Response,
@@ -212,7 +256,6 @@ export class RepositoryController {
         dependencyFile: projectType.dependencyFile,
       });
     } catch (err) {
-      console.error("error here", err);
       next(err);
     }
   };

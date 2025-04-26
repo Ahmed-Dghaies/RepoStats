@@ -29,13 +29,13 @@ const Dependency = ({ packageInfo }: { packageInfo: packageDetails }) => {
   ];
   return (
     <div className="h-fit rounded-2xl border border-gray-500 bg-gray-200 flex flex-col gap-3 p-2">
-      <div className="h-6 text-2xl">{packageInfo.name} </div>
-      <div className="flex flex-row gap-3 flex-wrap">
+      <div className="text-2xl h-fit">{packageInfo.name} </div>
+      <div className="flex flex-row gap-3 flex-wrap overflow-hidden">
         {dependenciesTags.map(
           (tag) =>
             tag.value && (
               <div
-                className={`flex border border-gray-500 rounded-lg p-1 text-sm bg-gray-100 ${
+                className={`flex border max-w-[100%] break-all border-gray-500 rounded-lg p-1 text-sm bg-gray-100 ${
                   tag.className ?? ""
                 }`}
                 key={tag.title}

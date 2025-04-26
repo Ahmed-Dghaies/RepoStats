@@ -1,14 +1,8 @@
 import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Typography,
-} from "@material-tailwind/react";
+import { Card, CardBody, CardHeader, Typography } from "@material-tailwind/react";
 import ReactApexChart, { Props as ChartOptions } from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import "./style.css";
 
 export interface ChartLine {
   name: string;
@@ -126,11 +120,7 @@ const LineGraph = ({
           <Typography variant="h6" color="blue-gray">
             {title}
           </Typography>
-          <Typography
-            variant="small"
-            color="gray"
-            className="max-w-sm font-normal"
-          >
+          <Typography variant="small" color="gray" className="max-w-sm font-normal">
             {description ?? ""}
           </Typography>
         </div>

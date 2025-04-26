@@ -33,7 +33,7 @@ const RepositorySourceTree = ({ owner, repository }: Partial<Repository>) => {
         tip: "Copy project structure",
       }}
       className="w-full flex flex-col h-[300px] mt-6"
-      bodyClassName="p-2 overflow-y-auto mr-1"
+      bodyClassName="p-2 overflow-y-auto mr-1 overflow-x-hidden"
     >
       {sourceTree && <FolderStructureDisplay node={sourceTree} />}
     </MyCard>

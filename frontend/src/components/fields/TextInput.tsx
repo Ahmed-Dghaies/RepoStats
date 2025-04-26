@@ -9,7 +9,7 @@ interface TextInputProps {
   placeholder?: string;
   labelClassName?: string;
   containerClassName?: string;
-  width?: string;
+  className?: string;
   errorMessage?: string;
 }
 
@@ -21,7 +21,7 @@ const TextInput = ({
   placeholder,
   labelClassName,
   containerClassName,
-  width,
+  className,
   errorMessage,
 }: TextInputProps) => {
   return (
@@ -32,12 +32,12 @@ const TextInput = ({
         onChange={(e) => onChange(e.target.value)}
         icon={icon}
         label={placeholder}
-        className={`${width} !border !border-gray-300`}
+        className={`!border !border-gray-300 ${className}`}
         labelProps={{
-          className: `before:content-none after:content-none peer-focus:invisible pl-3 transition-none ${labelClassName} ${width}`,
+          className: `before:content-none after:content-none peer-focus:invisible pl-3 transition-none ${labelClassName}`,
         }}
         crossOrigin={undefined}
-        containerProps={{ className: `${containerClassName} ${width}` }}
+        containerProps={{ className: `${value.length ? "hide-label" : ""} ${containerClassName}` }}
       />
       {errorMessage && (
         <Typography color="red" className="pl-1 text-sm">
