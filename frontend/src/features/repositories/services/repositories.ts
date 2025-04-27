@@ -120,6 +120,16 @@ export const fetchRepositoryContributors = async ({
   }
 };
 
+/**
+ * Retrieves the source tree of a GitHub repository for a specified branch.
+ *
+ * If no branch is provided, the repository's default branch is used.
+ *
+ * @param owner - The repository owner's username.
+ * @param repository - The name of the repository.
+ * @param branch - (Optional) The branch to fetch the source tree from.
+ * @returns The root {@link TreeNode} of the repository's source tree, or null if an error occurs.
+ */
 export async function fetchGitHubRepoTree({
   owner,
   repository,
@@ -143,6 +153,11 @@ export async function fetchGitHubRepoTree({
     });
 }
 
+/**
+ * Retrieves details about merged pull requests for a repository.
+ *
+ * @returns An object containing merged pull request data, total count, and average time to merge. Returns default empty data and zero counts if the request fails.
+ */
 export async function fetchMergedPullRequestsDetails({ owner, repository }: Partial<Repository>) {
   return await backendApi
     .get(`/repository/${owner}/${repository}/merged-pull-requests`)
@@ -155,6 +170,13 @@ export async function fetchMergedPullRequestsDetails({ owner, repository }: Part
     });
 }
 
+/**
+ * Retrieves and formats heat map activity data for a GitHub repository.
+ *
+ * @param owner - The repository owner's username.
+ * @param repository - The repository name.
+ * @returns An object containing an array of date/count pairs and the maximum count value.
+ */
 export async function fetchHeatMapData({ owner, repository }: Partial<Repository>) {
   let maximumValue = 0;
   return await backendApi
@@ -177,6 +199,12 @@ export async function fetchHeatMapData({ owner, repository }: Partial<Repository
     });
 }
 
+/**
+ * Checks whether the specified repository contains a dependencies file.
+ *
+ * @param repositoryDetails - The repository information used to identify the repository.
+ * @returns A promise that resolves to true if a dependencies file exists, false if not, or undefined if an error occurs.
+ */
 export async function repositoryHasDependenciesFile(
   repositoryDetails: RepositoryInfo
 ): Promise<boolean> {
@@ -192,6 +220,13 @@ export async function repositoryHasDependenciesFile(
     });
 }
 
+/**
+ * Retrieves the content of a file from a specified repository path.
+ *
+ * @param repositoryDetails - The repository information containing owner and name.
+ * @param path - The file path within the repository.
+ * @returns The file content as a string, or undefined if an error occurs.
+ */
 export async function fetchFileContent({
   repositoryDetails,
   path,

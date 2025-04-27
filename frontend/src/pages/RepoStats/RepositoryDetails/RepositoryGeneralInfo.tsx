@@ -7,6 +7,12 @@ import { useParams } from "react-router-dom";
 
 const RepositoryGeneralInfo = ({ details }: { details: RepositoryInfo | null }) => {
   const { owner, repository } = useParams();
+  /**
+   * Initiates a download of the repository as a zip file using the specified owner, repository, and branch.
+   *
+   * @remark
+   * If the repository's default branch is not specified, "main" is used as the default branch.
+   */
   function handleDownload() {
     if (!owner || !repository) return;
     downloadRepository({

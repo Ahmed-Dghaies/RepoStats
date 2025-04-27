@@ -26,6 +26,11 @@ const RepositorySourceTree = ({ owner, repository }: Partial<Repository>) => {
     fetchSourceTree();
   }, [owner, repository]);
 
+  /**
+   * Copies the repository's folder structure as a formatted string to the clipboard.
+   *
+   * @remark Does nothing if the source tree is not available.
+   */
   function copySourceTree() {
     if (!sourceTree) return;
     const sourceTreeString = createTreeStructure(sourceTree);

@@ -1,5 +1,14 @@
 import { GraphStep } from "@/types/graphs";
 
+/**
+ * Formats a timestamp string into a date label based on the specified graph step.
+ *
+ * Returns an empty string if the timestamp is invalid.
+ *
+ * @param timestamp - The date and time as an ISO string.
+ * @param step - The granularity for formatting the date label ("hour", "day", "week", "month", or "year").
+ * @returns A formatted date label appropriate for the given {@link step}, or an empty string if the timestamp is invalid.
+ */
 export function formatDateLabelByStep(timestamp: string, step: GraphStep): string {
   const date = new Date(timestamp);
 

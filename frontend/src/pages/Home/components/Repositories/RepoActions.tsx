@@ -9,6 +9,12 @@ import { confirmAlert } from "react-confirm-alert";
 
 const RepoActions = ({ row }: { row: Repository }) => {
   const dispatch = useAppDispatch();
+  /**
+   * Removes the current repository from localStorage and updates the repository list in the Redux store.
+   *
+   * @remark
+   * If the repository is not found in localStorage, no changes are made.
+   */
   function deleteRepository() {
     const list = JSON.parse(localStorage.getItem("repositories") ?? "[]");
     const index = list.findIndex((repo: Repository) => repo.url === row.url);
@@ -17,6 +23,11 @@ const RepoActions = ({ row }: { row: Repository }) => {
     dispatch(refreshRepositories());
   }
 
+  /**
+   * Displays a confirmation dialog before deleting the selected repository.
+   *
+   * If the user confirms, deletes the repository and updates the repository list.
+   */
   function handleDeleteClick() {
     confirmAlert({
       title: "Delete repository",
