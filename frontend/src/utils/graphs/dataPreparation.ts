@@ -163,6 +163,14 @@ export function formatGraphViewsData(response: ViewsResponse) {
 
 type PunchCardResponse = Array<Array<number>>;
 
+/**
+ * Formats punch card commit data into hourly commit counts for visualization.
+ *
+ * Aggregates commit counts by hour from the punch card response, determines the maximum commits in any hour, and returns an object with hourly labels, commit data, and the maximum value.
+ *
+ * @param response - Array of punch card data, where each entry contains day, hour, and commit count.
+ * @returns An object containing hourly keys, a dataset of commits per hour, and the maximum commit count.
+ */
 export function formatPunchCardData(response: PunchCardResponse) {
   const keys = Array.from({ length: 24 }, (_, i) => `${i}h`);
   const commitsPerHour: { [key: string]: number } = {};
@@ -189,6 +197,14 @@ export function formatPunchCardData(response: PunchCardResponse) {
   };
 }
 
+/**
+ * Converts a language usage object into percentage-based data suitable for charting.
+ *
+ * Calculates the percentage of total usage for each language, includes only languages with at least 1% usage as main languages, and groups the remainder under "Others". Returns arrays of language names and their corresponding floored percentage values, sorted in descending order.
+ *
+ * @param response - An object mapping language names to their usage counts.
+ * @returns An object containing `keys` (language names) and `data` (floored percentage values).
+ */
 export function formatLanguagesData(response: { [key: string]: number }) {
   const total = Object.values(response).reduce((sum, value) => sum + value, 0);
 

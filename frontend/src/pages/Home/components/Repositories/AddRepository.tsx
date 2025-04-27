@@ -49,6 +49,9 @@ const AddRepository = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialUrl]);
 
+  /**
+   * Resets the repository details, loading state, and error message to their default values.
+   */
   function resetDetails() {
     setRepositoryDetails({
       ...defaultRepositoryDetails,
@@ -57,6 +60,13 @@ const AddRepository = ({
     setErrorMessage("");
   }
 
+  /**
+   * Processes a repository URL by validating its format, extracting details, and fetching additional repository information.
+   *
+   * If the URL is invalid or repository details cannot be retrieved, resets the details and sets an appropriate error message.
+   *
+   * @param url - The repository URL to process.
+   */
   async function changeUrl(url: string) {
     setDetailsLoading(true);
     setRepositoryUrl(url);
@@ -94,6 +104,11 @@ const AddRepository = ({
     setErrorMessage("");
   }
 
+  /**
+   * Adds the current repository to local storage and refreshes the repository list.
+   *
+   * Constructs a repository object from the current input and fetched details, saves it to local storage, dispatches a refresh action, and closes the modal.
+   */
   function handleAddClick() {
     const existingRepositories = JSON.parse(localStorage.getItem("repositories") || "[]");
     const newRepository = {

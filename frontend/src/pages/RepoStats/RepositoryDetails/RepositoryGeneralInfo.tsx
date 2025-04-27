@@ -7,6 +7,12 @@ import { useParams } from "react-router-dom";
 
 const RepositoryGeneralInfo = ({ details }: { details: RepositoryInfo | null }) => {
   const { owner, repository } = useParams();
+  /**
+   * Initiates a download of the repository's default branch.
+   *
+   * @remark
+   * If {@link owner} or {@link repository} is missing, the download is not triggered.
+   */
   function handleDownload() {
     if (!owner || !repository) return;
     downloadRepository({
