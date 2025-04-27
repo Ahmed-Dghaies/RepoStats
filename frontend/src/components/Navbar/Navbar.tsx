@@ -36,10 +36,18 @@ const Navbar: React.FC = () => {
     },
   ];
 
+  /**
+   * Toggles the navigation menu's expanded state.
+   */
   function toggleExpanded() {
     setExpanded(!expanded);
   }
 
+  /**
+   * Handles changes to the repository URL input, validating the URL and opening a modal if the repository exists.
+   *
+   * @param value - The new repository URL entered by the user.
+   */
   async function handleUrlChange(value: string) {
     const extractedInfo = extractRepositoryDetailsFromUrl(value);
     setUrlIsValid(!!extractedInfo);
