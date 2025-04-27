@@ -30,7 +30,9 @@ const HeatMapChart = ({
 }: HeatMapChartProps) => {
   const handleToolTip = (value?: ReactCalendarHeatmapValue<string>) => {
     return {
-      "data-tooltip-content": `${value?.count ?? 0} contributions`,
+      "data-tooltip-content": `${value?.date ? new Date(value.date).toDateString() + " -" : ""} ${
+        value?.count ?? 0
+      } contributions`,
       "data-tooltip-id": "calendar-heatmap-tooltip",
     } as TooltipDataAttrs;
   };

@@ -28,3 +28,7 @@
   fill: #00441b;
   background-color: #00441b;
 }
+
+#calendar-heatmap-tooltip {
+  z-index: 10;
+}
