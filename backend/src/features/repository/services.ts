@@ -34,9 +34,9 @@ export class RepositoryServices {
     return response.data.map((branch: { name: string }) => branch.name);
   };
 
-  public static getPRDetails = async ({ owner, repository }: RequestsPayload) => {
+  public static getMergedPullRequests = async ({ owner, repository }: RequestsPayload) => {
     try {
-      const perPage = 30;
+      const perPage = 50;
       const response = await githubAPI.get(`/repos/${owner}/${repository}/pulls`, {
         params: {
           state: "closed",
@@ -46,33 +46,35 @@ export class RepositoryServices {
         },
       });
 
-      const mergedPRs = response.data.filter((pr: GitHubPR) => pr.merged_at).slice(0, 5);
+      const mergedPRs = response.data.filter((pr: GitHubPR) => pr.merged_at);
 
       interface formattedPR {
         title: string;
         author: string;
-        created_at: string;
-        merged_at: string;
-        duration_in_hours: string;
+        number: number;
+        createdAt: string;
+        mergedAt: string;
+        durationInHours: string;
         url: string;
       }
 
-      const mergedWithDurations = mergedPRs.map((pr: GitHubPR) => {
+      const mergedWithDurations: formattedPR[] = mergedPRs.map((pr: GitHubPR) => {
         const created = new Date(pr.created_at);
         const merged = new Date(pr.merged_at);
         const durationInHours = (merged.getTime() - created.getTime()) / (1000 * 60 * 60);
         return {
           title: pr.title,
+          number: pr.number,
           author: pr.user.login,
-          created_at: pr.created_at,
-          merged_at: pr.merged_at,
-          duration_in_hours: durationInHours.toFixed(2),
+          createdAt: pr.created_at,
+          mergedAt: pr.merged_at,
+          durationInHours: durationInHours.toFixed(2),
           url: pr.html_url,
         };
       });
 
       const totalDuration = mergedWithDurations.reduce(
-        (sum: number, pr: formattedPR) => sum + parseFloat(pr.duration_in_hours),
+        (sum: number, pr: formattedPR) => sum + parseFloat(pr.durationInHours),
         0
       );
       const averageDuration =
@@ -81,12 +83,12 @@ export class RepositoryServices {
           : null;
 
       return {
-        last5Merged: mergedWithDurations,
+        mergedPullRequests: mergedWithDurations,
         averageTimeToMergeHours: averageDuration,
       };
     } catch (error) {
       return {
-        last5Merged: [],
+        mergedPullRequests: [],
         averageTimeToMergeHours: null,
       };
     }

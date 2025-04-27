@@ -1,5 +1,4 @@
 import React from "react";
-import "./LoadingDots.css";
 
 const LoadingDots = ({
   loading,

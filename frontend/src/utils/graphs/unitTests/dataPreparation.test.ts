@@ -63,7 +63,6 @@ describe("formatGitHubStats", () => {
     };
     const lastNDays = ["01/01", "01/02"];
     const result = formatGitHubStats(response, "views", GraphStep.day, lastNDays);
-    console.log(result);
     expect(result.formattedData[0].count).toBe(10);
     expect(result.formattedData[1].count).toBe(15);
     expect(result.maximumValue).toBe(15);
@@ -80,7 +79,6 @@ describe("formatGitHubStats", () => {
     };
     const lastNDays = ["01/01", "01/02"];
     const result = formatGitHubStats(response, "clones", GraphStep.day, lastNDays);
-    console.log(result);
     expect(result.formattedData[0].count).toBe(10);
     expect(result.formattedData[1].count).toBe(15);
     expect(result.maximumValue).toBe(15);
@@ -97,7 +95,6 @@ describe("formatGraphViewsData", () => {
       views: [{ timestamp: formatDate(new Date()), count: 20, uniques: 10 }],
     };
     const result = formatGraphViewsData(response);
-    console.log(result);
     expect(result.count.data).toContain(20);
     expect(result.uniquesCount.data).toContain(10);
   });

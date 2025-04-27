@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 
 const RepositoryDetails = ({ repositoryDetails }: { repositoryDetails: RepositoryInfo }) => {
   const { owner, repository } = useParams();
+  console.log("reloading");
 
   return (
     <div className="flex flex-col gap-3 flex-grow-1 pl-4 pr-3 overflow-auto mr-1">

@@ -9,11 +9,11 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { useEffect, useState } from "react";
-import TextInput from "@/components/fields/TextInput";
+import TextInput from "@/components/Fields/TextInput";
 import { extractRepositoryDetailsFromUrl } from "@/utils/general/url";
 import { fetchRepositoryDetails } from "@/features/repositories/services/repositories";
 import { RepositoryInfo } from "@/types/repository";
-import LoadingDots from "@/components/common/LoadingDots";
+import { Loading } from "@/components/Common";
 import { refreshRepositories } from "@/features/repositories/reducers/repositoriesReducer";
 import { useAppDispatch } from "@/hooks";
 import RepositoryDetails from "./RepositoryDetails";
@@ -118,7 +118,7 @@ const AddRepository = ({
       <span className="mr-2 underline">Repository Details</span>
       {detailsLoading && (
         <span className="h-full">
-          <LoadingDots loading={detailsLoading || true} content={null} />
+          <Loading loading={detailsLoading || true} content={null} />
         </span>
       )}
       {!detailsLoading && (

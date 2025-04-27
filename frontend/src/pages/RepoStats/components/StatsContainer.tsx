@@ -16,7 +16,10 @@ const StatsContainer = () => {
   const [repositoryDetails, setRepositoryDetails] = useState<RepositoryInfo | null>(null);
 
   useEffect(() => {
+    if (!owner || !repository) return;
+
     fetchRepositoryDetails({ owner, repository }).then((details) => {
+      console.log(details);
       setRepositoryDetails(details);
     });
   }, [owner, repository]);

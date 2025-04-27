@@ -55,14 +55,12 @@ const HeatMapChart = ({
           </Typography>
         </div>
       </CardHeader>
-      <CardBody className="p-2 px-3 pb-0 flex flex-col justify-center flex-grow">
+      <CardBody className="p-2 px-3 pb-0 flex flex-col justify-center flex-grow gap-2">
         <CalendarHeatmap
           startDate={startDate}
           endDate={endDate}
           values={data}
-          showWeekdayLabels
           tooltipDataAttrs={handleToolTip}
-          weekdayLabels={["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]}
           gutterSize={2}
           classForValue={(value) => {
             if (!value) {
@@ -71,10 +69,30 @@ const HeatMapChart = ({
             return `color-scale-${Math.min(5, value.count)}`;
           }}
         />
+        <div className="flex justify-end w-full items-center gap-3">
+          <Typography className="font-small">Less</Typography>
+          <div className="flex gap-1 heatmap-legend">
+            <HeatMapSquare className="color-empty" />
+            <HeatMapSquare className="color-scale-1" />
+            <HeatMapSquare className="color-scale-2" />
+            <HeatMapSquare className="color-scale-3" />
+            <HeatMapSquare className="color-scale-4" />
+            <HeatMapSquare className="color-scale-5" />
+          </div>
+          <Typography className="font-small">More</Typography>
+        </div>
       </CardBody>
       <ReactToolTip id="calendar-heatmap-tooltip" />
     </Card>
   );
+};
+
+interface HeatMapSquareProps {
+  className: string;
+}
+
+const HeatMapSquare = ({ className }: HeatMapSquareProps) => {
+  return <div className={`w-3 h-3 md:w-4 md:h-4 ${className}`}></div>;
 };
 
 export default HeatMapChart;

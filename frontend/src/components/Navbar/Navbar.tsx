@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import navBarStyles from "./Navbar.module.css";
-import TextInput from "../fields/TextInput";
+import TextInput from "../Fields/TextInput";
 import { extractRepositoryDetailsFromUrl } from "@/utils/general/url";
 import ReactModal from "react-modal";
 import AddRepository from "@/pages/Home/components/Repositories/AddRepository";

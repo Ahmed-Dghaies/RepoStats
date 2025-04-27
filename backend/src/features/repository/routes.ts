@@ -15,6 +15,6 @@ router.get("/:owner/:repository/has-dependencies-file", RepositoryController.che
 router.get("/:owner/:repository/file/:path", RepositoryController.getFileContent);
 router.get("/:owner/:repository/languages", RepositoryController.getRepositoryLanguages);
 router.get("/:owner/:repository/heat-map", RepositoryController.getHeatMapData);
-router.get("/:owner/:repository/pr-details", RepositoryController.getPullRequestsDetails);
+router.get("/:owner/:repository/merged-pull-requests", RepositoryController.getMergedPullRequests);
 
 export default router;

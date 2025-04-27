@@ -61,7 +61,6 @@ export const fetchRepositoryLanguages = async ({
       console.error(error);
       return [];
     });
-  console.log(formatLanguagesData(result));
   return formatLanguagesData(result);
 };
 
@@ -141,6 +140,18 @@ export async function fetchGitHubRepoTree({
     })
     .catch((error: any) => {
       console.error(`Github API error: ${error}`);
+    });
+}
+
+export async function fetchMergedPullRequestsDetails({ owner, repository }: Partial<Repository>) {
+  return await backendApi
+    .get(`/repository/${owner}/${repository}/merged-pull-requests`)
+    .then((response: { data: any; total: number; timeToMerge: number }) => {
+      return response.data;
+    })
+    .catch((error: any) => {
+      console.error(`Github API error: ${error}`);
+      return { data: [], total: 0, timeToMerge: 0 };
     });
 }
 

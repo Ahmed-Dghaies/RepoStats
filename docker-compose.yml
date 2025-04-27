@@ -3,6 +3,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - BACKEND_URL=/api
     ports:
       - "80:80"
     volumes:

@@ -1,4 +1,4 @@
-import MyCard from "@/components/common/MyCard";
+import { Card } from "@/components/Common";
 import { Typography } from "@material-tailwind/react";
 import { downloadRepository } from "@/features/repositories/services/repositories";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
@@ -17,7 +17,7 @@ const RepositoryGeneralInfo = ({ details }: { details: RepositoryInfo | null }) 
   }
 
   return (
-    <MyCard
+    <Card
       title="Repository"
       actionParams={{
         icon: faDownload,
@@ -49,7 +49,7 @@ const RepositoryGeneralInfo = ({ details }: { details: RepositoryInfo | null }) 
           )}
         </>
       )}
-    </MyCard>
+    </Card>
   );
 };
 

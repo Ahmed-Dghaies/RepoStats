@@ -1,23 +1,26 @@
-import LineGraph from "@/components/graphs/LineChart/LineGraph";
+import LineGraph from "@/components/Graphs/LineChart/LineGraph";
 import useRepositoryStats from "../hooks/useRepositoryStats";
 import { Repository } from "@/types/repository";
-import DonutChart from "@/components/graphs/DonutChart";
+import DonutChart from "@/components/Graphs/DonutChart";
 import useRepositoryHeatMap from "../hooks/useRepositoryHeatMap";
-import HeatMapChart from "@/components/graphs/HeatMapChart";
+import HeatMapChart from "@/components/Graphs/HeatMapChart";
+import PullRequestsTable from "./PullRequestsTable";
+import useRepositoryPullRequests from "../hooks/useRepositoryPullRequests";
 
 const RepositoryGraphs = ({ owner, repository }: Partial<Repository>) => {
   const { clones, repositoryViews, punchCard, languages } = useRepositoryStats(owner, repository);
-  const heatMap = useRepositoryHeatMap(owner, repository);
+  const heatMap = useRepositoryHeatMap({ owner, repository });
+  const pullRequestsDetails = useRepositoryPullRequests({ owner, repository });
 
   return (
     <>
-      <div className="flex flex-col xl:flex-row gap-3">
-        <div className="flex flex-col gap-3 w-full md:flex-row">
+      <div className="flex flex-col lg:flex-row gap-3">
+        <div className="flex flex-col gap-3 w-full md:flex-row lg:w-3/4">
           <DonutChart
             title="Languages"
             data={languages.data}
             labels={languages.keys}
-            className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4"
+            className="w-full md:w-1/3 lg:w-1/3"
             description="Languages used in the repository"
           />
           <HeatMapChart
@@ -25,10 +28,16 @@ const RepositoryGraphs = ({ owner, repository }: Partial<Repository>) => {
             startDate={heatMap.startDate}
             endDate={heatMap.endDate}
             data={heatMap.data}
-            className="w-full lg:w-2/3 2xl:w-2/4 pb-3"
+            className="w-full md:w-2/3 lg:w-2/3 pb-3"
             description="Repository activity during the last 6 months on the main branch"
           />
         </div>
+        <PullRequestsTable
+          pullRequestsDetails={pullRequestsDetails}
+          className="w-full lg:w-1/3 2xl:w-1/4"
+          title="Pull Requests"
+          description="Recently merged pull requests details"
+        />
       </div>
       <div className="flex flex-col xl:flex-row gap-3">
         <div className="flex flex-col gap-3 w-full xl:w-2/3 md:flex-row">

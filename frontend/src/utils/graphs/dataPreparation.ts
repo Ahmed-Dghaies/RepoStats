@@ -120,8 +120,6 @@ export function formatGitHubStats(
     })
   );
 
-  console.log(dataMap);
-
   const formattedData = lastNDays.map((date) => ({
     date,
     count: dataMap.get(date)?.count ?? 0,

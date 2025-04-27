@@ -11,7 +11,12 @@ interface HeatMapDetails {
   maximumValue: number;
 }
 
-const useRepositoryHeatMap = (owner: string | undefined, repository: string | undefined) => {
+interface useRepositoryHeatMapProps {
+  owner: string | undefined;
+  repository: string | undefined;
+}
+
+const useRepositoryHeatMap = ({ owner, repository }: useRepositoryHeatMapProps): HeatMapDetails => {
   const EIGHT_MONTHS = 240 * 24 * 60 * 60 * 1000;
   const [heatMapDetails, setHeatMapDetails] = useState<HeatMapDetails>({
     data: [],

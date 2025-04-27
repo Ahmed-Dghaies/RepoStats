@@ -69,14 +69,14 @@ export class RepositoryController {
     }
   };
 
-  public static getPullRequestsDetails: RequestHandler = async (
+  public static getMergedPullRequests: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> => {
     try {
       const { owner, repository } = req.params;
-      const details = await RepositoryServices.getPRDetails({ owner, repository });
+      const details = await RepositoryServices.getMergedPullRequests({ owner, repository });
       res.json(details);
     } catch (err) {
       next(err);

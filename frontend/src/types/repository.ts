@@ -43,3 +43,13 @@ export interface TreeNode {
   type: "directory" | "file";
   children: TreeNode[];
 }
+
+export interface PullRequest {
+  title: string;
+  number: number;
+  author: string;
+  createdAt: string;
+  mergedAt: string | null;
+  durationInHours: number;
+  url: string;
+}

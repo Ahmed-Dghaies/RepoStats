@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { Repository } from "../../../../types/repository";
-import MyTable from "../../../../components/common/MyTable";
+import { Repository } from "@/types/repository";
+import { Table } from "@/components/Common";
 import RepoActions from "./RepoActions";
 import { CellContext } from "@tanstack/react-table";
 
@@ -38,7 +38,7 @@ const ReposTable = ({ repositories }: { repositories: Repository[] }) => {
   );
 
   return (
-    <MyTable
+    <Table
       {...{
         data: repositories,
         columns,

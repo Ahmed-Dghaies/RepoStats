@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import MyCard from "@/components/common/MyCard";
+import { Card } from "@/components/Common";
 import { useAppDispatch, useAppSelector } from "@/hooks";
 import { Repository } from "@/types/repository";
 import ReactModal from "react-modal";
@@ -35,7 +35,7 @@ const Repositories = () => {
       >
         <AddRepository closeModal={() => setModalIsOpen(false)} />{" "}
       </ReactModal>
-      <MyCard
+      <Card
         title="Repositories"
         className="w-full lg:w-3/4 mt-6"
         bodyClassName="overflow-hidden px-0 pt-0 pb-2 h-[400px] max-h-[400px] mx-2 flex flex-col"
@@ -53,7 +53,7 @@ const Repositories = () => {
         }}
       >
         <ReposTable repositories={displayedRepositories} />
-      </MyCard>
+      </Card>
     </>
   );
 };

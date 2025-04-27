@@ -1,6 +1,6 @@
 import { Card, CardBody, CardHeader, Typography } from "@material-tailwind/react";
 import React from "react";
-import TextInput from "../fields/TextInput";
+import TextInput from "../../Fields/TextInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
