@@ -10,7 +10,10 @@ export const formatRepositorySize = (size: number) => {
   return `${size.toFixed(2)} ${units[unitIndex]}`;
 };
 
-export const base64ToMarkdown = (base64String: string) => {
-  const decodedText = atob(base64String); // Decode Base64
-  return decodedText; // This is the Markdown content
+export const base64ToMarkdown = (base64String: string): string => {
+  try {
+    return Buffer.from(base64String, "base64").toString("utf8");
+  } catch (error) {
+    throw new Error(`Failed to decode Base64 string: ${error.message}`);
+  }
 };

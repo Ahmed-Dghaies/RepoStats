@@ -46,7 +46,7 @@ const RepositorySourceTree = ({ owner, repository }: Partial<Repository>) => {
         tip: "Copy project structure",
       }}
       className="w-full flex flex-col h-[300px] mt-6"
-      bodyClassName="p-2 overflow-y-auto mr-1 overflow-x-hidden pt-0"
+      bodyClassName="p-2 overflow-y-auto mr-1 overflow-x-hidden pt-0 flex-grow"
     >
       <LoadingOverlay
         active={loading}

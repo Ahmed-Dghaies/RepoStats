@@ -16,8 +16,12 @@ interface useRepositoryHeatMapProps {
   repository: string | undefined;
 }
 
-const useRepositoryHeatMap = ({ owner, repository }: useRepositoryHeatMapProps): HeatMapDetails => {
+const useRepositoryHeatMap = ({
+  owner,
+  repository,
+}: useRepositoryHeatMapProps): { heatMapDetails: HeatMapDetails; isLoading: boolean } => {
   const EIGHT_MONTHS = 240 * 24 * 60 * 60 * 1000;
+  const [isLoading, setIsLoading] = useState(false);
   const [heatMapDetails, setHeatMapDetails] = useState<HeatMapDetails>({
     data: [],
     startDate: new Date(new Date().getTime() - EIGHT_MONTHS),
@@ -27,7 +31,7 @@ const useRepositoryHeatMap = ({ owner, repository }: useRepositoryHeatMapProps):
 
   useEffect(() => {
     if (!owner || !repository) return;
-
+    setIsLoading(true);
     const fetchStats = async () => {
       const { data, maximumValue } = await fetchHeatMapData({ owner, repository });
       setHeatMapDetails((prev) => ({
@@ -35,12 +39,13 @@ const useRepositoryHeatMap = ({ owner, repository }: useRepositoryHeatMapProps):
         data,
         maximumValue,
       }));
+      setIsLoading(false);
     };
 
     fetchStats();
   }, [owner, repository]);
 
-  return heatMapDetails;
+  return { heatMapDetails, isLoading };
 };
 
 export default useRepositoryHeatMap;

@@ -21,21 +21,29 @@ export const useFetchDependencies = (repositoryDetails: RepositoryInfo) => {
         });
 
         if (packageFile) {
-          const dependencies = JSON.parse(packageFile).dependencies;
+          let dependencies = {};
+          try {
+            dependencies = JSON.parse(packageFile).dependencies;
+          } catch (error) {
+            console.error("Error parsing package.json:", error);
+          }
+          const lockFileContent = packageLockFile || "{}";
           const scoredDependencies = await fetchPackagesSummary({
             dependencies,
-            lockFileContent: packageLockFile,
+            lockFileContent,
           });
 
           setDependenciesList(scoredDependencies);
-          fetchedRepoRef.current = repositoryDetails; // Save reference to avoid duplicate fetches
+          fetchedRepoRef.current = repositoryDetails;
           setLoading(false);
           return;
         }
 
         setDependenciesList([]);
+        fetchedRepoRef.current = repositoryDetails;
       } catch (error) {
         setLoading(false);
+        fetchedRepoRef.current = null;
         console.error("Error fetching file:", error);
       }
     };

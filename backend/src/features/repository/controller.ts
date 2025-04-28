@@ -208,6 +208,7 @@ export class RepositoryController {
         return;
       }
 
+      // TODO: work on a retry logic in case one of the requests fails
       const responses = await Promise.all([
         RepositoryServices.getDetails(owner, repository),
         RepositoryServices.getReleases(owner, repository),
@@ -216,7 +217,6 @@ export class RepositoryController {
         RepositoryServices.getReadmeFileName(owner, repository),
       ]);
 
-      // TypeScript now knows these are not error responses
       const [details, releases, languages, projectType, readMeFilename] = responses as [
         githubRepositoryDetails,
         { latest: { tag_name: string; published_at: string } | null; nbReleases: number },
@@ -364,7 +364,8 @@ export class RepositoryController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const { owner, repository, path } = req.params;
+      const { owner, repository } = req.params;
+      const path = req.params[0];
       const response = await RepositoryServices.getFile({
         owner,
         repository,

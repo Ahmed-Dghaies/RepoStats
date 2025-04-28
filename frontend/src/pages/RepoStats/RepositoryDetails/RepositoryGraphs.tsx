@@ -8,9 +8,16 @@ import PullRequestsTable from "./PullRequestsTable";
 import useRepositoryPullRequests from "../hooks/useRepositoryPullRequests";
 
 const RepositoryGraphs = ({ owner, repository }: Partial<Repository>) => {
+  // TODO: Add a loading state
   const { clones, repositoryViews, punchCard, languages } = useRepositoryStats(owner, repository);
-  const heatMap = useRepositoryHeatMap({ owner, repository });
-  const pullRequestsDetails = useRepositoryPullRequests({ owner, repository });
+  const { heatMapDetails, isLoading: heatMapIsLoading } = useRepositoryHeatMap({
+    owner,
+    repository,
+  });
+  const { pullRequestsDetails, isLoading: prIsLoading } = useRepositoryPullRequests({
+    owner,
+    repository,
+  });
 
   return (
     <>
@@ -25,15 +32,17 @@ const RepositoryGraphs = ({ owner, repository }: Partial<Repository>) => {
           />
           <HeatMapChart
             title="Activity"
-            startDate={heatMap.startDate}
-            endDate={heatMap.endDate}
-            data={heatMap.data}
+            startDate={heatMapDetails.startDate}
+            endDate={heatMapDetails.endDate}
+            data={heatMapDetails.data}
             className="w-full md:w-2/3 lg:w-2/3 pb-3"
             description="Repository activity during the last 6 months on the main branch"
+            isLoading={heatMapIsLoading}
           />
         </div>
         <PullRequestsTable
           pullRequestsDetails={pullRequestsDetails}
+          isLoading={prIsLoading}
           className="w-full lg:w-1/3 2xl:w-1/4"
           title="Pull Requests"
           description="Recently merged pull requests details"

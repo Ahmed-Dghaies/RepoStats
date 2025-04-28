@@ -133,7 +133,7 @@ const AddRepository = ({
       <span className="mr-2 underline">Repository Details</span>
       {detailsLoading && (
         <span className="h-full">
-          <Loading loading={detailsLoading || true} content={null} />
+          <Loading loading={detailsLoading} content={null} />
         </span>
       )}
       {!detailsLoading && (

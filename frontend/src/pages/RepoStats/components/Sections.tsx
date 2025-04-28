@@ -5,7 +5,8 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 const Sections = ({ repositoryDetails }: { repositoryDetails: RepositoryInfo }) => {
   const location = useLocation();
-  const currentSection = location.pathname.split("/").pop();
+  const pathParts = location.pathname.split("/").filter(Boolean);
+  const currentSection = pathParts[pathParts.length - 1] || "details";
   const navigate = useNavigate();
   const { owner, repository } = useParams();
   const [displayedSectionsList, setDisplayedSectionsList] = useState([

@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Card, CardBody, CardHeader, Typography } from "@material-tailwind/react";
 import ReactApexChart, { Props as ChartOptions } from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
+import { BASE_CHART_COLORS } from "./constants";
 
 interface DonutChartProps {
   title: string;
@@ -12,9 +13,15 @@ interface DonutChartProps {
   description?: string;
 }
 
-const CHART_COLORS = ["#5E2BFF", "#C04CFD", "#DE5DD4", "#FC6DAB", "#FC6DAB", "#FAB2B8", "#DCA1E1"];
-
 const DonutChart = ({ title, data, labels, className, description }: DonutChartProps) => {
+  const hasData = Array.isArray(data) && data.length > 0;
+  const hasValidLabels =
+    Array.isArray(labels) && labels.length === (Array.isArray(data) ? data.length : 0);
+
+  const colors = hasData
+    ? data.map((_, index) => BASE_CHART_COLORS[index % BASE_CHART_COLORS.length])
+    : BASE_CHART_COLORS;
+
   const chartConfig: ChartOptions = {
     type: "donut",
     height: 260,
@@ -30,12 +37,12 @@ const DonutChart = ({ title, data, labels, className, description }: DonutChartP
           formatter: (val) => `${val}%`,
         },
       },
-      labels: labels,
+      labels: hasValidLabels ? labels : [],
       dataLabels: {
         enabled: true,
         formatter: (val) => `${val}%`,
       },
-      colors: CHART_COLORS,
+      colors: colors,
       legend: {
         position: "bottom",
       },

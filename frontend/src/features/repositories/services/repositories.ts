@@ -1,5 +1,5 @@
 import backendApi from "@/utils/axios/axios";
-import { Repository, TreeNode, Contributor, RepositoryInfo } from "@/types/repository";
+import { TreeNode, Contributor, RepositoryInfo } from "@/types/repository";
 import { FormattedGraphData, FormattedLanguageData, GraphData } from "@/types/graphs";
 import {
   formatClonesData,
@@ -16,10 +16,15 @@ export interface FormattedGraphComparisonData {
   uniquesCount: GraphData;
 }
 
+interface RepositoryIdentifier {
+  owner: string;
+  repository: string;
+}
+
 export const fetchClonesStatistics = async ({
   owner,
   repository,
-}: Partial<Repository>): Promise<FormattedGraphComparisonData> => {
+}: RepositoryIdentifier): Promise<FormattedGraphComparisonData> => {
   const result = await backendApi
     .get(`/repository/${owner}/${repository}/traffic/clones`)
     .then((response: any) => {
@@ -35,7 +40,7 @@ export const fetchClonesStatistics = async ({
 export const fetchRepositoryViews = async ({
   owner,
   repository,
-}: Partial<Repository>): Promise<FormattedGraphComparisonData> => {
+}: RepositoryIdentifier): Promise<FormattedGraphComparisonData> => {
   const result = await backendApi
     .get(`/repository/${owner}/${repository}/traffic/views`)
     .then((response: any) => {
@@ -51,7 +56,7 @@ export const fetchRepositoryViews = async ({
 export const fetchRepositoryLanguages = async ({
   owner,
   repository,
-}: Partial<Repository>): Promise<FormattedLanguageData> => {
+}: RepositoryIdentifier): Promise<FormattedLanguageData> => {
   const result = await backendApi
     .get(`/repository/${owner}/${repository}/languages`)
     .then((response: any) => {
@@ -59,7 +64,7 @@ export const fetchRepositoryLanguages = async ({
     })
     .catch((error: any) => {
       console.error(error);
-      return [];
+      return {};
     });
   return formatLanguagesData(result);
 };
@@ -67,7 +72,7 @@ export const fetchRepositoryLanguages = async ({
 export const fetchRepositoryPunchCard = async ({
   owner,
   repository,
-}: Partial<Repository>): Promise<FormattedGraphData> => {
+}: RepositoryIdentifier): Promise<FormattedGraphData> => {
   const result = await backendApi
     .get(`/repository/${owner}/${repository}/punch-card`)
     .then((response: any) => {
@@ -83,7 +88,7 @@ export const fetchRepositoryPunchCard = async ({
 export const fetchRepositoryDetails = async ({
   owner,
   repository,
-}: Partial<Repository>): Promise<RepositoryInfo> => {
+}: RepositoryIdentifier): Promise<RepositoryInfo> => {
   return await backendApi
     .get(`/repository/${owner}/${repository}/details`)
     .then((response: any) => {
@@ -104,13 +109,13 @@ export const downloadRepository = async ({
   repository: string;
   branch: string;
 }): Promise<void> => {
-  await backendApi.get(`repository/${owner}/${repository}/${branch}/download`);
+  await backendApi.get(`/repository/${owner}/${repository}/${branch}/download`);
 };
 
 export const fetchRepositoryContributors = async ({
   owner,
   repository,
-}: Partial<Repository>): Promise<Contributor[]> => {
+}: RepositoryIdentifier): Promise<Contributor[]> => {
   try {
     const contributors = await backendApi.get(`/repository/${owner}/${repository}/contributors`);
     return contributors.data;
@@ -160,7 +165,7 @@ export async function fetchGitHubRepoTree({
  * @param repository - The repository name.
  * @returns An object containing merged pull request data, total count, and average time to merge. Returns default empty values if the request fails.
  */
-export async function fetchMergedPullRequestsDetails({ owner, repository }: Partial<Repository>) {
+export async function fetchMergedPullRequestsDetails({ owner, repository }: RepositoryIdentifier) {
   return await backendApi
     .get(`/repository/${owner}/${repository}/merged-pull-requests`)
     .then((response: { data: any; total: number; timeToMerge: number }) => {
@@ -179,11 +184,11 @@ export async function fetchMergedPullRequestsDetails({ owner, repository }: Part
  * @param repository - The repository name.
  * @returns An object containing an array of date/count pairs and the maximum count value.
  */
-export async function fetchHeatMapData({ owner, repository }: Partial<Repository>) {
+export async function fetchHeatMapData({ owner, repository }: RepositoryIdentifier) {
   let maximumValue = 0;
   return await backendApi
     .get(`/repository/${owner}/${repository}/heat-map`)
-    .then((response: { data: boolean }) => {
+    .then((response: { data: Record<string, number> }) => {
       const formattedData: { date: string; count: number }[] = [];
 
       Object.entries(response.data).forEach(([key, value]) => {

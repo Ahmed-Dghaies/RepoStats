@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { githubAPI } from "../../config/githubService";
 import { Response } from "express";
 import { GithubUser } from "../user/types";
@@ -23,6 +23,11 @@ interface RequestsPayload {
 
 export class RepositoryServices {
   public static getSourceTree = async ({ owner, repository, branch }: RequestsPayload) => {
+    let targetBranch = branch;
+    if (!targetBranch) {
+      const repoRes = await githubAPI.get(`/repos/${owner}/${repository}`);
+      targetBranch = repoRes.data.default_branch;
+    }
     const response = await githubAPI.get(
       `/repos/${owner}/${repository}/git/trees/${branch}?recursive=1`
     );
@@ -36,7 +41,7 @@ export class RepositoryServices {
 
   public static getMergedPullRequests = async ({ owner, repository }: RequestsPayload) => {
     try {
-      const perPage = 50;
+      const perPage = 100;
       const response = await githubAPI.get(`/repos/${owner}/${repository}/pulls`, {
         params: {
           state: "closed",
@@ -54,7 +59,7 @@ export class RepositoryServices {
         number: number;
         createdAt: string;
         mergedAt: string;
-        durationInHours: string;
+        durationInHours: number;
         url: string;
       }
 
@@ -68,18 +73,19 @@ export class RepositoryServices {
           author: pr.user.login,
           createdAt: pr.created_at,
           mergedAt: pr.merged_at,
-          durationInHours: durationInHours.toFixed(2),
+          durationInHours: parseFloat(durationInHours.toFixed(2)),
           url: pr.html_url,
         };
       });
 
       const totalDuration = mergedWithDurations.reduce(
-        (sum: number, pr: formattedPR) => sum + parseFloat(pr.durationInHours),
+        (sum: number, pr: formattedPR) => sum + pr.durationInHours,
         0
       );
+
       const averageDuration =
         mergedWithDurations.length > 0
-          ? (totalDuration / mergedWithDurations.length).toFixed(2)
+          ? parseFloat((totalDuration / mergedWithDurations.length).toFixed(2))
           : null;
 
       return {
@@ -99,7 +105,7 @@ export class RepositoryServices {
     since.setDate(since.getDate() - 240);
     const isoSince = since.toISOString();
 
-    const contributionsByDay = {};
+    const contributionsByDay: Record<string, number> = {};
     const perPage = 100;
 
     let branches: string[] = [];
@@ -204,7 +210,13 @@ export class RepositoryServices {
   public static download = async ({ owner, repository, branch }, res: Response) => {
     const url = `https://github.com/${owner}/${repository}/archive/refs/heads/${branch}.zip`;
 
-    const response = await axios.get(url, { responseType: "stream" });
+    let response: AxiosResponse<NodeJS.ReadableStream>;
+    try {
+      response = await axios.get(url, { responseType: "stream" });
+    } catch (error) {
+      res.status(502).json({ message: "Failed to download archive from GitHub" });
+      return;
+    }
 
     res.setHeader("Content-Disposition", `attachment; filename=${repository}-${branch}.zip`);
     res.setHeader("Content-Type", "application/zip");

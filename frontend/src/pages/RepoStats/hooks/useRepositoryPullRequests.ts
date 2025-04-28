@@ -2,12 +2,12 @@ import { fetchMergedPullRequestsDetails } from "@/features/repositories/services
 import { PullRequest } from "@/types/repository";
 import { useEffect, useState } from "react";
 
-interface useRepositoryPullRequestsProps {
+interface UseRepositoryPullRequestsProps {
   owner: string | undefined;
   repository: string | undefined;
 }
 
-export interface pullRequestsDetails {
+export interface PullRequestsDetails {
   mergedPullRequests: PullRequest[];
   averageTimeToMergeHours: number;
 }
@@ -15,15 +15,19 @@ export interface pullRequestsDetails {
 const useRepositoryPullRequests = ({
   owner,
   repository,
-}: useRepositoryPullRequestsProps): pullRequestsDetails => {
-  const [pullRequestsDetails, setPullRequestsDetails] = useState<pullRequestsDetails>({
+}: UseRepositoryPullRequestsProps): {
+  pullRequestsDetails: PullRequestsDetails;
+  isLoading: boolean;
+} => {
+  const [pullRequestsDetails, setPullRequestsDetails] = useState<PullRequestsDetails>({
     mergedPullRequests: [],
     averageTimeToMergeHours: 0,
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!owner || !repository) return;
-
+    setIsLoading(true);
     const fetchStats = async () => {
       const { averageTimeToMergeHours, mergedPullRequests } = await fetchMergedPullRequestsDetails({
         owner,
@@ -34,12 +38,13 @@ const useRepositoryPullRequests = ({
         mergedPullRequests,
         averageTimeToMergeHours,
       }));
+      setIsLoading(false);
     };
 
     fetchStats();
   }, [owner, repository]);
 
-  return pullRequestsDetails;
+  return { pullRequestsDetails, isLoading };
 };
 
 export default useRepositoryPullRequests;

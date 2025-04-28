@@ -78,7 +78,12 @@ export const fetchPackagesSummary = async ({
   dependencies: Record<string, string>;
   lockFileContent: string;
 }): Promise<packageDetails[]> => {
-  const lockDependencies = JSON.parse(lockFileContent)?.dependencies;
+  let lockDependencies: any = {};
+  try {
+    lockDependencies = JSON.parse(lockFileContent)?.dependencies ?? {};
+  } catch {
+    console.warn("Unable to parse lock file – falling back to package.json versions");
+  }
 
   const formattedDependencies = await Promise.all(
     Object.entries(dependencies).map(async ([packageName, packageVersion]) => {
@@ -98,7 +103,9 @@ export const fetchPackagesSummary = async ({
         };
       }
       const usedVersion = findPackageVersion(lockDependencies, packageName) ?? packageVersion;
-      const repoDetails = extractRepositoryDetailsFromUrl(packageMetaData.links.repository);
+      const repoDetails = packageMetaData.links?.repository
+        ? extractRepositoryDetailsFromUrl(packageMetaData.links.repository)
+        : null;
       const {
         platform = "",
         organization = "",

@@ -1,3 +1,4 @@
+import LoadingOverlay from "@achmadk/react-loading-overlay";
 import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Card, CardBody, CardHeader, Typography } from "@material-tailwind/react";
@@ -18,6 +19,7 @@ interface HeatMapChartProps {
   data: HeatMapEvent[];
   className: string;
   description?: string;
+  isLoading: boolean;
 }
 
 const HeatMapChart = ({
@@ -27,6 +29,7 @@ const HeatMapChart = ({
   data,
   className,
   description,
+  isLoading,
 }: HeatMapChartProps) => {
   const handleToolTip = (value?: ReactCalendarHeatmapValue<string>) => {
     return {
@@ -58,31 +61,38 @@ const HeatMapChart = ({
         </div>
       </CardHeader>
       <CardBody className="p-2 px-3 pb-0 flex flex-col justify-center flex-grow gap-2">
-        <CalendarHeatmap
-          startDate={startDate}
-          endDate={endDate}
-          values={data}
-          tooltipDataAttrs={handleToolTip}
-          gutterSize={2}
-          classForValue={(value) => {
-            if (!value) {
-              return "color-empty";
-            }
-            return `color-scale-${Math.min(5, value.count)}`;
-          }}
-        />
-        <div className="flex justify-end w-full items-center gap-3">
-          <Typography className="font-small">Less</Typography>
-          <div className="flex gap-1 heatmap-legend">
-            <HeatMapSquare className="color-empty" />
-            <HeatMapSquare className="color-scale-1" />
-            <HeatMapSquare className="color-scale-2" />
-            <HeatMapSquare className="color-scale-3" />
-            <HeatMapSquare className="color-scale-4" />
-            <HeatMapSquare className="color-scale-5" />
+        <LoadingOverlay
+          active={isLoading}
+          spinner
+          text="Loading contributors..."
+          className="h-full w-full overflow-x-hidden pr-1 flex flex-col gap-3 justify-center"
+        >
+          <CalendarHeatmap
+            startDate={startDate}
+            endDate={endDate}
+            values={data}
+            tooltipDataAttrs={handleToolTip}
+            gutterSize={2}
+            classForValue={(value) => {
+              if (!value) {
+                return "color-empty";
+              }
+              return `color-scale-${Math.min(5, value.count)}`;
+            }}
+          />
+          <div className="flex justify-end w-full items-center gap-3">
+            <Typography className="font-small">Less</Typography>
+            <div className="flex gap-1 heatmap-legend">
+              <HeatMapSquare className="color-empty" />
+              <HeatMapSquare className="color-scale-1" />
+              <HeatMapSquare className="color-scale-2" />
+              <HeatMapSquare className="color-scale-3" />
+              <HeatMapSquare className="color-scale-4" />
+              <HeatMapSquare className="color-scale-5" />
+            </div>
+            <Typography className="font-small">More</Typography>
           </div>
-          <Typography className="font-small">More</Typography>
-        </div>
+        </LoadingOverlay>
       </CardBody>
       <ReactToolTip id="calendar-heatmap-tooltip" />
     </Card>

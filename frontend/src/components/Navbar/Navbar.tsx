@@ -9,6 +9,7 @@ import ReactModal from "react-modal";
 import AddRepository from "@/pages/Home/components/Repositories/AddRepository";
 import { RepositoryInfo } from "@/types/repository";
 import { fetchRepositoryDetails } from "@/features/repositories/services/repositories";
+import LoadingDots from "../Common/Loading/LoadingDots";
 
 interface NavBarLink {
   name: string;
@@ -20,6 +21,7 @@ const Navbar: React.FC = () => {
   const [repoUrl, setRepoUrl] = useState<string>("");
   const [urlIsValid, setUrlIsValid] = useState<boolean>(false);
   const [modalIsOpen, setModalIsOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const links: NavBarLink[] = [
     {
@@ -51,8 +53,10 @@ const Navbar: React.FC = () => {
   async function handleUrlChange(value: string) {
     const extractedInfo = extractRepositoryDetailsFromUrl(value);
     setUrlIsValid(!!extractedInfo);
+
     setRepoUrl(value);
     if (extractedInfo) {
+      setIsLoading(true);
       const retrievedDetails: RepositoryInfo = await fetchRepositoryDetails({
         owner: extractedInfo.organization,
         repository: extractedInfo.repository,
@@ -62,6 +66,7 @@ const Navbar: React.FC = () => {
         return;
       }
       setModalIsOpen(true);
+      setIsLoading(false);
     }
   }
 
@@ -75,18 +80,18 @@ const Navbar: React.FC = () => {
         <AddRepository closeModal={() => setModalIsOpen(false)} initialUrl={repoUrl} />
       </ReactModal>
       <div className="flex items-center justify-between flex-1 h-[50px] text-[var(--navbar-font)] ml-4">
-        <a href="/home">RepoStats</a>
+        <Link to="/home">RepoStats</Link>
       </div>
 
       <TextInput
         value={repoUrl}
         onChange={handleUrlChange}
-        icon={<FontAwesomeIcon icon={faSearch} />}
+        icon={<LoadingDots loading={isLoading} content={<FontAwesomeIcon icon={faSearch} />} />}
         placeholder="Repository URL ..."
         className={`w-auto sm:w-[300px] max-w-[300px] ${
           urlIsValid || repoUrl === "" ? "" : "!border-red-600"
         }`}
-        containerClassName="mr-2 !h-9 !w-auto sm:w-[300px] max-w-[300px] !border-red-600"
+        containerClassName="mr-2 !h-9 !w-auto sm:w-[300px] max-w-[300px]"
       />
       <button className="block pointer-cursor lg:hidden mr-4" onClick={toggleExpanded}>
         <FontAwesomeIcon icon={faBars} className="hover:cursor-pointer text-[var(--navbar-font)]" />

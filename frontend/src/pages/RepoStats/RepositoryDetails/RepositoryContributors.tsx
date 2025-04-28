@@ -11,6 +11,7 @@ const RepositoryContributors = ({ owner, repository }: Partial<Repository>) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
+    if (!owner || !repository) return;
     const fetchContributors = async () => {
       setLoading(true);
       await fetchRepositoryContributors({ owner, repository }).then((response) => {
@@ -26,13 +27,13 @@ const RepositoryContributors = ({ owner, repository }: Partial<Repository>) => {
     <Card
       title="Contributors"
       className="w-full sm:w-1/2 h-[300px] mt-6 flex flex-col"
-      bodyClassName="pr-0 pl-3 overflow-y-auto mr-2 mb-2 divide-y divide-gray-200 py-0"
+      bodyClassName="pr-0 pl-3 overflow-y-auto mr-2 mb-2 divide-y divide-gray-200 py-0 flex-grow"
     >
       <LoadingOverlay
         active={loading}
         spinner
         text="Loading contributors..."
-        className="h-full w-full overflow-x-hidden pr-1"
+        className="h-full w-full overflow-x-hidden pr-1 flex-grow min-h-full"
       >
         {contributors.map(({ login, email, contributions, avatarUrl }) => (
           <div

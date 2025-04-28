@@ -13,13 +13,17 @@ const RepositoryGeneralInfo = ({ details }: { details: RepositoryInfo | null }) 
    * @remark
    * If {@link owner} or {@link repository} is missing, the download is not triggered.
    */
-  function handleDownload() {
+  async function handleDownload() {
     if (!owner || !repository) return;
-    downloadRepository({
-      owner,
-      repository,
-      branch: details?.defaultBranch ?? "main",
-    });
+    try {
+      await downloadRepository({
+        owner,
+        repository,
+        branch: details?.defaultBranch ?? "main",
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   return (

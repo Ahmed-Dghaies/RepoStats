@@ -19,7 +19,6 @@ const StatsContainer = () => {
     if (!owner || !repository) return;
 
     fetchRepositoryDetails({ owner, repository }).then((details) => {
-      console.log(details);
       setRepositoryDetails(details);
     });
   }, [owner, repository]);

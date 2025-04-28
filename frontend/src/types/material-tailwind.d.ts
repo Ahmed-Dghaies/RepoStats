@@ -1,36 +1,21 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import {} from "@material-tailwind/react";
+import React from "react";
 
 type EventCapture = {
-  onPointerEnterCapture?: unknown;
-  onPointerLeaveCapture?: unknown;
+  onPointerEnterCapture?: React.PointerEventHandler<any>;
+  onPointerLeaveCapture?: React.PointerEventHandler<any>;
+  placeholder?: string;
 };
 
 declare module "@material-tailwind/react" {
-  export interface ButtonProps extends EventCapture {
-    placeholder?: unknown;
-  }
-  export interface CardProps extends EventCapture {
-    placeholder?: unknown;
-  }
-  export interface CardHeaderProps extends EventCapture {
-    placeholder?: unknown;
-  }
-  export interface CardBodyProps extends EventCapture {
-    placeholder?: unknown;
-  }
-  export interface DialogBodyProps extends EventCapture {
-    placeholder?: unknown;
-  }
-  export interface DialogFooterProps extends EventCapture {
-    placeholder?: unknown;
-  }
-  export interface DialogHeaderProps extends EventCapture {
-    placeholder?: unknown;
-  }
-  export interface InputProps extends EventCapture {
-    placeholder?: unknown;
-  }
-  export interface AvatarProps extends EventCapture {
-    placeholder?: unknown;
-  }
+  export interface ButtonProps extends EventCapture {}
+  export interface CardProps extends EventCapture {}
+  export interface CardHeaderProps extends EventCapture {}
+  export interface CardBodyProps extends EventCapture {}
+  export interface DialogBodyProps extends EventCapture {}
+  export interface DialogFooterProps extends EventCapture {}
+  export interface DialogHeaderProps extends EventCapture {}
+  export interface InputProps extends EventCapture {}
+  export interface AvatarProps extends EventCapture {}
 }

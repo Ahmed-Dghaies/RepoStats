@@ -57,7 +57,11 @@ const Pagination = <T,>({ table, paginationClassName }: PaginationProps<T>) => {
           defaultValue={table.getState().pagination.pageIndex + 1}
           onChange={(e) => {
             const page = e.target.value ? Number(e.target.value) - 1 : 0;
-            table.setPageIndex(page);
+            const validatedPage = Math.max(0, Math.min(page, table.getPageCount() - 1));
+            table.setPageIndex(validatedPage);
+            if (validatedPage !== page) {
+              e.target.value = String(validatedPage + 1);
+            }
           }}
           className="border p-1 rounded w-16"
         />

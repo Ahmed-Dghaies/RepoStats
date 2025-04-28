@@ -2,14 +2,16 @@ import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CardBody } from "@material-tailwind/react";
 import { Card, CardHeader, Typography } from "@material-tailwind/react";
-import { pullRequestsDetails } from "../hooks/useRepositoryPullRequests";
+import { PullRequestsDetails } from "../hooks/useRepositoryPullRequests";
 import { PullRequest } from "@/types/repository";
+import LoadingOverlay from "@achmadk/react-loading-overlay";
 
 interface PullRequestTableProps {
-  pullRequestsDetails: pullRequestsDetails;
+  pullRequestsDetails: PullRequestsDetails;
   className?: string;
   title: string;
   description?: string;
+  isLoading: boolean;
 }
 
 const PullRequestsTable = ({
@@ -17,6 +19,7 @@ const PullRequestsTable = ({
   className,
   title,
   description,
+  isLoading,
 }: PullRequestTableProps) => {
   return (
     <Card className={className}>
@@ -39,15 +42,22 @@ const PullRequestsTable = ({
         </div>
       </CardHeader>
       <CardBody className="p-2 px-3 pb-0 flex flex-col flex-grow gap-2 h-[360px]">
-        <div className="w-full flex gap-3">
-          <div>Average time to merge:</div>
-          <div>{displayTime(pullRequestsDetails.averageTimeToMergeHours)}</div>
-        </div>
-        <div className="flex-grow overflow-auto pr-1">
-          {pullRequestsDetails.mergedPullRequests.map((pullRequest: PullRequest) => (
-            <PullRequestsTableSkeleton pullRequest={pullRequest} key={pullRequest.number} />
-          ))}
-        </div>
+        <LoadingOverlay
+          active={isLoading}
+          spinner
+          text="Loading repository source tree..."
+          className="h-full w-full overflow-x-hidden pr-1"
+        >
+          <div className="w-full flex gap-3">
+            <div>Average time to merge:</div>
+            <div>{displayTime(pullRequestsDetails.averageTimeToMergeHours)}</div>
+          </div>
+          <div className="flex-grow overflow-auto pr-1">
+            {pullRequestsDetails.mergedPullRequests.map((pullRequest: PullRequest) => (
+              <PullRequestsTableSkeleton pullRequest={pullRequest} key={pullRequest.number} />
+            ))}
+          </div>
+        </LoadingOverlay>
       </CardBody>
     </Card>
   );

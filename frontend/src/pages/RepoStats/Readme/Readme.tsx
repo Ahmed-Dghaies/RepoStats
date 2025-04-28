@@ -9,12 +9,16 @@ const Readme = ({ repositoryDetails }: { repositoryDetails: RepositoryInfo }) =>
   useEffect(() => {
     const fetchFile = async () => {
       try {
-        const response = await fetchFileContent({ repositoryDetails, path: "README.md" });
-        if (response) {
-          setReadMeContent(response);
-          return;
+        const names = ["README.md", "readme.md", "Readme.md", "README.MD"];
+        let content = null;
+        for (const name of names) {
+          const result = await fetchFileContent({ repositoryDetails, path: name });
+          if (result) {
+            content = result;
+            break;
+          }
         }
-        setReadMeContent(null);
+        setReadMeContent(content);
       } catch (error) {
         console.error("Error fetching file:", error);
       }
