@@ -47,7 +47,7 @@ const Sections = ({ repositoryDetails }: { repositoryDetails: RepositoryInfo }) 
         <div
           key={url}
           tabIndex={index}
-          className={`p-2 px-4 rounded-t-lg transition-all duration-200 ${
+          className={`outline-none p-2 px-4 rounded-t-lg transition-all duration-200 ${
             currentSection === url
               ? "bg-gray-100 shadow-md shadow-gray-400"
               : "bg-gray-400 shadow-inner shadow-gray-600"
