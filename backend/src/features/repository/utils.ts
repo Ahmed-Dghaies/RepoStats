@@ -1,5 +1,3 @@
-import { Result } from "../../types/repository";
-
 export const formatRepositorySize = (size: number) => {
   const units = ["KB", "MB", "GB", "TB"];
   let unitIndex = 0;
@@ -16,4 +14,29 @@ export const base64ToMarkdown = (base64String: string): string => {
   } catch (error) {
     throw new Error(`Failed to decode Base64 string: ${error.message}`);
   }
+};
+
+export const locateDependencyFile = (files: string[]): Record<string, string | null> => {
+  let pythonFile: string | null = null;
+  if (files.includes("requirements.txt")) {
+    pythonFile = "requirements.txt";
+  } else if (files.includes("pyproject.toml")) {
+    pythonFile = "pyproject.toml";
+  }
+
+  let cppFile: string | null = null;
+  if (files.includes("CMakeLists.txt")) {
+    cppFile = "CMakeLists.txt";
+  } else {
+    cppFile = files.find((f: string) => f.endsWith(".cpp") || f.endsWith(".h")) ?? null;
+  }
+
+  return {
+    node: "package.json",
+    python: pythonFile,
+    php: "composer.json",
+    rust: "Cargo.toml",
+    go: "go.mod",
+    "c++": cppFile,
+  };
 };

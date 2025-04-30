@@ -1,4 +1,4 @@
-export interface packageDetails {
+export interface PackageDetails {
   name: string | null;
   author: string | null;
   organization: string | null;

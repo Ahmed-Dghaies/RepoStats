@@ -1,6 +1,4 @@
-export type Result<T> = T | { status: number; message: string };
-
-export interface githubRepositoryDetails {
+export interface GithubRepositoryDetails {
   name: string;
   full_name: string;
   default_branch: string;

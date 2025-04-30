@@ -1,6 +1,6 @@
-import { packageDetails } from "./types";
+import { PackageDetails } from "./types";
 
-const Dependency = ({ packageInfo }: { packageInfo: packageDetails }) => {
+const Dependency = ({ packageInfo }: { packageInfo: PackageDetails }) => {
   const dependenciesTags = [
     {
       title: "Version",

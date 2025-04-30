@@ -110,7 +110,7 @@ const AddRepository = ({
    * Constructs a repository object from the current input and fetched details, saves it to local storage, dispatches a refresh action, and closes the modal.
    */
   function handleAddClick() {
-    const existingRepositories = JSON.parse(localStorage.getItem("repositories") || "[]");
+    const existingRepositories = JSON.parse(localStorage.getItem("repositories") ?? "[]");
     const newRepository = {
       url: repositoryUrl,
       owner: repositoryDetails.organization,

@@ -1,5 +1,6 @@
 import { extractRepositoryDetailsFromUrl } from "@/utils/general/url";
-import { packageDetails } from "./types";
+import { PackageDetails } from "./types";
+import pLimit from "p-limit";
 
 interface NpmsPackageDetails {
   collected: {
@@ -77,7 +78,7 @@ export const fetchPackagesSummary = async ({
 }: {
   dependencies: Record<string, string>;
   lockFileContent: string;
-}): Promise<packageDetails[]> => {
+}): Promise<PackageDetails[]> => {
   let lockDependencies: any = {};
   try {
     lockDependencies = JSON.parse(lockFileContent)?.dependencies ?? {};
@@ -85,48 +86,48 @@ export const fetchPackagesSummary = async ({
     console.warn("Unable to parse lock file – falling back to package.json versions");
   }
 
+  // This limits the number of concurrent requests to avoid rate limiting and browser errors for huge repositories
+  const limit = pLimit(10);
   const formattedDependencies = await Promise.all(
-    Object.entries(dependencies).map(async ([packageName, packageVersion]) => {
-      const encodedPackageName = encodeURIComponent(packageName);
-      const packageDetails = await fetchNpmPackageDetails({ packageName: encodedPackageName });
-      const packageMetaData = packageDetails?.collected.metadata;
-      if (!packageDetails || !packageMetaData) {
+    Object.entries(dependencies).map(([packageName, packageVersion]) =>
+      limit(async () => {
+        const encodedPackageName = encodeURIComponent(packageName);
+        const packageDetails = await fetchNpmPackageDetails({ packageName: encodedPackageName });
+        const packageMetaData = packageDetails?.collected.metadata;
+        if (!packageDetails || !packageMetaData) {
+          return {
+            name: packageName,
+            author: null,
+            organization: null,
+            usedVersion: packageVersion,
+            latestVersion: null,
+            lastUpdate: null,
+            description: null,
+            dependencyScore: null,
+          };
+        }
+        const usedVersion = findPackageVersion(lockDependencies, packageName) ?? packageVersion;
+        const repoDetails = packageMetaData.links?.repository
+          ? extractRepositoryDetailsFromUrl(packageMetaData.links.repository)
+          : null;
+        const { platform = "", organization = "", repository = "" } = repoDetails ?? {};
+        const dependencyScore = await fetchDependencyScore({
+          packageName: repository ?? packageName,
+          organization: organization ?? packageMetaData.author?.username ?? "",
+          platform,
+        });
         return {
           name: packageName,
-          author: null,
-          organization: null,
-          usedVersion: packageVersion,
-          latestVersion: null,
-          lastUpdate: null,
-          description: null,
-          dependencyScore: null,
+          author: packageMetaData.author?.username ?? "",
+          organization: organization ?? "",
+          usedVersion,
+          latestVersion: packageMetaData.version,
+          lastUpdate: packageMetaData.date,
+          description: packageMetaData.description,
+          dependencyScore,
         };
-      }
-      const usedVersion = findPackageVersion(lockDependencies, packageName) ?? packageVersion;
-      const repoDetails = packageMetaData.links?.repository
-        ? extractRepositoryDetailsFromUrl(packageMetaData.links.repository)
-        : null;
-      const {
-        platform = "",
-        organization = "",
-        repository = "",
-      } = repoDetails === null ? {} : repoDetails;
-      const dependencyScore = await fetchDependencyScore({
-        packageName: repository ?? packageName,
-        organization: organization ?? packageMetaData.author?.username ?? "",
-        platform,
-      });
-      return {
-        name: packageName,
-        author: packageMetaData.author?.username ?? "",
-        organization: organization ?? "",
-        usedVersion,
-        latestVersion: packageMetaData.version,
-        lastUpdate: packageMetaData.date,
-        description: packageMetaData.description,
-        dependencyScore,
-      };
-    })
+      })
+    )
   );
   return formattedDependencies;
 };

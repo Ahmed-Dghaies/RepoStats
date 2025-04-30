@@ -2,10 +2,10 @@ import { fetchFileContent } from "@/features/repositories/services/repositories"
 import { RepositoryInfo } from "@/types/repository";
 import { useEffect, useState, useRef } from "react";
 import { fetchPackagesSummary } from "./service";
-import { packageDetails } from "./types";
+import { PackageDetails } from "./types";
 
 export const useFetchDependencies = (repositoryDetails: RepositoryInfo) => {
-  const [dependenciesList, setDependenciesList] = useState<packageDetails[]>([]);
+  const [dependenciesList, setDependenciesList] = useState<PackageDetails[]>([]);
   const [loading, setLoading] = useState(false);
   const fetchedRepoRef = useRef<RepositoryInfo | null>(null);
 

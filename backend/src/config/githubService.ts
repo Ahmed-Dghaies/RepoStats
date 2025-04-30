@@ -12,10 +12,10 @@ const githubAPI = axios.create({
 githubAPI.interceptors.response.use(
   (response) => response,
   (error) => {
-    const status = error.response?.status || 500;
-    const message = error.response?.statusText || "Internal Server Error";
+    const status = error.response?.status ?? 500;
+    const message = error.response?.statusText ?? "Internal Server Error";
 
-    return Promise.reject({ status, message });
+    return Promise.reject(Object.assign(new Error(message), { status }));
   }
 );
 

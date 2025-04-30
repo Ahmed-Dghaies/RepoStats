@@ -17,13 +17,23 @@ export function extractRepositoryDetailsFromUrl(url: string): RepositoryDetails 
     const urlObj = new URL(url);
     const pathSegments = urlObj.pathname.split("/").filter(Boolean);
     if (pathSegments.length < 2) return null;
+
+    // Handle GitLab subgroups (all but last segment form the organization)
+    if (urlObj.hostname.includes("gitlab") && pathSegments.length > 2) {
+      return {
+        platform: urlObj.hostname,
+        organization: pathSegments.slice(0, -1).join("/"),
+        repository: pathSegments[pathSegments.length - 1],
+      };
+    }
+
     return {
       platform: urlObj.hostname,
       organization: pathSegments[0],
       repository: pathSegments[1],
     };
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (_err) {
+  } catch (error) {
+    console.error(`Could not retrieve repository details from ${url}: ${error}`);
     return null;
   }
 }

@@ -11,7 +11,7 @@ interface HeatMapDetails {
   maximumValue: number;
 }
 
-interface useRepositoryHeatMapProps {
+interface UseRepositoryHeatMapProps {
   owner: string | undefined;
   repository: string | undefined;
 }
@@ -19,7 +19,7 @@ interface useRepositoryHeatMapProps {
 const useRepositoryHeatMap = ({
   owner,
   repository,
-}: useRepositoryHeatMapProps): { heatMapDetails: HeatMapDetails; isLoading: boolean } => {
+}: UseRepositoryHeatMapProps): { heatMapDetails: HeatMapDetails; isLoading: boolean } => {
   const EIGHT_MONTHS = 240 * 24 * 60 * 60 * 1000;
   const [isLoading, setIsLoading] = useState(false);
   const [heatMapDetails, setHeatMapDetails] = useState<HeatMapDetails>({

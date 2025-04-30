@@ -18,33 +18,52 @@ const useRepositoryPullRequests = ({
 }: UseRepositoryPullRequestsProps): {
   pullRequestsDetails: PullRequestsDetails;
   isLoading: boolean;
+  error: Error | null;
 } => {
   const [pullRequestsDetails, setPullRequestsDetails] = useState<PullRequestsDetails>({
     mergedPullRequests: [],
     averageTimeToMergeHours: 0,
   });
+  const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (!owner || !repository) return;
     setIsLoading(true);
+    setError(null);
+
+    const controller = new AbortController();
     const fetchStats = async () => {
-      const { averageTimeToMergeHours, mergedPullRequests } = await fetchMergedPullRequestsDetails({
-        owner,
-        repository,
-      });
-      setPullRequestsDetails((prev) => ({
-        ...prev,
-        mergedPullRequests,
-        averageTimeToMergeHours,
-      }));
-      setIsLoading(false);
+      try {
+        const { averageTimeToMergeHours, mergedPullRequests } =
+          await fetchMergedPullRequestsDetails({
+            owner,
+            repository,
+            signal: controller.signal,
+          });
+        setPullRequestsDetails((prev) => ({
+          ...prev,
+          mergedPullRequests,
+          averageTimeToMergeHours,
+        }));
+      } catch (err: any) {
+        // Ignore AbortError which happens on cleanup
+        if (err.name !== "AbortError") {
+          setError(err instanceof Error ? err : new Error("Failed to fetch pull requests"));
+        }
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchStats();
+
+    return () => {
+      controller.abort();
+    };
   }, [owner, repository]);
 
-  return { pullRequestsDetails, isLoading };
+  return { pullRequestsDetails, isLoading, error };
 };
 
 export default useRepositoryPullRequests;

@@ -2,7 +2,7 @@ import { Request, Response, NextFunction, RequestHandler } from "express";
 import { RepositoryServices } from "./services";
 import { UserServices } from "../user/services";
 import { formatRepositorySize } from "./utils";
-import { githubRepositoryDetails } from "../../types/repository";
+import { GithubRepositoryDetails } from "../../types/repository";
 
 interface GitHubTreeItem {
   path: string;
@@ -16,7 +16,7 @@ interface TreeNode {
 }
 
 export class RepositoryController {
-  public static getContributors: RequestHandler = async (
+  public static readonly getContributors: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -55,7 +55,7 @@ export class RepositoryController {
     }
   };
 
-  public static getHeatMapData: RequestHandler = async (
+  public static readonly getHeatMapData: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -69,7 +69,7 @@ export class RepositoryController {
     }
   };
 
-  public static getMergedPullRequests: RequestHandler = async (
+  public static readonly getMergedPullRequests: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -83,7 +83,7 @@ export class RepositoryController {
     }
   };
 
-  public static download: RequestHandler = async (
+  public static readonly download: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -109,7 +109,7 @@ export class RepositoryController {
     }
   };
 
-  public static getSourceTree = async (
+  public static readonly getSourceTree = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -160,7 +160,7 @@ export class RepositoryController {
     }
   };
 
-  public static getViews: RequestHandler = async (
+  public static readonly getViews: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -176,7 +176,7 @@ export class RepositoryController {
     }
   };
 
-  public static getRepositoryLanguages: RequestHandler = async (
+  public static readonly getRepositoryLanguages: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -192,7 +192,7 @@ export class RepositoryController {
     }
   };
 
-  public static getDetails: RequestHandler = async (
+  public static readonly getDetails: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -218,7 +218,7 @@ export class RepositoryController {
       ]);
 
       const [details, releases, languages, projectType, readMeFilename] = responses as [
-        githubRepositoryDetails,
+        GithubRepositoryDetails,
         { latest: { tag_name: string; published_at: string } | null; nbReleases: number },
         Record<string, number>,
         { type: string; dependencyFile: string },
@@ -260,7 +260,7 @@ export class RepositoryController {
     }
   };
 
-  public static getClones: RequestHandler = async (
+  public static readonly getClones: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -276,7 +276,7 @@ export class RepositoryController {
     }
   };
 
-  public static getCommits: RequestHandler = async (
+  public static readonly getCommits: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -321,7 +321,7 @@ export class RepositoryController {
     }
   };
 
-  public static getPunchCard: RequestHandler = async (
+  public static readonly getPunchCard: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -336,7 +336,7 @@ export class RepositoryController {
     }
   };
 
-  public static checkDependenciesFile: RequestHandler = async (
+  public static readonly checkDependenciesFile: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -358,7 +358,7 @@ export class RepositoryController {
     }
   };
 
-  public static getFileContent: RequestHandler = async (
+  public static readonly getFileContent: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction

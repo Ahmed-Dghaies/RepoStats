@@ -1,5 +1,5 @@
 import backendApi from "@/utils/axios/axios";
-import { TreeNode, Contributor, RepositoryInfo } from "@/types/repository";
+import { TreeNode, Contributor, RepositoryInfo, PullRequest } from "@/types/repository";
 import { FormattedGraphData, FormattedLanguageData, GraphData } from "@/types/graphs";
 import {
   formatClonesData,
@@ -19,6 +19,7 @@ export interface FormattedGraphComparisonData {
 interface RepositoryIdentifier {
   owner: string;
   repository: string;
+  signal?: AbortSignal;
 }
 
 export const fetchClonesStatistics = async ({
@@ -158,6 +159,11 @@ export async function fetchGitHubRepoTree({
     });
 }
 
+interface MergedPullRequestsDetails {
+  mergedPullRequests: PullRequest[];
+  averageTimeToMergeHours: number;
+}
+
 /**
  * Retrieves details about merged pull requests for a given repository.
  *
@@ -165,15 +171,19 @@ export async function fetchGitHubRepoTree({
  * @param repository - The repository name.
  * @returns An object containing merged pull request data, total count, and average time to merge. Returns default empty values if the request fails.
  */
-export async function fetchMergedPullRequestsDetails({ owner, repository }: RepositoryIdentifier) {
+export async function fetchMergedPullRequestsDetails({
+  owner,
+  repository,
+  signal,
+}: RepositoryIdentifier): Promise<MergedPullRequestsDetails> {
   return await backendApi
-    .get(`/repository/${owner}/${repository}/merged-pull-requests`)
+    .get(`/repository/${owner}/${repository}/merged-pull-requests`, { signal })
     .then((response: { data: any; total: number; timeToMerge: number }) => {
       return response.data;
     })
     .catch((error: any) => {
       console.error(`Github API error: ${error}`);
-      return { data: [], total: 0, timeToMerge: 0 };
+      return { averageTimeToMergeHours: 0, mergedPullRequests: [] };
     });
 }
 
@@ -224,6 +234,7 @@ export async function repositoryHasDependenciesFile(
     })
     .catch((error: any) => {
       console.error(`Github API error: ${error}`);
+      return false;
     });
 }
 
@@ -242,7 +253,11 @@ export async function fetchFileContent({
   path: string;
 }): Promise<string> {
   return await backendApi
-    .get(`/repository/${repositoryDetails.owner.login}/${repositoryDetails.name}/file/${path}`)
+    .get(
+      `/repository/${repositoryDetails.owner.login}/${
+        repositoryDetails.name
+      }/file/${encodeURIComponent(path)}`
+    )
     .then((response: { data: boolean }) => response.data)
     .catch((error: any) => {
       console.error(`Github API error: ${error}`);

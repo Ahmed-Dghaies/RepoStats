@@ -1,7 +1,6 @@
 import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { CardBody } from "@material-tailwind/react";
-import { Card, CardHeader, Typography } from "@material-tailwind/react";
+import { Card, CardHeader, Typography, CardBody } from "@material-tailwind/react";
 import { PullRequestsDetails } from "../hooks/useRepositoryPullRequests";
 import { PullRequest } from "@/types/repository";
 import LoadingOverlay from "@achmadk/react-loading-overlay";
