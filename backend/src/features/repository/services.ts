@@ -1,7 +1,10 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { githubAPI } from "../../config/githubService";
 import { Response } from "express";
 import { GithubUser } from "../user/types";
+import { base64ToMarkdown, locateDependencyFile } from "./utils";
+import { GithubRepositoryDetails } from "../../types/repository";
+import { GitHubCommit, GitHubPR } from "../../types/github";
 
 interface getCommitsPayload {
   owner: string;
@@ -12,130 +15,283 @@ interface getCommitsPayload {
   currentPage: number;
 }
 
+interface RequestsPayload {
+  owner: string;
+  repository: string;
+  branch?: string;
+}
+
 export class RepositoryServices {
-  public static getSourceTree = async ({ owner, repository, branch }) => {
-    try {
-      console.log(`/repos/${owner}/${repository}/git/trees/${branch}?recursive=1`);
-      const response = await githubAPI.get(
-        `/repos/${owner}/${repository}/git/trees/${branch}?recursive=1`
-      );
-      return response.data;
-    } catch (err) {
-      throw new Error(`Error fetching repository source tree: ${err}`);
+  public static readonly getSourceTree = async ({ owner, repository, branch }: RequestsPayload) => {
+    let targetBranch = branch;
+    if (!targetBranch) {
+      const repoRes = await githubAPI.get(`/repos/${owner}/${repository}`);
+      targetBranch = repoRes.data.default_branch;
     }
+    const response = await githubAPI.get(
+      `/repos/${owner}/${repository}/git/trees/${targetBranch}?recursive=1`
+    );
+    return response.data;
   };
 
-  public static getPunchCard = async (owner: string, repository: string) => {
-    try {
-      console.log(`/repos/${owner}/${repository}/stats/punch_card`);
-      const response = await githubAPI.get(`/repos/${owner}/${repository}/stats/punch_card`);
-      console.log("here");
-      return response.data;
-    } catch (err) {
-      throw new Error(`Error fetching repository punch card: ${err}`);
-    }
+  public static readonly getBranches = async ({ owner, repository }: RequestsPayload) => {
+    const response = await githubAPI.get(`/repos/${owner}/${repository}/branches`);
+    return response.data.map((branch: { name: string }) => branch.name);
   };
 
-  public static getContributors = async (
+  public static readonly getMergedPullRequests = async ({ owner, repository }: RequestsPayload) => {
+    const perPage = 100;
+    const response = await githubAPI.get(`/repos/${owner}/${repository}/pulls`, {
+      params: {
+        state: "closed",
+        sort: "updated",
+        direction: "desc",
+        per_page: perPage,
+      },
+    });
+
+    const mergedPRs = response.data.filter((pr: GitHubPR) => pr.merged_at);
+
+    interface formattedPullRequest {
+      title: string;
+      author: string;
+      number: number;
+      createdAt: string;
+      mergedAt: string;
+      durationInHours: number;
+      url: string;
+    }
+
+    const mergedWithDurations: formattedPullRequest[] = mergedPRs.map((pr: GitHubPR) => {
+      const created = new Date(pr.created_at);
+      const merged = new Date(pr.merged_at);
+      const durationInHours = (merged.getTime() - created.getTime()) / (1000 * 60 * 60);
+      return {
+        title: pr.title,
+        number: pr.number,
+        author: pr.user.login,
+        createdAt: pr.created_at,
+        mergedAt: pr.merged_at,
+        durationInHours: parseFloat(durationInHours.toFixed(2)),
+        url: pr.html_url,
+      };
+    });
+
+    const totalDuration = mergedWithDurations.reduce(
+      (sum: number, pr: formattedPullRequest) => sum + pr.durationInHours,
+      0
+    );
+
+    const averageDuration =
+      mergedWithDurations.length > 0
+        ? parseFloat((totalDuration / mergedWithDurations.length).toFixed(2))
+        : null;
+
+    return {
+      mergedPullRequests: mergedWithDurations,
+      averageTimeToMergeHours: averageDuration,
+    };
+  };
+
+  public static readonly getHeatMapData = async ({
+    owner,
+    repository,
+    includeAllBranches = false,
+  }) => {
+    const since = new Date();
+    since.setDate(since.getDate() - 240);
+    const isoSince = since.toISOString();
+
+    const contributionsByDay: Record<string, number> = {};
+    const perPage = 100;
+
+    let branches: string[] = [];
+
+    if (includeAllBranches) {
+      branches = await RepositoryServices.getBranches({ owner, repository });
+    } else {
+      const repoResponse = await githubAPI.get(`/repos/${owner}/${repository}`);
+      branches = [repoResponse.data.default_branch];
+    }
+
+    for (const branch of branches) {
+      let page = 1;
+
+      while (true) {
+        const response = await githubAPI.get(`/repos/${owner}/${repository}/commits`, {
+          params: {
+            sha: branch,
+            since: isoSince,
+            per_page: perPage,
+            page,
+          },
+        });
+
+        const commits = response.data;
+
+        if (commits.length === 0) break;
+
+        commits.forEach((commit: GitHubCommit) => {
+          const date = new Date(commit.commit.author.date).toISOString().split("T")[0];
+          contributionsByDay[date] = (contributionsByDay[date] || 0) + 1;
+        });
+
+        if (commits.length < perPage) break;
+
+        page++;
+      }
+    }
+
+    return contributionsByDay;
+  };
+
+  public static readonly getReadmeFileName = async (
+    owner: string,
+    repository: string
+  ): Promise<string | null> => {
+    const response = await githubAPI.get(`/repos/${owner}/${repository}/contents`);
+
+    const filenames = ["readme", "readme.md", "readme.txt", "readme.rst", "readme.adoc"];
+    const file = response.data.find((file: { name: string }) =>
+      filenames.includes(file.name.toLowerCase())
+    );
+
+    return file ? file.name : null;
+  };
+
+  public static readonly getProjectType = async (
+    owner: string,
+    repository: string
+  ): Promise<{ type: string; dependencyFile: string }> => {
+    const response = await githubAPI.get(`/repos/${owner}/${repository}/contents`);
+
+    const files = response.data.map((file: { name: string }) => file.name.toLowerCase());
+
+    const dependencyFiles: Record<string, string | null> = locateDependencyFile(files);
+
+    for (const [type, file] of Object.entries(dependencyFiles)) {
+      if (file && files.includes(file.toLowerCase())) {
+        return { type, dependencyFile: file };
+      }
+    }
+
+    return { type: "unknown", dependencyFile: null };
+  };
+
+  public static readonly getPunchCard = async (owner: string, repository: string) => {
+    const response = await githubAPI.get(`/repos/${owner}/${repository}/stats/punch_card`);
+    return response.data;
+  };
+
+  public static readonly getContributors = async (
     owner: string,
     repository: string
   ): Promise<GithubUser[]> => {
-    try {
-      const response = await githubAPI.get(`/repos/${owner}/${repository}/contributors`);
-      return response.data;
-    } catch (err) {
-      throw new Error(`Error fetching repository contributors: ${err}`);
-    }
+    const response = await githubAPI.get(`/repos/${owner}/${repository}/contributors`);
+    return response.data;
   };
 
-  public static download = async ({ owner, repository, branch }, res: Response) => {
+  public static readonly download = async ({ owner, repository, branch }, res: Response) => {
+    const url = `https://github.com/${owner}/${repository}/archive/refs/heads/${branch}.zip`;
+
+    let response: AxiosResponse<NodeJS.ReadableStream>;
     try {
-      const url = `https://github.com/${owner}/${repository}/archive/refs/heads/${branch}.zip`;
-
-      const response = await axios.get(url, { responseType: "stream" });
-
-      res.setHeader("Content-Disposition", `attachment; filename=${repository}-${branch}.zip`);
-      res.setHeader("Content-Type", "application/zip");
-
-      response.data.pipe(res);
-    } catch (err) {
-      throw new Error(`Error download repository from GitHub: ${err}`);
+      response = await axios.get(url, { responseType: "stream" });
+    } catch (error) {
+      res.status(502).json({ message: `Failed to download archive from GitHub: ${error.message}` });
+      return;
     }
+
+    res.setHeader("Content-Disposition", `attachment; filename=${repository}-${branch}.zip`);
+    res.setHeader("Content-Type", "application/zip");
+
+    response.data.pipe(res);
   };
 
-  public static getReleases = async (owner: string, repository: string) => {
-    try {
-      const releasesRequestUrl = `/repos/${owner}/${repository}/releases?per_page=100`;
-      const response = await githubAPI.get(releasesRequestUrl);
-      const linkHeader = response.headers.link;
+  public static readonly getReleases = async (
+    owner: string,
+    repository: string
+  ): Promise<{ latest: { tag_name: string; published_at: string }; nbReleases: number }> => {
+    const releasesRequestUrl = `/repos/${owner}/${repository}/releases?per_page=100`;
+    const response = await githubAPI.get(releasesRequestUrl);
+    const linkHeader = response.headers.link;
 
-      let totalReleases = response.data.length;
-      let lastPage = 1;
+    let totalReleases = response.data.length;
+    let lastPage = 1;
 
-      if (linkHeader) {
-        const lastPageMatch = linkHeader.match(/&page=(\d+)>; rel="last"/);
-        if (lastPageMatch) {
-          lastPage = parseInt(lastPageMatch[1], 10);
-        }
+    if (linkHeader) {
+      const lastPageMatch = linkHeader.match(/&page=(\d+)>; rel="last"/);
+      if (lastPageMatch) {
+        lastPage = parseInt(lastPageMatch[1], 10);
       }
+    }
 
-      if (lastPage > 1) {
-        const lastPageUrl = `${releasesRequestUrl}&page=${lastPage}`;
-        const lastPageResponse = await githubAPI.get(lastPageUrl);
-        totalReleases = (lastPage - 1) * 100 + lastPageResponse.data.length;
+    if (lastPage > 1) {
+      const lastPageUrl = `${releasesRequestUrl}&page=${lastPage}`;
+      const lastPageResponse = await githubAPI.get(lastPageUrl);
+      totalReleases = (lastPage - 1) * 100 + lastPageResponse.data.length;
+    }
+    const formattedResponse = {
+      latest: response.data.length ? response.data[0] : null,
+      nbReleases: totalReleases,
+    };
+    return formattedResponse;
+  };
+
+  public static readonly getViews = async (owner: string, repository: string) => {
+    const response = await githubAPI.get(`/repos/${owner}/${repository}/traffic/views`);
+    return response.data;
+  };
+
+  public static readonly getClonesData = async (owner: string, repository: string) => {
+    const response = await githubAPI.get(`/repos/${owner}/${repository}/traffic/clones`);
+    return response.data;
+  };
+
+  public static readonly getDetails = async (
+    owner: string,
+    repository: string
+  ): Promise<GithubRepositoryDetails> => {
+    const response = await githubAPI.get(`/repos/${owner}/${repository}`);
+    return response.data;
+  };
+
+  public static readonly getLanguages = async (
+    owner: string,
+    repository: string
+  ): Promise<Record<string, number>> => {
+    const response = await githubAPI.get(`/repos/${owner}/${repository}/languages`);
+    return response.data;
+  };
+
+  public static readonly getCommits = async (payload: getCommitsPayload) => {
+    const { owner, repository, commitsPerPage, currentPage, since, until } = payload;
+
+    let queryParams: string = `?since=${since}&until=${until}`;
+    if (commitsPerPage) {
+      queryParams += `&per_page=${commitsPerPage}`;
+      if (currentPage) {
+        queryParams += `&page=${currentPage}`;
       }
-      const formattedResponse = {
-        latest: response.data.length ? response.data[0] : null,
-        nbReleases: totalReleases,
-      };
-      return formattedResponse;
-    } catch (err) {
-      throw new Error(`Error fetching repository releases from GitHub: ${err}`);
     }
+    const response = await githubAPI.get(`/repos/${owner}/${repository}/commits${queryParams}`);
+    return response.data;
   };
 
-  public static getViews = async (owner: string, repository: string) => {
+  public static readonly getFile = async ({
+    owner,
+    repository,
+    path,
+  }: {
+    owner: string;
+    repository: string;
+    path: string;
+  }) => {
     try {
-      const response = await githubAPI.get(`/repos/${owner}/${repository}/traffic/views`);
-      return response.data;
-    } catch (err) {
-      throw new Error(`Error fetching repository views from GitHub: ${err}`);
-    }
-  };
-
-  public static getClonesData = async (owner: string, repository: string) => {
-    try {
-      const response = await githubAPI.get(`/repos/${owner}/${repository}/traffic/clones`);
-      return response.data;
-    } catch (err) {
-      throw new Error(`Error fetching repository clones stats from GitHub: ${err}`);
-    }
-  };
-
-  public static getDetails = async (owner: string, repository: string) => {
-    try {
-      const response = await githubAPI.get(`/repos/${owner}/${repository}`);
-      return response.data;
-    } catch (err) {
-      throw new Error(`Error fetching repository stats from GitHub: ${err}`);
-    }
-  };
-
-  public static getCommits = async (payload: getCommitsPayload) => {
-    try {
-      const { owner, repository, commitsPerPage, currentPage, since, until } = payload;
-
-      let queryParams: string = `?since=${since}&until=${until}`;
-      if (commitsPerPage) {
-        queryParams += `&per_page=${commitsPerPage}`;
-        if (currentPage) {
-          queryParams += `&page=${currentPage}`;
-        }
-      }
-      const response = await githubAPI.get(`/repos/${owner}/${repository}/commits${queryParams}`);
-      return response.data;
-    } catch (err) {
-      throw new Error(`Error fetching repository commits from GitHub: ${err}`);
+      const response = await githubAPI.get(`/repos/${owner}/${repository}/contents/${path}`);
+      return response.data?.content ? base64ToMarkdown(response.data.content) : null;
+    } catch (error) {
+      return null;
     }
   };
 }

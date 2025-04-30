@@ -9,7 +9,7 @@ interface RepositoriesState {
 const initialState: RepositoriesState = {
   repositoriesList: [],
   selectedRepository: {
-    name: "",
+    repository: "",
     owner: "",
     lastUpdated: "",
     url: "",
@@ -26,11 +26,28 @@ const repositorySlice = createSlice({
     setSelectedRepository: (state, action: PayloadAction<Repository>) => {
       state.selectedRepository = action.payload;
     },
+    deleteRepository: (state, action: PayloadAction<Repository>) => {
+      const index = state.repositoriesList.findIndex(
+        (repo: Repository) => repo.url === action.payload.url
+      );
+      if (index !== -1) {
+        state.repositoriesList.splice(index, 1);
+      }
+    },
+    refreshRepositories: (state) => {
+      const items: Array<Repository> = JSON.parse(localStorage.getItem("repositories") ?? "[]");
+      state.repositoriesList = items;
+    },
     resetState: () => initialState,
   },
 });
 
-export const { setSelectedRepository, setRepositories, resetState } =
-  repositorySlice.actions;
+export const {
+  setSelectedRepository,
+  setRepositories,
+  resetState,
+  deleteRepository,
+  refreshRepositories,
+} = repositorySlice.actions;
 
 export default repositorySlice.reducer;

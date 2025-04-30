@@ -1,20 +1,33 @@
 {
   "cSpell.words": [
+    "achmadk",
+    "adoc",
     "apexcharts",
     "Avenir",
+    "dasharray",
     "Dghaies",
     "Dockerized",
     "evenodd",
+    "linecap",
+    "linejoin",
     "linestep",
+    "miterlimit",
     "nivo",
+    "nodesecure",
+    "Npms",
+    "ossf",
     "PLSVF",
+    "pyproject",
     "stepline",
     "svgrepo",
     "VITE",
     "xaxis",
+    "xlink",
     "yaxis",
     "Ysxbn",
     "zipball"
   ],
-  "css.customData": [".vscode/css_custom_data.json"]
+  "css.customData": [".vscode/css_custom_data.json"],
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" }
 }

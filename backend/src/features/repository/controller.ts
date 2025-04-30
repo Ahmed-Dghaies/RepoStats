@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import { RepositoryServices } from "./services";
 import { UserServices } from "../user/services";
+import { formatRepositorySize } from "./utils";
+import { GithubRepositoryDetails } from "../../types/repository";
 
 interface GitHubTreeItem {
   path: string;
@@ -14,7 +16,7 @@ interface TreeNode {
 }
 
 export class RepositoryController {
-  public static getContributors: RequestHandler = async (
+  public static readonly getContributors: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -53,7 +55,35 @@ export class RepositoryController {
     }
   };
 
-  public static download: RequestHandler = async (
+  public static readonly getHeatMapData: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+      const heatMapData = await RepositoryServices.getHeatMapData({ owner, repository });
+      res.json(heatMapData);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public static readonly getMergedPullRequests: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+      const details = await RepositoryServices.getMergedPullRequests({ owner, repository });
+      res.json(details);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public static readonly download: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -79,7 +109,7 @@ export class RepositoryController {
     }
   };
 
-  public static getSourceTree = async (
+  public static readonly getSourceTree = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -130,7 +160,7 @@ export class RepositoryController {
     }
   };
 
-  public static getViews: RequestHandler = async (
+  public static readonly getViews: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -146,7 +176,23 @@ export class RepositoryController {
     }
   };
 
-  public static getDetails: RequestHandler = async (
+  public static readonly getRepositoryLanguages: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+
+      const languages = await RepositoryServices.getLanguages(owner, repository);
+
+      res.json(languages);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public static readonly getDetails: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -162,10 +208,24 @@ export class RepositoryController {
         return;
       }
 
-      const details = await RepositoryServices.getDetails(owner, repository);
-      const releases = await RepositoryServices.getReleases(owner, repository);
+      // TODO: work on a retry logic in case one of the requests fails
+      const responses = await Promise.all([
+        RepositoryServices.getDetails(owner, repository),
+        RepositoryServices.getReleases(owner, repository),
+        RepositoryServices.getLanguages(owner, repository),
+        RepositoryServices.getProjectType(owner, repository),
+        RepositoryServices.getReadmeFileName(owner, repository),
+      ]);
 
-      const result = {
+      const [details, releases, languages, projectType, readMeFilename] = responses as [
+        GithubRepositoryDetails,
+        { latest: { tag_name: string; published_at: string } | null; nbReleases: number },
+        Record<string, number>,
+        { type: string; dependencyFile: string },
+        string | null
+      ];
+
+      res.json({
         name: details.name,
         fullName: details.full_name,
         defaultBranch: details.default_branch,
@@ -174,6 +234,8 @@ export class RepositoryController {
           avatarUrl: details.owner.avatar_url,
           contributions: 0,
         },
+        stars: details.stargazers_count,
+        license: details.license ? details.license.name : null,
         description: details.description,
         releases: {
           latestRelease: releases.latest
@@ -184,18 +246,21 @@ export class RepositoryController {
             : null,
           nbReleases: releases.nbReleases,
         },
+        size: formatRepositorySize(details.size),
+        languages: languages ?? {},
         openIssues: details.open_issues_count,
         createdAt: new Date(details.created_at).toISOString().split("T")[0],
         updatedAt: details.updated_at,
-      };
-
-      res.json(result);
+        readme: readMeFilename,
+        projectType: projectType.type,
+        dependencyFile: projectType.dependencyFile,
+      });
     } catch (err) {
       next(err);
     }
   };
 
-  public static getClones: RequestHandler = async (
+  public static readonly getClones: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -211,7 +276,7 @@ export class RepositoryController {
     }
   };
 
-  public static getCommits: RequestHandler = async (
+  public static readonly getCommits: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -256,7 +321,7 @@ export class RepositoryController {
     }
   };
 
-  public static getPunchCard: RequestHandler = async (
+  public static readonly getPunchCard: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -265,6 +330,47 @@ export class RepositoryController {
       const { owner, repository } = req.params;
 
       const response = await RepositoryServices.getPunchCard(owner, repository);
+      res.json(response);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public static readonly checkDependenciesFile: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+      const response = await RepositoryServices.getFile({
+        owner,
+        repository,
+        path: "package.json",
+      });
+      if (response) {
+        res.json(true);
+        return;
+      }
+      res.json(false);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  public static readonly getFileContent: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+      const path = req.params[0];
+      const response = await RepositoryServices.getFile({
+        owner,
+        repository,
+        path,
+      });
       res.json(response);
     } catch (err) {
       next(err);

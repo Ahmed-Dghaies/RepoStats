@@ -1,7 +1,9 @@
 # Build stage
-FROM node:18 AS builder
+FROM node:22-slim AS builder
 WORKDIR /app
 COPY . .
+ARG BACKEND_URL
+ENV VITE_BACKEND_URL=$BACKEND_URL
 RUN npm ci && npm run build
 
 # Nginx stage

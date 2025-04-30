@@ -1,28 +1,52 @@
-import { useParams } from "react-router-dom";
-import RepositoryDetails from "./RepositoryDetails";
-import RepositoryGraphs from "./RepositoryGraphs";
+import { Navigate, Route, Routes, useParams } from "react-router-dom";
 import useValidateRepository from "@/hooks/useValidateRepository";
-import RepositoryContributors from "./RepositoryContributors";
-import RepositorySourceTree from "./RepositorySourceTree";
+import { useEffect, useState } from "react";
+import { RepositoryInfo } from "@/types/repository";
+import { fetchRepositoryDetails } from "@/features/repositories/services/repositories";
+import Readme from "../Readme";
+import RepositoryTags from "./RepositoryTags";
+import Sections from "./Sections";
+import Dependencies from "../Dependencies";
+import RepositoryDetails from "../RepositoryDetails";
 
 const StatsContainer = () => {
-  const { owner, name } = useParams();
-  useValidateRepository({ owner, name });
+  const { owner, repository } = useParams();
+  useValidateRepository({ owner, repository });
+
+  const [repositoryDetails, setRepositoryDetails] = useState<RepositoryInfo | null>(null);
+
+  useEffect(() => {
+    if (!owner || !repository) return;
+
+    fetchRepositoryDetails({ owner, repository }).then((details) => {
+      setRepositoryDetails(details);
+    });
+  }, [owner, repository]);
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-3">
-        <div className="flex flex-col gap-6 sm:gap-3 sm:flex-row w-full lg:w-2/3 xl:w-2/4">
-          <RepositoryDetails owner={owner} name={name} />
-          <RepositoryContributors owner={owner} name={name} />
+    owner &&
+    repository &&
+    repositoryDetails && (
+      <div className="flex flex-col h-full max-h-full overflow-hidden">
+        <div className="width-full bg-gradient-to-b to-gray-100 from-gray-400 flex flex-col gap-3 p-4 pb-0 mb-3 md:px-[10%]">
+          <div className="text-xl">{`${repositoryDetails.fullName}`}</div>
+          <RepositoryTags repositoryDetails={repositoryDetails} />
+          <Sections repositoryDetails={repositoryDetails} />
         </div>
-        <div className="w-full lg:w-1/3 xl:w-2/4">
-          <RepositorySourceTree owner={owner} name={name} />
-        </div>
+        <Routes>
+          <Route
+            path="details"
+            element={<RepositoryDetails repositoryDetails={repositoryDetails} />}
+          />
+          <Route path="readme" element={<Readme repositoryDetails={repositoryDetails} />} />
+          <Route
+            path="dependencies"
+            element={<Dependencies repositoryDetails={repositoryDetails} />}
+          />
+          <Route path="" element={<Navigate to="details" replace />} />
+        </Routes>
       </div>
-
-      <RepositoryGraphs owner={owner} name={name} />
-    </div>
+    )
   );
 };
 

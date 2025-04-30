@@ -163,6 +163,14 @@ export function formatGraphViewsData(response: ViewsResponse) {
 
 type PunchCardResponse = Array<Array<number>>;
 
+/**
+ * Formats punch card commit data into hourly commit counts for visualization.
+ *
+ * Aggregates commit counts by hour from the punch card response, determines the maximum commits in any hour, and returns an object with hourly labels, commit data, and the maximum value.
+ *
+ * @param response - Array of punch card data, where each entry contains day, hour, and commit count.
+ * @returns An object containing hourly keys, a dataset of commits per hour, and the maximum commit count.
+ */
 export function formatPunchCardData(response: PunchCardResponse) {
   const keys = Array.from({ length: 24 }, (_, i) => `${i}h`);
   const commitsPerHour: { [key: string]: number } = {};
@@ -186,5 +194,55 @@ export function formatPunchCardData(response: PunchCardResponse) {
     ],
     keys: keys,
     maximumValue: maximumValue,
+  };
+}
+
+/**
+ * Converts a language usage object into percentage-based data suitable for charting.
+ *
+ * Calculates the percentage of total usage for each language, includes only languages with at least 1% usage as main languages, and groups the remainder under "Others". Returns arrays of language names and their corresponding floored percentage values, sorted in descending order.
+ *
+ * @param response - An object mapping language names to their usage counts.
+ * @returns An object containing `keys` (language names) and `data` (floored percentage values).
+ */
+export function formatLanguagesData(response: { [key: string]: number }) {
+  const total = Object.values(response).reduce((sum, value) => sum + value, 0);
+
+  const percentages = Object.entries(response).map(([language, count]) => ({
+    language,
+    percentage: (count / total) * 100,
+  }));
+
+  const mainLanguages = percentages.filter((lang) => lang.percentage >= 1);
+
+  const mainLanguagesPercentage = mainLanguages.reduce(
+    (sum, lang) => sum + Math.floor(lang.percentage),
+    0
+  );
+  const othersPercentage = 100 - mainLanguagesPercentage;
+
+  let formattedData = mainLanguages.map((lang) => ({
+    language: lang.language,
+    percentage: Math.round(lang.percentage * 100) / 100,
+  }));
+
+  if (othersPercentage > 0) {
+    formattedData = [
+      ...formattedData,
+      {
+        language: "Others",
+        percentage: othersPercentage,
+      },
+    ];
+  }
+
+  formattedData.sort((a, b) => b.percentage - a.percentage);
+
+  const keys = formattedData.map((item) => item.language);
+  const data = formattedData.map((item) => Math.floor(item.percentage));
+
+  return {
+    data,
+    keys,
   };
 }

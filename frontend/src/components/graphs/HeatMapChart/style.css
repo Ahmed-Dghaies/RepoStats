@@ -1,0 +1,34 @@
+.heatmap-legend .color-empty {
+  fill: #eeeeee;
+  background-color: #eeeeee;
+}
+
+.react-calendar-heatmap .color-scale-1,
+.heatmap-legend .color-scale-1 {
+  fill: #d6e685;
+  background-color: #d6e685;
+}
+.react-calendar-heatmap .color-scale-2,
+.heatmap-legend .color-scale-2 {
+  fill: #8cc665;
+  background-color: #8cc665;
+}
+.react-calendar-heatmap .color-scale-3,
+.heatmap-legend .color-scale-3 {
+  fill: #44a340;
+  background-color: #44a340;
+}
+.react-calendar-heatmap .color-scale-4,
+.heatmap-legend .color-scale-4 {
+  fill: #1e6823;
+  background-color: #1e6823;
+}
+.react-calendar-heatmap .color-scale-5,
+.heatmap-legend .color-scale-5 {
+  fill: #00441b;
+  background-color: #00441b;
+}
+
+#calendar-heatmap-tooltip {
+  z-index: 10;
+}

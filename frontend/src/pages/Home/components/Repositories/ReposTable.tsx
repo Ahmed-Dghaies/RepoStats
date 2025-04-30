@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { Repository } from "../../../../types/repository";
-import MyTable from "../../../../components/common/MyTable";
+import { Repository } from "@/types/repository";
+import { Table } from "@/components/Common";
 import RepoActions from "./RepoActions";
 import { CellContext } from "@tanstack/react-table";
 
@@ -8,36 +8,37 @@ const ReposTable = ({ repositories }: { repositories: Repository[] }) => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: "name",
+        accessorKey: "repository",
         header: "Name",
       },
       {
         accessorKey: "owner",
         header: "Owner",
+        meta: { className: "hidden sm:table-cell" },
       },
       {
         accessorKey: "lastUpdated",
         header: "Last Updated",
-        hideFor: ["sm"],
+        meta: { className: "hidden md:table-cell" },
       },
       {
         accessorKey: "url",
         header: "URL",
-        hideFor: ["sm"],
+        meta: { className: "hidden sm:table-cell" },
       },
       {
         accessorKey: "actions",
         header: "Actions",
         enableSorting: false,
         cell: RepoActionsCell,
-        className: "text-center",
+        meta: { className: "!text-center" },
       },
     ],
     []
   );
 
   return (
-    <MyTable
+    <Table
       {...{
         data: repositories,
         columns,

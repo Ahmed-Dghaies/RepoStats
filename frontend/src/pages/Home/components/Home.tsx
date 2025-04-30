@@ -3,7 +3,7 @@ import Repositories from "./Repositories";
 
 const Home: React.FC = () => {
   return (
-    <div className="grow overflow-x-hidden overflow-y-auto p-5">
+    <div className="grow overflow-x-hidden overflow-y-auto p-4">
       <Repositories />
     </div>
   );

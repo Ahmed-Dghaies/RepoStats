@@ -9,7 +9,6 @@ export class UserController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      console.log("here");
       const { username } = req.params;
 
       if (!username) {

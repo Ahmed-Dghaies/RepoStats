@@ -4,7 +4,7 @@
   /* Fonts */
   --base-font: black;
   /* Fillers */
-  --body-background: #eceff180;
+  --body-background: #f3f4f6;
   --modules-background: white;
 
   /* Navbar */
@@ -46,4 +46,9 @@ body {
 
 .tooltip-container {
   border-radius: 5px !important;
+}
+
+.center-btns .react-confirm-alert-body {
+  width: 100%;
+  justify-content: center;
 }
