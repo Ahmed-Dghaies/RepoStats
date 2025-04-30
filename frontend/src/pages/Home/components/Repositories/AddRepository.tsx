@@ -166,7 +166,6 @@ const AddRepository = ({
           label="Repository URL"
           errorMessage={errorMessage}
         />
-        {detailsLoading ? toggleTitle : null}
         <Collapsible trigger={toggleTitle}>
           <RepositoryDetails repositoryDetails={repositoryDetails} loading={detailsLoading} />
         </Collapsible>

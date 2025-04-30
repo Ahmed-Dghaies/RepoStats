@@ -261,5 +261,6 @@ export async function fetchFileContent({
     .then((response: { data: boolean }) => response.data)
     .catch((error: any) => {
       console.error(`Github API error: ${error}`);
+      return "";
     });
 }
