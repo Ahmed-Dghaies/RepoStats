@@ -1,4 +1,4 @@
-import LineGraph from "@/components/Graphs/LineChart/LineGraph";
+import LineGraph from "@/components/Graphs/LineChart";
 import useRepositoryStats from "../hooks/useRepositoryStats";
 import { Repository } from "@/types/repository";
 import DonutChart from "@/components/Graphs/DonutChart";

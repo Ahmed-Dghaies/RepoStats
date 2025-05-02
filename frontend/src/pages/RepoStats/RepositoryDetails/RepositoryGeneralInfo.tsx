@@ -1,5 +1,4 @@
 import { Card } from "@/components/Common";
-import { Typography } from "@material-tailwind/react";
 import { downloadRepository } from "@/features/repositories/services/repositories";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { RepositoryInfo } from "@/types/repository";
@@ -64,11 +63,9 @@ const RepositoryGeneralInfo = ({ details }: { details: RepositoryInfo | null }) 
 };
 
 const Property = ({ title, value }: { title: string; value: string }) => (
-  <div className="flex px-3">
-    <Typography variant="h6" className="mr-2">
-      {title}:
-    </Typography>
-    <Typography>{value}</Typography>
+  <div className="px-3 mb-1">
+    <span className="font-bold">{title}:</span>
+    <span className="ml-1 break-words">{value}</span>
   </div>
 );
 

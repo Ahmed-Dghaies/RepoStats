@@ -1,15 +1,12 @@
-import { repositoryHasDependenciesFile } from "@/features/repositories/services/repositories";
-import { RepositoryInfo } from "@/types/repository";
-import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-const Sections = ({ repositoryDetails }: { repositoryDetails: RepositoryInfo }) => {
+const Sections = () => {
   const location = useLocation();
   const pathParts = location.pathname.split("/").filter(Boolean);
   const currentSection = pathParts[pathParts.length - 1] ?? "details";
   const navigate = useNavigate();
   const { owner, repository } = useParams();
-  const [displayedSectionsList, setDisplayedSectionsList] = useState([
+  const displayedSectionsList = [
     {
       name: "General info",
       url: "details",
@@ -18,24 +15,8 @@ const Sections = ({ repositoryDetails }: { repositoryDetails: RepositoryInfo }) 
       name: "Readme",
       url: "readme",
     },
-  ]);
-
-  useEffect(() => {
-    const checkForDependenciesFile = async () => {
-      const alreadyAdded = displayedSectionsList.some(({ url }) => url === "dependencies");
-      if (alreadyAdded) return;
-      const hasDependenciesFile = await repositoryHasDependenciesFile(repositoryDetails);
-
-      if (hasDependenciesFile) {
-        setDisplayedSectionsList((prev) => {
-          if (prev.some(({ url }) => url === "dependencies")) return prev;
-          return [...prev, { name: "Dependencies", url: "dependencies" }];
-        });
-      }
-    };
-
-    checkForDependenciesFile();
-  }, [repositoryDetails, displayedSectionsList]);
+    { name: "Dependencies", url: "dependencies" },
+  ];
 
   function handleSectionClick(url: string) {
     navigate(`/repository/${owner}/${repository}/${url}`);

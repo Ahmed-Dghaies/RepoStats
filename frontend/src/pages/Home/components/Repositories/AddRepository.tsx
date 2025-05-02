@@ -13,11 +13,11 @@ import TextInput from "@/components/Fields/TextInput";
 import { extractRepositoryDetailsFromUrl } from "@/utils/general/url";
 import { fetchRepositoryDetails } from "@/features/repositories/services/repositories";
 import { RepositoryInfo } from "@/types/repository";
-import { Loading } from "@/components/Common";
 import { refreshRepositories } from "@/features/repositories/reducers/repositoriesReducer";
 import { useAppDispatch } from "@/hooks";
 import RepositoryDetails from "./RepositoryDetails";
 import { NewRepositoryDetails } from "./types";
+import { Loading } from "@/components/Common";
 
 const AddRepository = ({
   closeModal,
