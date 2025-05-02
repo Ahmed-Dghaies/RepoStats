@@ -1,5 +1,5 @@
-import avatar from "@/assets/images/avatar.svg";
-import notFound from "@/assets/images/not-found.svg";
+import avatar from "./images/avatar.svg";
+import notFound from "./images/not-found.svg";
 import { Button } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 
