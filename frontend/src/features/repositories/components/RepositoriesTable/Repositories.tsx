@@ -1,18 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Card } from "@/components/Common";
-import { useAppDispatch, useAppSelector } from "@/hooks";
 import { Repository } from "@/types/repository";
 import ReactModal from "react-modal";
 import AddRepository from "./AddRepository";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import ReposTable from "./ReposTable";
-import { refreshRepositories } from "@/features/repositories/reducers/repositoriesReducer";
+import useRepositories from "../../hooks/useRepositories";
 
-const Repositories = () => {
+const RepositoriesTable = () => {
   const [filterValue, setFilterValue] = useState<string>("");
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const originalRepositories = useAppSelector((state) => state.repositories.repositoriesList);
-  const dispatch = useAppDispatch();
+  const originalRepositories: Repository[] = useRepositories();
 
   const displayedRepositories: Repository[] = useMemo(
     () =>
@@ -21,10 +19,6 @@ const Repositories = () => {
       ),
     [filterValue, originalRepositories]
   );
-
-  useEffect(() => {
-    dispatch(refreshRepositories());
-  }, [dispatch]);
 
   return (
     <>
@@ -58,4 +52,4 @@ const Repositories = () => {
   );
 };
 
-export default Repositories;
+export default RepositoriesTable;

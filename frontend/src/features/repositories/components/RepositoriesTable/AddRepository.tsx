@@ -13,8 +13,6 @@ import TextInput from "@/components/Fields/TextInput";
 import { extractRepositoryDetailsFromUrl } from "@/utils/general/url";
 import { fetchRepositoryDetails } from "@/features/repositories/services/repositories";
 import { RepositoryInfo } from "@/types/repository";
-import { refreshRepositories } from "@/features/repositories/reducers/repositoriesReducer";
-import { useAppDispatch } from "@/hooks";
 import RepositoryDetails from "./RepositoryDetails";
 import { NewRepositoryDetails } from "./types";
 import { Loading } from "@/components/Common";
@@ -39,7 +37,6 @@ const AddRepository = ({
     dependencyFile: null,
     readme: null,
   };
-  const dispatch = useAppDispatch();
   const [repositoryDetails, setRepositoryDetails] = useState<NewRepositoryDetails>({
     ...defaultRepositoryDetails,
   });
@@ -123,8 +120,9 @@ const AddRepository = ({
       lastUpdated: new Date().toISOString(),
     };
     existingRepositories.push(newRepository);
-    localStorage.setItem("repositories", JSON.stringify(existingRepositories));
-    dispatch(refreshRepositories());
+    const newRepositories = JSON.stringify(existingRepositories);
+    localStorage.setItem("repositories", newRepositories);
+    window.dispatchEvent(new CustomEvent("repositoriesUpdated", { detail: existingRepositories }));
     closeModal();
   }
 
