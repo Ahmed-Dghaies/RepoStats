@@ -3,13 +3,13 @@ import useValidateRepository from "@/hooks/useValidateRepository";
 import { useEffect, useState } from "react";
 import { RepositoryInfo } from "@/types/repository";
 import { fetchRepositoryDetails } from "@/features/repositories/services/repositories";
-import Readme from "../Readme";
+import Readme from "@/features/repositories/components/Readme";
 import RepositoryTags from "./RepositoryTags";
 import Sections from "./Sections";
-import Dependencies from "../Dependencies";
-import RepositoryDetails from "../RepositoryDetails";
+import Dependencies from "@/features/repositories/components/Dependencies";
+import RepositoryCards from "@/features/repositories/components/RepositoryCards";
 
-const StatsContainer = () => {
+const DetailsContainer = () => {
   const { owner, repository } = useParams();
   useValidateRepository({ owner, repository });
 
@@ -36,7 +36,7 @@ const StatsContainer = () => {
         <Routes>
           <Route
             path="details"
-            element={<RepositoryDetails repositoryDetails={repositoryDetails} />}
+            element={<RepositoryCards repositoryDetails={repositoryDetails} />}
           />
           <Route path="readme" element={<Readme repositoryDetails={repositoryDetails} />} />
           <Route
@@ -50,4 +50,4 @@ const StatsContainer = () => {
   );
 };
 
-export default StatsContainer;
+export default DetailsContainer;

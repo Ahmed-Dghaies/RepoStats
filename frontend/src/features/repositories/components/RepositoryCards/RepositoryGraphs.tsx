@@ -1,11 +1,11 @@
 import LineGraph from "@/components/Graphs/LineChart";
-import useRepositoryStats from "../hooks/useRepositoryStats";
+import useRepositoryStats from "@/features/repositories/hooks/useRepositoryStats";
 import { Repository } from "@/types/repository";
 import DonutChart from "@/components/Graphs/DonutChart";
-import useRepositoryHeatMap from "../hooks/useRepositoryHeatMap";
+import useRepositoryHeatMap from "@/features/repositories/hooks/useRepositoryHeatMap";
 import HeatMapChart from "@/components/Graphs/HeatMapChart";
 import PullRequestsTable from "./PullRequestsTable";
-import useRepositoryPullRequests from "../hooks/useRepositoryPullRequests";
+import useRepositoryPullRequests from "@/features/repositories/hooks/useRepositoryPullRequests";
 
 const RepositoryGraphs = ({ owner, repository }: Partial<Repository>) => {
   // TODO: Add a loading state

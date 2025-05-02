@@ -10,7 +10,7 @@ import Navbar from "@/components/Navbar";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import { Tooltip } from "react-tooltip";
-import RepoStats from "./pages/RepoStats";
+import RepositoryDetails from "./pages/RepositoryDetails";
 
 const App: React.FC = () => {
   function MultiRoute(el: JSX.Element, paths: string[]): JSX.Element[] {
@@ -23,7 +23,7 @@ const App: React.FC = () => {
       <div className="flex-grow overflow-y-auto">
         <Routes>
           {MultiRoute(<Home />, ["/", "/home"])}
-          <Route path="/repository/:owner/:repository/*" element={<RepoStats />} />
+          <Route path="/repository/:owner/:repository/*" element={<RepositoryDetails />} />
           {MultiRoute(<NotFound />, ["/404", "*"])}
         </Routes>
         <Tooltip id="global-tooltip" className="z-50 tooltip-container" />
