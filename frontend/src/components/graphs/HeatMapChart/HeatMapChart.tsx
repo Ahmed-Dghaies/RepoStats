@@ -51,7 +51,7 @@ const HeatMapChart = ({
         </div>
         <div>
           <div className="font-semibold text-xl">{title}</div>
-          <div color="gray" className="max-w-sm font-normal">
+          <div color="gray" className="font-normal">
             {description ?? ""}
           </div>
         </div>

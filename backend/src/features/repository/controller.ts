@@ -225,6 +225,8 @@ export class RepositoryController {
         string | null
       ];
 
+      console.log(details);
+
       res.json({
         name: details.name,
         fullName: details.full_name,
@@ -246,6 +248,8 @@ export class RepositoryController {
             : null,
           nbReleases: releases.nbReleases,
         },
+        forkCount: details.forks_count,
+        watchersCount: details.watchers_count,
         size: formatRepositorySize(details.size),
         languages: languages ?? {},
         openIssues: details.open_issues_count,

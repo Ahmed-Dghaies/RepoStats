@@ -28,6 +28,8 @@ export interface RepositoryInfo {
   languages: Record<string, number>;
   size: string;
   stars: number;
+  forkCount: number;
+  watchersCount: number;
   license: string;
   createdAt: string;
   updatedAt: string;

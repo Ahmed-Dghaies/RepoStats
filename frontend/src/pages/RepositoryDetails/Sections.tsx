@@ -23,32 +23,24 @@ const Sections = () => {
   }
 
   return (
-    <div className="flex mt-2 ">
-      {displayedSectionsList.map(({ name, url }, index) => (
-        <div
-          key={url}
-          tabIndex={index}
-          className={`outline-none p-2 px-4 rounded-t-lg transition-all duration-200 ${
-            currentSection === url
-              ? "bg-gray-100 shadow-md shadow-gray-400"
-              : "bg-gray-400 shadow-inner shadow-gray-600"
-          } hover:bg-gray-200 hover:shadow-md hover:shadow-gray-500 cursor-pointer`}
-          style={{
-            boxShadow:
+    <div className="sections-wrapper sticky top-0 z-20 py-3 mb-2 px-4 md:px-[10%] backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+      <div className="flex gap-6">
+        {displayedSectionsList.map(({ name, url }, index) => (
+          <div
+            key={url}
+            tabIndex={index}
+            onClick={() => handleSectionClick(url)}
+            onKeyDown={(e) => e.key === "Enter" && handleSectionClick(url)}
+            className={`select-none text-sm md:text-base font-medium px-1 pb-1.5 cursor-pointer transition-all duration-200 ${
               currentSection === url
-                ? "2px -2px 5px rgba(0, 0, 0, 0.2)"
-                : "inset 2px -2px 5px rgba(0, 0, 0, 0.3)",
-          }}
-          onClick={() => handleSectionClick(url)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSectionClick(url);
-            }
-          }}
-        >
-          {name}
-        </div>
-      ))}
+                ? "text-black dark:text-white border-b-2 border-blue-500"
+                : "text-gray-800 dark:text-gray-400 hover:text-black dark:hover:text-gray-200"
+            }`}
+          >
+            {name}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

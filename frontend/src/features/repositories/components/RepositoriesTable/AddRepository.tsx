@@ -1,4 +1,4 @@
-import { faCaretDown, faClose, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { faCaretDown, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Collapsible from "react-collapsible";
 import { useEffect, useState } from "react";
@@ -10,8 +10,7 @@ import { NewRepositoryDetails } from "./types";
 import { Loading } from "@/components/Common";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@/components/ui/dialog";
+import { DialogContent, DialogFooter, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 const AddRepository = ({
@@ -40,6 +39,10 @@ const AddRepository = ({
 
   useEffect(() => {
     changeUrl(initialUrl);
+
+    return () => {
+      resetDetails();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialUrl]);
 
@@ -140,18 +143,11 @@ const AddRepository = ({
   );
 
   return (
-    <Dialog>
+    <>
       <DialogContent className="overflow-y-auto">
         <DialogHeader className="justify-between">
           <div className="text-lg font-medium">Add Repository</div>
-          <FontAwesomeIcon
-            icon={faClose}
-            color="gray"
-            className="hover:cursor-pointer"
-            onClick={closeModal}
-          />
         </DialogHeader>
-
         <div className="space-y-2">
           <div className="relative">
             <Input
@@ -159,23 +155,25 @@ const AddRepository = ({
               placeholder="Enter GitHub repository URL (e.g., https://github.com/vercel/next.js)"
               value={repositoryUrl}
               onChange={(e) => changeUrl(e.target.value)}
-              className="pl-10"
+              className={`pl-10 !ring-2 ${errorMessage ? "!ring-red-500" : ""}`}
             />
             <FontAwesomeIcon
               icon={faGithub}
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5"
             />
           </div>
-          {errorMessage && (
-            <Alert variant="destructive">
+          {errorMessage && !detailsLoading && (
+            <div className="flex items-center gap-2 text-red-500">
               <FontAwesomeIcon icon={faExclamationTriangle} className="h-4 w-4" />
-              <AlertDescription>{errorMessage}</AlertDescription>
-            </Alert>
+              <div>{errorMessage}</div>
+            </div>
           )}
         </div>
-        <Collapsible trigger={toggleTitle}>
-          <RepositoryDetails repositoryDetails={repositoryDetails} loading={detailsLoading} />
-        </Collapsible>
+        {(detailsLoading || repositoryDetails.isValid) && (
+          <Collapsible trigger={toggleTitle}>
+            <RepositoryDetails repositoryDetails={repositoryDetails} loading={detailsLoading} />
+          </Collapsible>
+        )}
 
         <DialogFooter className="justify-center">
           <Button
@@ -188,7 +186,7 @@ const AddRepository = ({
           </Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
+    </>
   );
 };
 

@@ -27,12 +27,12 @@ const DetailsContainer = () => {
     owner &&
     repository &&
     repositoryDetails && (
-      <div className="flex flex-col h-full max-h-full overflow-hidden">
-        <div className="width-full bg-gradient-to-b to-gray-100 from-gray-400 flex flex-col gap-3 p-4 pb-0 mb-3 md:px-[10%]">
+      <div className="flex flex-col ">
+        <div className="width-full  flex flex-col gap-3 p-4 pb-0 mb-3 md:px-[10%]">
           <div className="text-xl">{`${repositoryDetails.fullName}`}</div>
           <RepositoryTags repositoryDetails={repositoryDetails} />
-          <Sections />
         </div>
+        <Sections />
         <Routes>
           <Route
             path="details"

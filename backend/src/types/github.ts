@@ -7,6 +7,7 @@ export interface GitHubPR {
   merged_at: string | null;
   html_url: string;
   number: number;
+  state: string;
 }
 
 export interface GitHubCommit {

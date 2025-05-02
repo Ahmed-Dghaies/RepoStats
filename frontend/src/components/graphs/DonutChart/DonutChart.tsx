@@ -59,7 +59,7 @@ const DonutChart = ({ title, data, labels, className, description }: DonutChartP
         </div>
         <div>
           <div className="font-semibold text-xl">{title}</div>
-          <div className="max-w-sm font-normal">{description ?? ""}</div>
+          <div className="font-normal">{description ?? ""}</div>
         </div>
       </CardHeader>
       <CardContent className="p-2 px-2 pb-0">

@@ -32,10 +32,10 @@ const PullRequestsTable = ({
         </div>
         <div>
           <div className="font-semibold text-xl">{title}</div>
-          <div className="max-w-sm font-normal">{description ?? ""}</div>
+          <div className="font-normal">{description ?? ""}</div>
         </div>
       </CardHeader>
-      <CardContent className="p-2 px-3 pb-0 flex flex-col flex-grow gap-2 h-[360px]">
+      <CardContent className="p-2 px-3 pb-0 flex flex-col flex-grow gap-2 overflow-hidden">
         <LoadingOverlay
           active={isLoading}
           spinner

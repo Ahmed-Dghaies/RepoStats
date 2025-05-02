@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
 import { Card } from "@/components/Common";
 import { Repository } from "@/types/repository";
-import ReactModal from "react-modal";
 import AddRepository from "./AddRepository";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import ReposTable from "./ReposTable";
 import useRepositories from "../../hooks/useRepositories";
+import { Dialog } from "@/components/ui/dialog";
 
 const RepositoriesTable = () => {
   const [filterValue, setFilterValue] = useState<string>("");
@@ -22,13 +22,10 @@ const RepositoriesTable = () => {
 
   return (
     <>
-      <ReactModal
-        isOpen={modalIsOpen}
-        className="modal-content !w-2/3"
-        overlayClassName="modal-overlay"
-      >
-        <AddRepository closeModal={() => setModalIsOpen(false)} />{" "}
-      </ReactModal>
+      <Dialog open={modalIsOpen} onOpenChange={setModalIsOpen}>
+        <AddRepository closeModal={() => setModalIsOpen(false)} />
+      </Dialog>
+
       <Card
         title="Repositories"
         className="w-full lg:w-3/4"

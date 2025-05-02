@@ -32,13 +32,20 @@ const Readme = ({ repositoryDetails }: { repositoryDetails: RepositoryInfo }) =>
       {readMeContent === null ? (
         <p>Readme not found</p>
       ) : (
-        <MarkdownPreview
-          source={readMeContent}
-          style={{ padding: "20px", marginBottom: "50px", height: "fit-content", maxWidth: "100%" }}
-          wrapperElement={{
-            "data-color-mode": "light",
-          }}
-        />
+        <div className="w-full lg:w-2/3">
+          <MarkdownPreview
+            source={readMeContent}
+            style={{
+              padding: "20px",
+              marginBottom: "50px",
+              height: "fit-content",
+              maxWidth: "100%",
+            }}
+            wrapperElement={{
+              "data-color-mode": "light",
+            }}
+          />
+        </div>
       )}
     </div>
   );

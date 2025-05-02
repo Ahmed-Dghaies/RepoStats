@@ -4,11 +4,11 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import navBarStyles from "./Navbar.module.css";
 import { extractRepositoryDetailsFromUrl } from "@/utils/general/url";
-import ReactModal from "react-modal";
 import AddRepository from "@/features/repositories/components/RepositoriesTable/AddRepository";
-import { RepositoryInfo } from "@/types/repository";
+import { debounce } from "lodash";
 import { fetchRepositoryDetails } from "@/features/repositories/services/repositories";
 import { Input } from "@/components/ui/input";
+import { Dialog } from "@/components/ui/dialog";
 
 interface NavBarLink {
   name: string;
@@ -44,6 +44,18 @@ const Navbar: React.FC = () => {
     setExpanded(!expanded);
   }
 
+  // Create debounced version outside component
+  const debouncedFetchDetails = debounce(
+    async (extractedInfo: { organization: string; repository: string }) => {
+      const retrievedDetails = await fetchRepositoryDetails({
+        owner: extractedInfo.organization,
+        repository: extractedInfo.repository,
+      });
+      return retrievedDetails;
+    },
+    500 // 500ms delay
+  );
+
   /**
    * Handles changes to the repository URL input, validating the URL and opening a modal if the repository exists.
    *
@@ -52,43 +64,41 @@ const Navbar: React.FC = () => {
   async function handleUrlChange(value: string) {
     const extractedInfo = extractRepositoryDetailsFromUrl(value);
     setUrlIsValid(!!extractedInfo);
-
     setRepoUrl(value);
+
     if (extractedInfo) {
       setIsLoading(true);
-      const retrievedDetails: RepositoryInfo = await fetchRepositoryDetails({
-        owner: extractedInfo.organization,
-        repository: extractedInfo.repository,
-      });
-      if (retrievedDetails === null) {
-        setUrlIsValid(false);
-        return;
+      try {
+        const retrievedDetails = await debouncedFetchDetails(extractedInfo);
+
+        if (!retrievedDetails) {
+          setUrlIsValid(false);
+          return;
+        }
+
+        setModalIsOpen(true);
+      } finally {
+        setIsLoading(false);
       }
-      setModalIsOpen(true);
-      setIsLoading(false);
     }
   }
 
   return (
     <header className={`${navBarStyles.navbar} sticky top-0 z-10 lg:pr-1 lg:pl-1`}>
-      <ReactModal
-        isOpen={modalIsOpen}
-        className="modal-content !w-2/3"
-        overlayClassName="modal-overlay"
-      >
+      <Dialog open={modalIsOpen} onOpenChange={setModalIsOpen}>
         <AddRepository closeModal={() => setModalIsOpen(false)} initialUrl={repoUrl} />
-      </ReactModal>
+      </Dialog>
       <div className="flex items-center justify-between flex-1 h-[50px] text-[var(--navbar-font)] ml-4">
         <Link to="/home">RepoStats</Link>
       </div>
 
-      <div className="relative">
+      <div className="relative mr-3">
         <Input
           value={repoUrl}
           onChange={(e) => handleUrlChange(e.target.value)}
           placeholder="Repository URL ..."
           className={`pr-10 w-auto sm:w-[300px] max-w-[300px] ${
-            urlIsValid || repoUrl === "" ? "" : "!border-red-600"
+            urlIsValid || repoUrl === "" ? "" : "!ring-red-600"
           }`}
         />
         <FontAwesomeIcon
@@ -101,7 +111,9 @@ const Navbar: React.FC = () => {
       </button>
 
       <div
-        className={`w-full lg:flex lg:items-center lg:w-auto lg:mr-4 ${expanded ? "" : "hidden"}`}
+        className={`w-full lg:flex lg:items-center lg:w-auto z-30 lg:mr-4 ${
+          expanded ? "" : "hidden"
+        }`}
         id="menu"
       >
         <nav>
