@@ -6,7 +6,7 @@ import navBarStyles from "./Navbar.module.css";
 import TextInput from "../Fields/TextInput";
 import { extractRepositoryDetailsFromUrl } from "@/utils/general/url";
 import ReactModal from "react-modal";
-import AddRepository from "@/pages/Home/components/Repositories/AddRepository";
+import AddRepository from "@/features/repositories/components/RepositoriesTable/AddRepository";
 import { RepositoryInfo } from "@/types/repository";
 import { fetchRepositoryDetails } from "@/features/repositories/services/repositories";
 import LoadingDots from "../Common/Loading/LoadingDots";
