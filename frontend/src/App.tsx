@@ -11,6 +11,9 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import { Tooltip } from "react-tooltip";
 import RepositoryDetails from "./pages/RepositoryDetails";
+import Modal from "react-modal";
+
+Modal.setAppElement("body");
 
 const App: React.FC = () => {
   function MultiRoute(el: JSX.Element, paths: string[]): JSX.Element[] {
