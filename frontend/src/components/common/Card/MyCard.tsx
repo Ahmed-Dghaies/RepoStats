@@ -1,9 +1,9 @@
-import { Card, CardBody, CardHeader, Typography } from "@material-tailwind/react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import React from "react";
-import TextInput from "../../Fields/TextInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { Input } from "@/components/ui/input";
 
 interface ActionParams {
   icon: IconProp;
@@ -37,29 +37,27 @@ const MyCard = ({
   children,
 }: MyCardProps) => {
   return (
-    <Card className={className}>
-      <CardHeader
-        variant="gradient"
-        color="gray"
-        className="mb-4 p-6 flex justify-between flex-shrink-0"
-      >
-        <Typography variant="h6" color="white" className="flex items-center pr-2">
-          <div>{title}</div>
-        </Typography>
+    <Card className={`${className} py-3 gap-6`}>
+      <CardHeader className="flex justify-between items-center">
+        <CardTitle className="pr-2 text-xl">{title}</CardTitle>
         <div className="flex gap-3">
           {searchParams && (
-            <TextInput
-              value={searchParams.value}
-              onChange={(value) => searchParams.onChange(value)}
-              icon={<FontAwesomeIcon icon={faSearch} />}
-              placeholder={searchParams.placeholder}
-              className={searchParams.className ?? "w-full"}
-              containerClassName={searchParams.containerClassName ?? ""}
-            />
+            <div className="relative">
+              <Input
+                value={searchParams.value}
+                onChange={(e) => searchParams.onChange(e.target.value)}
+                placeholder={searchParams.placeholder}
+                className={`pr-10 ${searchParams.className ?? "w-full"}`}
+              />
+              <FontAwesomeIcon
+                icon={faSearch}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 h-5 w-5"
+              />
+            </div>
           )}
           {actionParams && (
             <div
-              className="h-full flex items-center"
+              className="flex items-center"
               data-tooltip-content={actionParams.tip}
               data-tooltip-id="global-tooltip"
             >
@@ -72,7 +70,7 @@ const MyCard = ({
           )}
         </div>
       </CardHeader>
-      <CardBody className={bodyClassName}>{children ?? ""}</CardBody>
+      <CardContent className={bodyClassName}>{children ?? ""}</CardContent>
     </Card>
   );
 };

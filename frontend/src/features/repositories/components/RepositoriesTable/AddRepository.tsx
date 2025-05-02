@@ -1,21 +1,18 @@
-import { faCaretDown, faClose } from "@fortawesome/free-solid-svg-icons";
+import { faCaretDown, faClose, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Collapsible from "react-collapsible";
-import {
-  Button,
-  DialogBody,
-  DialogFooter,
-  DialogHeader,
-  Typography,
-} from "@material-tailwind/react";
 import { useEffect, useState } from "react";
-import TextInput from "@/components/Fields/TextInput";
 import { extractRepositoryDetailsFromUrl } from "@/utils/general/url";
 import { fetchRepositoryDetails } from "@/features/repositories/services/repositories";
 import { RepositoryInfo } from "@/types/repository";
 import RepositoryDetails from "./RepositoryDetails";
 import { NewRepositoryDetails } from "./types";
 import { Loading } from "@/components/Common";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Dialog, DialogContent, DialogFooter, DialogHeader } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 const AddRepository = ({
   closeModal,
@@ -143,42 +140,55 @@ const AddRepository = ({
   );
 
   return (
-    <>
-      <DialogHeader className="justify-between">
-        <Typography variant="h5" color="blue-gray">
-          Add Repository
-        </Typography>
-        <FontAwesomeIcon
-          icon={faClose}
-          color="gray"
-          className="hover:cursor-pointer"
-          onClick={closeModal}
-        />
-      </DialogHeader>
-      <DialogBody className="overflow-y-scroll">
-        <TextInput
-          value={repositoryUrl}
-          onChange={changeUrl}
-          placeholder="Repository URL ..."
-          containerClassName="min-w-[400px]"
-          label="Repository URL"
-          errorMessage={errorMessage}
-        />
+    <Dialog>
+      <DialogContent className="overflow-y-auto">
+        <DialogHeader className="justify-between">
+          <div className="text-lg font-medium">Add Repository</div>
+          <FontAwesomeIcon
+            icon={faClose}
+            color="gray"
+            className="hover:cursor-pointer"
+            onClick={closeModal}
+          />
+        </DialogHeader>
+
+        <div className="space-y-2">
+          <div className="relative">
+            <Input
+              type="text"
+              placeholder="Enter GitHub repository URL (e.g., https://github.com/vercel/next.js)"
+              value={repositoryUrl}
+              onChange={(e) => changeUrl(e.target.value)}
+              className="pl-10"
+            />
+            <FontAwesomeIcon
+              icon={faGithub}
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5"
+            />
+          </div>
+          {errorMessage && (
+            <Alert variant="destructive">
+              <FontAwesomeIcon icon={faExclamationTriangle} className="h-4 w-4" />
+              <AlertDescription>{errorMessage}</AlertDescription>
+            </Alert>
+          )}
+        </div>
         <Collapsible trigger={toggleTitle}>
           <RepositoryDetails repositoryDetails={repositoryDetails} loading={detailsLoading} />
         </Collapsible>
-      </DialogBody>
-      <DialogFooter className="justify-center">
-        <Button
-          color="gray"
-          className="w-full lg:max-w-[15rem] hover:cursor-pointer"
-          disabled={!repositoryDetails.isValid}
-          onClick={handleAddClick}
-        >
-          Add
-        </Button>
-      </DialogFooter>
-    </>
+
+        <DialogFooter className="justify-center">
+          <Button
+            color="gray"
+            className="w-full lg:max-w-[15rem] hover:cursor-pointer"
+            disabled={!repositoryDetails.isValid}
+            onClick={handleAddClick}
+          >
+            Add
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 

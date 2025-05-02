@@ -1,4 +1,4 @@
-import { Avatar, Typography } from "@material-tailwind/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const UserDisplay = ({
   image,
@@ -13,16 +13,13 @@ const UserDisplay = ({
 }) => {
   return (
     <div className={`flex items-center gap-x-3 ${className}`}>
-      <Avatar size="sm" src={image} alt={name} />
+      <Avatar className="w-sm">
+        <AvatarImage src={image} />
+        <AvatarFallback>name</AvatarFallback>
+      </Avatar>
       <div>
-        <Typography color="blue-gray" variant="h6">
-          {name}
-        </Typography>
-        {email && (
-          <Typography variant="small" color="gray">
-            {email}
-          </Typography>
-        )}
+        <div className="font-bold text-lg text-slate-800">{name}</div>
+        {email && <div className="text-sm text-slate-600">{email}</div>}
       </div>
     </div>
   );

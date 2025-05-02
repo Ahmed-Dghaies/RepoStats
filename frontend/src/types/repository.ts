@@ -51,5 +51,6 @@ export interface PullRequest {
   createdAt: string;
   mergedAt: string | null;
   durationInHours: number;
+  state: string;
   url: string;
 }

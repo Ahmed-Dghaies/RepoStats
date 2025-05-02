@@ -31,7 +31,7 @@ const RepositoriesTable = () => {
       </ReactModal>
       <Card
         title="Repositories"
-        className="w-full lg:w-3/4 mt-6"
+        className="w-full lg:w-3/4"
         bodyClassName="overflow-hidden px-0 pt-0 pb-2 h-[400px] max-h-[400px] mx-2 flex flex-col"
         searchParams={{
           value: filterValue,

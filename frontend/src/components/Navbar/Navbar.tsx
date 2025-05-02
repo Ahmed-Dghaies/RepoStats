@@ -3,13 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import navBarStyles from "./Navbar.module.css";
-import TextInput from "../Fields/TextInput";
 import { extractRepositoryDetailsFromUrl } from "@/utils/general/url";
 import ReactModal from "react-modal";
 import AddRepository from "@/features/repositories/components/RepositoriesTable/AddRepository";
 import { RepositoryInfo } from "@/types/repository";
 import { fetchRepositoryDetails } from "@/features/repositories/services/repositories";
-import LoadingDots from "../Common/Loading/LoadingDots";
+import { Input } from "@/components/ui/input";
 
 interface NavBarLink {
   name: string;
@@ -83,16 +82,20 @@ const Navbar: React.FC = () => {
         <Link to="/home">RepoStats</Link>
       </div>
 
-      <TextInput
-        value={repoUrl}
-        onChange={handleUrlChange}
-        icon={<LoadingDots loading={isLoading} content={<FontAwesomeIcon icon={faSearch} />} />}
-        placeholder="Repository URL ..."
-        className={`w-auto sm:w-[300px] max-w-[300px] ${
-          urlIsValid || repoUrl === "" ? "" : "!border-red-600"
-        }`}
-        containerClassName="mr-2 !h-9 !w-auto sm:w-[300px] max-w-[300px]"
-      />
+      <div className="relative">
+        <Input
+          value={repoUrl}
+          onChange={(e) => handleUrlChange(e.target.value)}
+          placeholder="Repository URL ..."
+          className={`pr-10 w-auto sm:w-[300px] max-w-[300px] ${
+            urlIsValid || repoUrl === "" ? "" : "!border-red-600"
+          }`}
+        />
+        <FontAwesomeIcon
+          icon={isLoading ? "spinner" : faSearch}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 h-5 w-5"
+        />
+      </div>
       <button className="block pointer-cursor lg:hidden mr-4" onClick={toggleExpanded}>
         <FontAwesomeIcon icon={faBars} className="hover:cursor-pointer text-[var(--navbar-font)]" />
       </button>
