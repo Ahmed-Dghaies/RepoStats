@@ -7,12 +7,13 @@ const UnderConstruction = ({ content }: { content: string }) => {
       <div className="hidden sm:block">
         <img
           src={constructionWorker}
+          alt="Construction worker"
           className="w-3xs min-w-3xs md:w-2xs lg:w-xs md:min-w-2xs lg:min-w-xs "
         />
       </div>
       <div className="flex gap-3 flex-col">
         <div className="flex justify-center">
-          <img src={underConstructionSign} className="w-sm" />
+          <img src={underConstructionSign} alt="Under construction sign" className="w-sm" />
         </div>
         <div className="flex flex-col">
           <div className="text-2xl font-bold text-center">Work in progress: {content}</div>

@@ -8,11 +8,11 @@ const NotFound = () => {
     <div className="w-full overflow-y-auto flex justify-center items-center p-5">
       <div className="flex flex-col gap-3 lg:w-2/3">
         <div className="flex justify-center">
-          <img src={notFound} className="w-sm" />
+          <img src={notFound} alt="Page not found illustration" className="w-sm" />
         </div>
         <div className="flex gap-3">
           <div className="hidden sm:block">
-            <img src={avatar} className="w-xs min-w-xs" />
+            <img src={avatar} alt="Avatar illustration" className="w-xs min-w-xs" />
           </div>
           <div className="flex flex-col">
             <div className="text-2xl font-bold text-justify">
