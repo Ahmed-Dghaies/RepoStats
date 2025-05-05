@@ -33,8 +33,8 @@ const RepositoryGeneralInfo = ({ details }: { details: RepositoryInfo | null }) 
         onClick: handleDownload,
         tip: "Download repository (zip)",
       }}
-      className="w-full sm:w-1/2 flex flex-col h-[300px] mt-6"
-      bodyClassName="p-2 overflow-y-auto"
+      className="w-full sm:w-1/2 flex flex-col h-[300px] py-4"
+      bodyClassName="pr-2 pl-3 overflow-y-auto"
     >
       {details !== null && (
         <>

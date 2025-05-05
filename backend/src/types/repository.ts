@@ -15,4 +15,6 @@ export interface GithubRepositoryDetails {
   open_issues_count: number;
   created_at: string;
   updated_at: string;
+  forks_count: number;
+  watchers_count: number;
 }

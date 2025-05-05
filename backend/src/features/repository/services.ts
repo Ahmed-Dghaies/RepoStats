@@ -59,6 +59,7 @@ export class RepositoryServices {
       createdAt: string;
       mergedAt: string;
       durationInHours: number;
+      state: string;
       url: string;
     }
 
@@ -73,6 +74,7 @@ export class RepositoryServices {
         createdAt: pr.created_at,
         mergedAt: pr.merged_at,
         durationInHours: parseFloat(durationInHours.toFixed(2)),
+        state: pr.state,
         url: pr.html_url,
       };
     });

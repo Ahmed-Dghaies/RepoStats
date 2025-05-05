@@ -28,6 +28,8 @@ export interface RepositoryInfo {
   languages: Record<string, number>;
   size: string;
   stars: number;
+  forkCount: number;
+  watchersCount: number;
   license: string;
   createdAt: string;
   updatedAt: string;
@@ -51,5 +53,6 @@ export interface PullRequest {
   createdAt: string;
   mergedAt: string | null;
   durationInHours: number;
+  state: string;
   url: string;
 }

@@ -1,12 +1,12 @@
 import LoadingOverlay from "@achmadk/react-loading-overlay";
 import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Card, CardBody, CardHeader, Typography } from "@material-tailwind/react";
 import CalendarHeatmap, {
   ReactCalendarHeatmapValue,
   TooltipDataAttrs,
 } from "react-calendar-heatmap";
 import { Tooltip as ReactToolTip } from "react-tooltip";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 interface HeatMapEvent {
   date: string;
@@ -41,10 +41,8 @@ const HeatMapChart = ({
   };
 
   return (
-    <Card className={`heatmap-chart ${className}`}>
+    <Card className={`heatmap-chart ${className} max-h-[400px]`}>
       <CardHeader
-        floated={false}
-        shadow={false}
         color="transparent"
         className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"
       >
@@ -52,15 +50,11 @@ const HeatMapChart = ({
           <FontAwesomeIcon icon={faLayerGroup} className="h-6 w-6" />
         </div>
         <div>
-          <Typography variant="h6" color="blue-gray">
-            {title}
-          </Typography>
-          <Typography variant="small" color="gray" className="max-w-sm font-normal">
-            {description ?? ""}
-          </Typography>
+          <div className="font-semibold text-xl">{title}</div>
+          <div className="font-normal">{description ?? ""}</div>
         </div>
       </CardHeader>
-      <CardBody className="p-2 px-3 pb-0 flex flex-col justify-center flex-grow gap-2">
+      <CardContent className="p-2 px-3 pb-0 flex flex-col justify-center flex-grow gap-2">
         <LoadingOverlay
           active={isLoading}
           spinner
@@ -81,7 +75,7 @@ const HeatMapChart = ({
             }}
           />
           <div className="flex justify-end w-full items-center gap-3">
-            <Typography className="font-small">Less</Typography>
+            <div className="font-small">Less</div>
             <div className="flex gap-1 heatmap-legend">
               <HeatMapSquare className="color-empty" />
               <HeatMapSquare className="color-scale-1" />
@@ -90,10 +84,10 @@ const HeatMapChart = ({
               <HeatMapSquare className="color-scale-4" />
               <HeatMapSquare className="color-scale-5" />
             </div>
-            <Typography className="font-small">More</Typography>
+            <div className="font-small">More</div>
           </div>
         </LoadingOverlay>
-      </CardBody>
+      </CardContent>
       <ReactToolTip id="calendar-heatmap-tooltip" />
     </Card>
   );

@@ -20,7 +20,7 @@ const RepositoryGraphs = ({ owner, repository }: Partial<Repository>) => {
   });
 
   return (
-    <>
+    <div className="flex flex-col gap-3">
       <div className="flex flex-col lg:flex-row gap-3">
         <div className="flex flex-col gap-3 w-full md:flex-row lg:w-3/4">
           <DonutChart
@@ -43,7 +43,7 @@ const RepositoryGraphs = ({ owner, repository }: Partial<Repository>) => {
         <PullRequestsTable
           pullRequestsDetails={pullRequestsDetails}
           isLoading={prIsLoading}
-          className="w-full lg:w-1/3 2xl:w-1/4"
+          className="w-full lg:w-1/3 2xl:w-1/4 max-h-[400px]"
           title="Pull Requests"
           description="Recently merged pull requests details"
         />
@@ -85,7 +85,7 @@ const RepositoryGraphs = ({ owner, repository }: Partial<Repository>) => {
           }}
         />
       </div>
-    </>
+    </div>
   );
 };
 

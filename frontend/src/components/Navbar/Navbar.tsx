@@ -3,13 +3,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import navBarStyles from "./Navbar.module.css";
-import TextInput from "../Fields/TextInput";
 import { extractRepositoryDetailsFromUrl } from "@/utils/general/url";
-import ReactModal from "react-modal";
 import AddRepository from "@/features/repositories/components/RepositoriesTable/AddRepository";
-import { RepositoryInfo } from "@/types/repository";
+import { debounce } from "lodash";
 import { fetchRepositoryDetails } from "@/features/repositories/services/repositories";
-import LoadingDots from "../Common/Loading/LoadingDots";
+import { Input } from "@/components/ui/input";
+import { Dialog } from "@/components/ui/dialog";
 
 interface NavBarLink {
   name: string;
@@ -45,6 +44,18 @@ const Navbar: React.FC = () => {
     setExpanded(!expanded);
   }
 
+  // Create debounced version outside component
+  const debouncedFetchDetails = debounce(
+    async (extractedInfo: { organization: string; repository: string }) => {
+      const retrievedDetails = await fetchRepositoryDetails({
+        owner: extractedInfo.organization,
+        repository: extractedInfo.repository,
+      });
+      return retrievedDetails;
+    },
+    500 // 500ms delay
+  );
+
   /**
    * Handles changes to the repository URL input, validating the URL and opening a modal if the repository exists.
    *
@@ -53,52 +64,56 @@ const Navbar: React.FC = () => {
   async function handleUrlChange(value: string) {
     const extractedInfo = extractRepositoryDetailsFromUrl(value);
     setUrlIsValid(!!extractedInfo);
-
     setRepoUrl(value);
+
     if (extractedInfo) {
       setIsLoading(true);
-      const retrievedDetails: RepositoryInfo = await fetchRepositoryDetails({
-        owner: extractedInfo.organization,
-        repository: extractedInfo.repository,
-      });
-      if (retrievedDetails === null) {
-        setUrlIsValid(false);
-        return;
+      try {
+        const retrievedDetails = await debouncedFetchDetails(extractedInfo);
+
+        if (!retrievedDetails) {
+          setUrlIsValid(false);
+          return;
+        }
+
+        setModalIsOpen(true);
+      } finally {
+        setIsLoading(false);
       }
-      setModalIsOpen(true);
-      setIsLoading(false);
     }
   }
 
   return (
     <header className={`${navBarStyles.navbar} sticky top-0 z-10 lg:pr-1 lg:pl-1`}>
-      <ReactModal
-        isOpen={modalIsOpen}
-        className="modal-content !w-2/3"
-        overlayClassName="modal-overlay"
-      >
+      <Dialog open={modalIsOpen} onOpenChange={setModalIsOpen}>
         <AddRepository closeModal={() => setModalIsOpen(false)} initialUrl={repoUrl} />
-      </ReactModal>
+      </Dialog>
       <div className="flex items-center justify-between flex-1 h-[50px] text-[var(--navbar-font)] ml-4">
         <Link to="/home">RepoStats</Link>
       </div>
 
-      <TextInput
-        value={repoUrl}
-        onChange={handleUrlChange}
-        icon={<LoadingDots loading={isLoading} content={<FontAwesomeIcon icon={faSearch} />} />}
-        placeholder="Repository URL ..."
-        className={`w-auto sm:w-[300px] max-w-[300px] ${
-          urlIsValid || repoUrl === "" ? "" : "!border-red-600"
-        }`}
-        containerClassName="mr-2 !h-9 !w-auto sm:w-[300px] max-w-[300px]"
-      />
+      <div className="relative mr-3">
+        <Input
+          value={repoUrl}
+          onChange={(e) => handleUrlChange(e.target.value)}
+          placeholder="Repository URL ..."
+          className={`pr-10 w-auto sm:w-[300px] max-w-[300px] ${
+            urlIsValid || repoUrl === "" ? "" : "!ring-red-600"
+          }`}
+        />
+        <FontAwesomeIcon
+          icon={isLoading ? "spinner" : faSearch}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 h-5 w-5"
+        />
+      </div>
       <button className="block pointer-cursor lg:hidden mr-4" onClick={toggleExpanded}>
         <FontAwesomeIcon icon={faBars} className="hover:cursor-pointer text-[var(--navbar-font)]" />
       </button>
 
       <div
-        className={`w-full lg:flex lg:items-center lg:w-auto lg:mr-4 ${expanded ? "" : "hidden"}`}
+        className={`w-full lg:flex lg:items-center lg:w-auto z-30 lg:mr-4 ${
+          expanded ? "" : "hidden"
+        }`}
         id="menu"
       >
         <nav>

@@ -1,9 +1,10 @@
 import { faLayerGroup } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Card, CardHeader, Typography, CardBody } from "@material-tailwind/react";
-import { PullRequestsDetails } from "../../../features/repositories/hooks/useRepositoryPullRequests";
+import { PullRequestsDetails } from "@/features/repositories/hooks/useRepositoryPullRequests";
 import { PullRequest } from "@/types/repository";
 import LoadingOverlay from "@achmadk/react-loading-overlay";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface PullRequestTableProps {
   pullRequestsDetails: PullRequestsDetails;
@@ -21,10 +22,8 @@ const PullRequestsTable = ({
   isLoading,
 }: PullRequestTableProps) => {
   return (
-    <Card className={className}>
+    <Card className={`${className} gap-3`}>
       <CardHeader
-        floated={false}
-        shadow={false}
         color="transparent"
         className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"
       >
@@ -32,22 +31,18 @@ const PullRequestsTable = ({
           <FontAwesomeIcon icon={faLayerGroup} className="h-6 w-6" />
         </div>
         <div>
-          <Typography variant="h6" color="blue-gray">
-            {title}
-          </Typography>
-          <Typography variant="small" color="gray" className="max-w-sm font-normal">
-            {description ?? ""}
-          </Typography>
+          <div className="font-semibold text-xl">{title}</div>
+          <div className="font-normal">{description ?? ""}</div>
         </div>
       </CardHeader>
-      <CardBody className="p-2 px-3 pb-0 flex flex-col flex-grow gap-2 h-[360px]">
+      <CardContent className="p-2 px-3 pb-0 flex flex-col flex-grow gap-2 overflow-hidden">
         <LoadingOverlay
           active={isLoading}
           spinner
           text="Loading repository source tree..."
           className="h-full w-full overflow-x-hidden pr-1"
         >
-          <div className="w-full flex gap-3">
+          <div className="w-full flex gap-3 mb-2">
             <div>Average time to merge:</div>
             <div>{displayTime(pullRequestsDetails.averageTimeToMergeHours)}</div>
           </div>
@@ -57,7 +52,7 @@ const PullRequestsTable = ({
             ))}
           </div>
         </LoadingOverlay>
-      </CardBody>
+      </CardContent>
     </Card>
   );
 };
@@ -68,17 +63,27 @@ interface PullRequestSkeletonProps {
 
 const PullRequestsTableSkeleton = ({ pullRequest }: PullRequestSkeletonProps) => {
   return (
-    <div className="w-full flex gap-3 border-t border-gray-200 py-2">
-      <a
-        href={pullRequest.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-500 hover:underline text-underline-offset-2"
-      >
-        #{pullRequest.number}
-      </a>
-      <div className="flex-1 overflow-hidden line-clamp-2 font-medium">{pullRequest.title}</div>
-      <div>{displayTime(pullRequest.durationInHours)}</div>
+    <div className="space-y-2 border-t border-gray-200 py-2">
+      <div>
+        <a
+          href={pullRequest.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-medium hover:underline"
+        >
+          {pullRequest.title}
+        </a>
+      </div>
+      <div className="flex items-center gap-2">
+        <Badge variant={pullRequest.mergedAt ? "secondary" : "default"}>{pullRequest.state}</Badge>
+        <span className="text-sm text-muted-foreground">
+          #{pullRequest.number} by {pullRequest.author}
+        </span>
+      </div>
+      <div className="text-sm text-muted-foreground">
+        {new Date(pullRequest.createdAt).toLocaleDateString()} - Time to merge:{" "}
+        {displayTime(pullRequest.durationInHours)}
+      </div>
     </div>
   );
 };

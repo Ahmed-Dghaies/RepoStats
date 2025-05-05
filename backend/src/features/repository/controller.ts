@@ -246,6 +246,8 @@ export class RepositoryController {
             : null,
           nbReleases: releases.nbReleases,
         },
+        forkCount: details.forks_count,
+        watchersCount: details.watchers_count,
         size: formatRepositorySize(details.size),
         languages: languages ?? {},
         openIssues: details.open_issues_count,

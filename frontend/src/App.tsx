@@ -3,7 +3,8 @@ import { Routes, Route } from "react-router-dom";
 
 import "react-tooltip/dist/react-tooltip.css";
 import "react-confirm-alert/src/react-confirm-alert.css";
-import "@/assets/styles/globalStyles.css";
+import "@/assets/styles/global-styles.css";
+import "@/assets/styles/shadcn-style-extension.css";
 import "./App.css";
 
 import Navbar from "@/components/Navbar";
@@ -11,9 +12,6 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import { Tooltip } from "react-tooltip";
 import RepositoryDetails from "./pages/RepositoryDetails";
-import Modal from "react-modal";
-
-Modal.setAppElement("body");
 
 const App: React.FC = () => {
   function MultiRoute(el: JSX.Element, paths: string[]): JSX.Element[] {
@@ -23,7 +21,7 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen h-full">
       <Navbar />
-      <div className="flex-grow overflow-y-auto">
+      <div className="flex-grow overflow-y-auto border-transparent border-r-2">
         <Routes>
           {MultiRoute(<Home />, ["/", "/home"])}
           <Route path="/repository/:owner/:repository/*" element={<RepositoryDetails />} />

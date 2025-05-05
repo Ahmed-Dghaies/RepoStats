@@ -1,6 +1,6 @@
+import { Button } from "@/components/ui/button";
 import avatar from "./images/avatar.svg";
 import notFound from "./images/not-found.svg";
-import { Button } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 
 const NotFound = () => {
@@ -22,7 +22,7 @@ const NotFound = () => {
             <div className="mt-3 flex justify-center flex-grow items-center">
               <Link to="/">
                 <Button
-                  variant="gradient"
+                  variant="default"
                   size="sm"
                   className="w-fit h-10 px-8 hover:cursor-pointer"
                 >
