@@ -10,6 +10,7 @@ bower_components
 
 *.sublime*
 .vscode/
+**/coverage/*
 
 psd
 thumb
