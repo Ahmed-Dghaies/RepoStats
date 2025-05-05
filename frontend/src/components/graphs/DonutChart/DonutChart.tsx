@@ -49,7 +49,7 @@ const DonutChart = ({ title, data, labels, className, description }: DonutChartP
     },
   };
   return (
-    <Card className={`donut-chart ${className}`}>
+    <Card className={`donut-chart ${className} max-h-[400px]`}>
       <CardHeader
         color="transparent"
         className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"

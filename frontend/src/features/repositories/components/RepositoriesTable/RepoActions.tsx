@@ -16,7 +16,6 @@ const RepoActions = ({ row }: { row: Repository }) => {
     const list = JSON.parse(localStorage.getItem("repositories") ?? "[]");
     const index = list.findIndex((repo: Repository) => repo.url === row.url);
     list.splice(index, 1);
-    console.log(list);
     const newRepositories = JSON.stringify(list);
     localStorage.setItem("repositories", newRepositories);
     window.dispatchEvent(new CustomEvent("repositoriesUpdated", { detail: list }));

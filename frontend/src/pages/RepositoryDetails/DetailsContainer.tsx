@@ -27,7 +27,7 @@ const DetailsContainer = () => {
     owner &&
     repository &&
     repositoryDetails && (
-      <div className="flex flex-col ">
+      <div className="flex flex-col pb-4">
         <div className="width-full  flex flex-col gap-3 p-4 pb-0 mb-3 md:px-[10%]">
           <div className="text-xl">{`${repositoryDetails.fullName}`}</div>
           <RepositoryTags repositoryDetails={repositoryDetails} />

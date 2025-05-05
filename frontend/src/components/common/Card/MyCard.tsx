@@ -13,7 +13,7 @@ interface ActionParams {
 
 interface SearchParams {
   value: string;
-  onChange: (data?: any) => void;
+  onChange: (value: string) => void;
   placeholder: string;
   className?: string;
   containerClassName?: string;

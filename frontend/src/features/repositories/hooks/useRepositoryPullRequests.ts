@@ -41,7 +41,6 @@ const useRepositoryPullRequests = ({
             repository,
             signal: controller.signal,
           });
-        console.log({ averageTimeToMergeHours, mergedPullRequests });
         setPullRequestsDetails((prev) => ({
           ...prev,
           mergedPullRequests,

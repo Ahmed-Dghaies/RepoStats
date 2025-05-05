@@ -41,7 +41,7 @@ const HeatMapChart = ({
   };
 
   return (
-    <Card className={`heatmap-chart ${className}`}>
+    <Card className={`heatmap-chart ${className} max-h-[400px]`}>
       <CardHeader
         color="transparent"
         className="flex flex-col gap-4 rounded-none md:flex-row md:items-center"
@@ -51,9 +51,7 @@ const HeatMapChart = ({
         </div>
         <div>
           <div className="font-semibold text-xl">{title}</div>
-          <div color="gray" className="font-normal">
-            {description ?? ""}
-          </div>
+          <div className="font-normal">{description ?? ""}</div>
         </div>
       </CardHeader>
       <CardContent className="p-2 px-3 pb-0 flex flex-col justify-center flex-grow gap-2">

@@ -225,8 +225,6 @@ export class RepositoryController {
         string | null
       ];
 
-      console.log(details);
-
       res.json({
         name: details.name,
         fullName: details.full_name,
