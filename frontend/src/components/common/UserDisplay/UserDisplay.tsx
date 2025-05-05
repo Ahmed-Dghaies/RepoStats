@@ -15,7 +15,7 @@ const UserDisplay = ({
     <div className={`flex items-center gap-x-3 ${className}`}>
       <Avatar className="w-sm">
         <AvatarImage src={image} />
-        <AvatarFallback>name</AvatarFallback>
+        <AvatarFallback>{name}</AvatarFallback>
       </Avatar>
       <div>
         <div className="font-bold text-lg text-slate-800">{name}</div>
