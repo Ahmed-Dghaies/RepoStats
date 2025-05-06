@@ -9,6 +9,7 @@ import {
 } from "../dataPreparation";
 import { GraphStep } from "@/types/graphs";
 import { TreeNode } from "@/types/repository";
+import { formatDateLabelByStep } from "@/utils/general/time";
 
 describe("createTreeStructure", () => {
   it("should generate a correct tree structure for directories and files", () => {
@@ -36,7 +37,13 @@ describe("formatClonesData", () => {
     const response = {
       count: 5,
       uniques: 3,
-      clones: [{ timestamp: "2023-01-01", count: 5, uniques: 3 }],
+      clones: [
+        {
+          timestamp: formatDateLabelByStep(new Date().toISOString(), GraphStep.day),
+          count: 5,
+          uniques: 3,
+        },
+      ],
     };
     const result = formatClonesData(response);
     expect(result.count.data).toContain(5);
@@ -87,12 +94,16 @@ describe("formatGitHubStats", () => {
 
 describe("formatGraphViewsData", () => {
   it("should correctly format graph views data", () => {
-    const formatDate = (date: Date) =>
-      `${String(date.getDate() + 1).padStart(2, "0")}/${String(date.getMonth()).slice(-2)}`;
     const response = {
       count: 20,
       uniques: 10,
-      views: [{ timestamp: formatDate(new Date()), count: 20, uniques: 10 }],
+      views: [
+        {
+          timestamp: formatDateLabelByStep(new Date().toISOString(), GraphStep.day),
+          count: 20,
+          uniques: 10,
+        },
+      ],
     };
     const result = formatGraphViewsData(response);
     expect(result.count.data).toContain(20);
