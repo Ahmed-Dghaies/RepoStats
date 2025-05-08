@@ -513,35 +513,6 @@ describe("RepositoryController", () => {
     });
   });
 
-  describe("getClones", () => {
-    it("should return clone data", async () => {
-      const mockData = { count: 100, uniques: 50 };
-      (RepositoryServices.getClonesData as jest.Mock).mockResolvedValue(mockData);
-
-      await RepositoryController.getClones(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext
-      );
-
-      expect(RepositoryServices.getClonesData).toHaveBeenCalledWith("testOwner", "testRepo");
-      expect(mockResponse.json).toHaveBeenCalledWith(mockData);
-    });
-
-    it("should handle service error", async () => {
-      const mockError = new Error("Service error");
-      (RepositoryServices.getClonesData as jest.Mock).mockRejectedValue(mockError);
-
-      await RepositoryController.getClones(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext
-      );
-
-      expect(mockNext).toHaveBeenCalledWith(mockError);
-    });
-  });
-
   describe("getCommits", () => {
     it("should return formatted commits with query params", async () => {
       mockRequest.query = {
@@ -639,83 +610,6 @@ describe("RepositoryController", () => {
       (RepositoryServices.getClonesData as jest.Mock).mockRejectedValue(mockError);
 
       await RepositoryController.getClones(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext
-      );
-
-      expect(mockNext).toHaveBeenCalledWith(mockError);
-    });
-  });
-
-  describe("getCommits", () => {
-    it("should return formatted commits with query params", async () => {
-      mockRequest.query = {
-        since: "2022-01-01",
-        until: "2022-12-31",
-        commitsPerPage: "10",
-        currentPage: "1",
-      };
-
-      const mockCommits = [
-        {
-          sha: "abc123",
-          commit: {
-            author: {
-              name: "Test User",
-              date: "2022-06-01T00:00:00Z",
-            },
-          },
-        },
-      ];
-
-      (RepositoryServices.getCommits as jest.Mock).mockResolvedValue(mockCommits);
-
-      await RepositoryController.getCommits(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext
-      );
-
-      expect(RepositoryServices.getCommits).toHaveBeenCalledWith({
-        owner: "testOwner",
-        repository: "testRepo",
-        since: "2022-01-01",
-        until: "2022-12-31",
-        commitsPerPage: 10,
-        currentPage: 1,
-      });
-
-      expect(mockResponse.json).toHaveBeenCalledWith([
-        {
-          id: "abc123",
-          author: "Test User",
-          date: "2022-06-01T00:00:00Z",
-        },
-      ]);
-    });
-
-    it("should return 400 if missing owner or repository", async () => {
-      mockRequest.params = {};
-
-      await RepositoryController.getCommits(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext
-      );
-
-      expect(mockResponse.status).toHaveBeenCalledWith(400);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        success: false,
-        error: "Missing required parameters: 'owner' or 'repository'",
-      });
-    });
-
-    it("should handle service error", async () => {
-      const mockError = new Error("Service error");
-      (RepositoryServices.getCommits as jest.Mock).mockRejectedValue(mockError);
-
-      await RepositoryController.getCommits(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
