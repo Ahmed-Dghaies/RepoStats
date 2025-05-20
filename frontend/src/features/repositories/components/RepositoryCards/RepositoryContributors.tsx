@@ -42,7 +42,7 @@ const RepositoryContributors = ({ owner, repository }: Partial<Repository>) => {
             <div className="flex items-center gap-x-3">
               <Avatar>
                 <AvatarImage src={avatarUrl} />
-                <AvatarFallback>User</AvatarFallback>
+                <AvatarFallback>{login}</AvatarFallback>
               </Avatar>
               <div>
                 <div className="font-semibold text-md text-slate-800">{login}</div>
