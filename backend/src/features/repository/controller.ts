@@ -16,6 +16,20 @@ interface TreeNode {
 }
 
 export class RepositoryController {
+  public static readonly getStaticAnalysis: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+      const staticAnalysis = await RepositoryServices.getStaticAnalysis({ owner, repository }, res);
+      res.json(staticAnalysis);
+    } catch (err) {
+      next(err);
+    }
+  };
+
   public static readonly getContributors: RequestHandler = async (
     req: Request,
     res: Response,

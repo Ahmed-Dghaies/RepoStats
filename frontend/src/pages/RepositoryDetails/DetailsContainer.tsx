@@ -8,6 +8,7 @@ import RepositoryTags from "./RepositoryTags";
 import Sections from "./Sections";
 import Dependencies from "@/features/repositories/components/Dependencies";
 import RepositoryCards from "@/features/repositories/components/RepositoryCards";
+import CodeAnalysis from "@/features/repositories/components/CodeAnalysis";
 
 const DetailsContainer = () => {
   const { owner, repository } = useParams();
@@ -42,6 +43,10 @@ const DetailsContainer = () => {
           <Route
             path="dependencies"
             element={<Dependencies repositoryDetails={repositoryDetails} />}
+          />
+          <Route
+            path="code-analysis"
+            element={<CodeAnalysis repositoryDetails={repositoryDetails} />}
           />
           <Route path="" element={<Navigate to="details" replace />} />
         </Routes>

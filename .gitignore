@@ -12,6 +12,8 @@ bower_components
 .vscode/
 **/coverage/*
 
+coverage
+
 psd
 thumb
 sketch
