@@ -8,6 +8,7 @@ import {
   formatPunchCardData,
 } from "@/utils/graphs/dataPreparation";
 import { AxiosError } from "axios";
+import { SemgrepResult } from "../components/CodeAnalysis/types";
 
 export interface FormattedGraphComparisonData {
   keys: string[];
@@ -99,6 +100,17 @@ export const fetchRepositoryDetails = async ({
       console.error(error);
       return null;
     });
+};
+
+export const runStaticAnalysis = async ({
+  owner,
+  repository,
+}: {
+  owner: string;
+  repository: string;
+}): Promise<SemgrepResult> => {
+  const result = await backendApi.get(`/repository/${owner}/${repository}/static-analysis`);
+  return result.data;
 };
 
 export const downloadRepository = async ({

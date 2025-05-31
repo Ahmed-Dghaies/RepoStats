@@ -1,5 +1,3 @@
-"use client";
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,242 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle, CheckCircle, Code, Loader2 } from "lucide-react";
 import { RepositoryInfo } from "@/types/repository";
-
-interface SemgrepFinding {
-  check_id: string;
-  path: string;
-  start: { line: number; col: number };
-  end: { line: number; col: number };
-  message: string;
-  severity: "ERROR" | "WARNING" | "INFO";
-  metadata: {
-    category: string;
-    technology: string[];
-    confidence: string;
-    likelihood: string;
-    impact: string;
-    subcategory: string[];
-  };
-}
-
-interface SemgrepResult {
-  results: SemgrepFinding[];
-  errors: string[];
-  status: "success" | "error" | "running" | "idle";
-}
+import { runStaticAnalysis } from "../../services/repositories";
+import { SemgrepFinding, SemgrepResult } from "./types";
 
 interface CodeAnalysisProps {
   repositoryDetails: RepositoryInfo;
 }
-
-const semGrepExample: SemgrepResult = {
-  results: [
-    {
-      check_id: "javascript.express.security.audit.express-open-redirect",
-      path: "src/routes/auth.js",
-      start: { line: 42, col: 3 },
-      end: { line: 42, col: 28 },
-      message:
-        "Possible open redirect vulnerability detected. User-controlled redirect URLs can lead to phishing attacks.",
-      severity: "ERROR",
-      metadata: {
-        category: "Security",
-        technology: ["javascript", "express"],
-        confidence: "HIGH",
-        likelihood: "MEDIUM",
-        impact: "HIGH",
-        subcategory: ["open-redirect", "user-controlled"],
-      },
-    },
-    {
-      check_id: "javascript.react.security.audit.react-dangerouslysetinnerhtml",
-      path: "src/components/Comment.jsx",
-      start: { line: 15, col: 7 },
-      end: { line: 17, col: 8 },
-      message:
-        "Detected dangerouslySetInnerHTML which could lead to XSS vulnerabilities. Ensure user input is properly sanitized.",
-      severity: "ERROR",
-      metadata: {
-        category: "Security",
-        technology: ["javascript", "react"],
-        confidence: "HIGH",
-        likelihood: "HIGH",
-        impact: "HIGH",
-        subcategory: ["xss", "injection"],
-      },
-    },
-    {
-      check_id: "javascript.node.security.audit.path-traversal",
-      path: "src/utils/fileHandler.js",
-      start: { line: 23, col: 12 },
-      end: { line: 23, col: 54 },
-      message:
-        "Path traversal vulnerability detected. User-controlled file paths can lead to unauthorized file access.",
-      severity: "ERROR",
-      metadata: {
-        category: "Security",
-        technology: ["javascript", "node"],
-        confidence: "HIGH",
-        likelihood: "MEDIUM",
-        impact: "HIGH",
-        subcategory: ["path-traversal", "file-access"],
-      },
-    },
-    {
-      check_id: "javascript.node.security.audit.sql-injection",
-      path: "src/models/user.js",
-      start: { line: 78, col: 22 },
-      end: { line: 78, col: 65 },
-      message: "Possible SQL injection detected. User input should be parameterized.",
-      severity: "ERROR",
-      metadata: {
-        category: "Security",
-        technology: ["javascript", "sql"],
-        confidence: "HIGH",
-        likelihood: "HIGH",
-        impact: "HIGH",
-        subcategory: ["sql-injection", "database"],
-      },
-    },
-    {
-      check_id: "javascript.react.performance.react-usecallback-missing",
-      path: "src/components/UserList.jsx",
-      start: { line: 31, col: 19 },
-      end: { line: 34, col: 3 },
-      message:
-        "Function created in component body without useCallback. This may lead to unnecessary re-renders.",
-      severity: "WARNING",
-      metadata: {
-        category: "Performance",
-        technology: ["javascript", "react"],
-        confidence: "MEDIUM",
-        likelihood: "MEDIUM",
-        impact: "LOW",
-        subcategory: ["hooks", "optimization"],
-      },
-    },
-    {
-      check_id: "javascript.react.performance.react-usememo-missing",
-      path: "src/components/Dashboard.jsx",
-      start: { line: 45, col: 21 },
-      end: { line: 52, col: 3 },
-      message:
-        "Complex computation in component body without useMemo. This may cause unnecessary recalculations.",
-      severity: "WARNING",
-      metadata: {
-        category: "Performance",
-        technology: ["javascript", "react"],
-        confidence: "MEDIUM",
-        likelihood: "MEDIUM",
-        impact: "LOW",
-        subcategory: ["hooks", "optimization"],
-      },
-    },
-    {
-      check_id: "javascript.node.correctness.audit.detect-non-literal-fs-filename",
-      path: "src/services/fileService.js",
-      start: { line: 12, col: 15 },
-      end: { line: 12, col: 42 },
-      message:
-        "Using a non-literal value in fs module methods can lead to path traversal vulnerabilities.",
-      severity: "WARNING",
-      metadata: {
-        category: "Correctness",
-        technology: ["javascript", "node"],
-        confidence: "MEDIUM",
-        likelihood: "MEDIUM",
-        impact: "MEDIUM",
-        subcategory: ["filesystem", "path-traversal"],
-      },
-    },
-    {
-      check_id: "javascript.node.security.audit.detect-eval-with-expression",
-      path: "src/utils/dynamicCode.js",
-      start: { line: 8, col: 3 },
-      end: { line: 8, col: 25 },
-      message:
-        "Detected eval() with a variable. This is a security risk as it can lead to code injection.",
-      severity: "ERROR",
-      metadata: {
-        category: "Security",
-        technology: ["javascript", "node"],
-        confidence: "HIGH",
-        likelihood: "HIGH",
-        impact: "HIGH",
-        subcategory: ["code-injection", "eval"],
-      },
-    },
-    {
-      check_id: "javascript.node.security.audit.detect-non-literal-regexp",
-      path: "src/utils/validation.js",
-      start: { line: 17, col: 19 },
-      end: { line: 17, col: 39 },
-      message: "Detected RegExp constructor with a variable. This can lead to ReDoS attacks.",
-      severity: "WARNING",
-      metadata: {
-        category: "Security",
-        technology: ["javascript", "node"],
-        confidence: "MEDIUM",
-        likelihood: "LOW",
-        impact: "MEDIUM",
-        subcategory: ["redos", "regexp"],
-      },
-    },
-    {
-      check_id: "javascript.react.best-practice.react-props-spreading",
-      path: "src/components/Button.jsx",
-      start: { line: 5, col: 10 },
-      end: { line: 5, col: 25 },
-      message:
-        "Detected props spreading in React component. This can lead to unintended props being passed down.",
-      severity: "INFO",
-      metadata: {
-        category: "Best Practices",
-        technology: ["javascript", "react"],
-        confidence: "MEDIUM",
-        likelihood: "LOW",
-        impact: "LOW",
-        subcategory: ["props", "maintainability"],
-      },
-    },
-    {
-      check_id: "javascript.node.security.audit.detect-insecure-randomness",
-      path: "src/utils/crypto.js",
-      start: { line: 5, col: 19 },
-      end: { line: 5, col: 36 },
-      message:
-        "Using Math.random() for security-sensitive operations. Use crypto.randomBytes() instead.",
-      severity: "WARNING",
-      metadata: {
-        category: "Security",
-        technology: ["javascript", "node"],
-        confidence: "HIGH",
-        likelihood: "MEDIUM",
-        impact: "MEDIUM",
-        subcategory: ["crypto", "randomness"],
-      },
-    },
-    {
-      check_id: "javascript.node.security.audit.detect-nosql-injection",
-      path: "src/models/product.js",
-      start: { line: 42, col: 25 },
-      end: { line: 42, col: 58 },
-      message:
-        "Possible NoSQL injection detected. User input should be sanitized before using in queries.",
-      severity: "ERROR",
-      metadata: {
-        category: "Security",
-        technology: ["javascript", "mongodb"],
-        confidence: "HIGH",
-        likelihood: "MEDIUM",
-        impact: "HIGH",
-        subcategory: ["nosql-injection", "database"],
-      },
-    },
-  ],
-  errors: [],
-  status: "success",
-};
 
 const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
   const [analysisState, setAnalysisState] = useState<SemgrepResult>({
@@ -258,8 +26,13 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
       setIsLoading(true);
       setAnalysisState({ results: [], errors: [], status: "running" });
 
-      const results = semGrepExample;
-      console.log(repositoryDetails);
+      const results = await runStaticAnalysis({
+        owner: repositoryDetails.owner.login,
+        repository: repositoryDetails.name,
+      });
+
+      console.log(results);
+
       setAnalysisState({
         ...results,
         status: "success",
@@ -290,7 +63,7 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
     const grouped = new Map<string, SemgrepFinding[]>();
 
     findings.forEach((finding) => {
-      const category = finding.metadata?.category || "Other";
+      const category = finding.extra?.metadata?.category || "Other";
       if (!grouped.has(category)) {
         grouped.set(category, []);
       }
@@ -388,12 +161,12 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
                   {analysisState.results.map((finding, index) => (
                     <div key={index} className="mb-4 border-b pb-4 last:border-0">
                       <div className="flex items-center gap-2 mb-2">
-                        <Badge className={getSeverityColor(finding.severity)}>
-                          {finding.severity}
+                        <Badge className={getSeverityColor(finding.extra.severity)}>
+                          {finding.extra.severity}
                         </Badge>
                         <span className="font-medium">{finding.check_id}</span>
                       </div>
-                      <p className="mb-2">{finding.message}</p>
+                      <p className="mb-2">{finding.extra.message}</p>
                       <div className="text-sm text-muted-foreground">
                         <div>
                           <span className="font-medium">File:</span> {finding.path}
@@ -402,10 +175,10 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
                           <span className="font-medium">Location:</span> Line {finding.start.line},
                           Column {finding.start.col}
                         </div>
-                        {finding.metadata?.category && (
+                        {finding.extra?.metadata?.category && (
                           <div>
                             <span className="font-medium">Category:</span>{" "}
-                            {finding.metadata.category}
+                            {finding.extra.metadata.category}
                           </div>
                         )}
                       </div>
@@ -418,15 +191,16 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
                     {groupedFindings.get(category)?.map((finding, index) => (
                       <div key={index} className="mb-4 border-b pb-4 last:border-0">
                         <div className="flex items-center gap-2 mb-2">
-                          <Badge className={getSeverityColor(finding.severity)}>
-                            {finding.severity}
+                          <Badge className={getSeverityColor(finding.extra.severity)}>
+                            {finding.extra.severity}
                           </Badge>
                           <span className="font-medium">{finding.check_id}</span>
                         </div>
-                        <p className="mb-2">{finding.message}</p>
+                        <p className="mb-2">{finding.extra.message}</p>
                         <div className="text-sm text-muted-foreground">
                           <div>
-                            <span className="font-medium">File:</span> {finding.path}
+                            <span className="font-medium">File:</span>{" "}
+                            <span className="break-all">{finding.path}</span>
                           </div>
                           <div>
                             <span className="font-medium">Location:</span> Line {finding.start.line}

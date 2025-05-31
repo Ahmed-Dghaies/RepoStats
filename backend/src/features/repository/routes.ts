@@ -16,5 +16,6 @@ router.get("/:owner/:repository/file/*", RepositoryController.getFileContent);
 router.get("/:owner/:repository/languages", RepositoryController.getRepositoryLanguages);
 router.get("/:owner/:repository/heat-map", RepositoryController.getHeatMapData);
 router.get("/:owner/:repository/merged-pull-requests", RepositoryController.getMergedPullRequests);
+router.get("/:owner/:repository/static-analysis", RepositoryController.getStaticAnalysis);
 
 export default router;

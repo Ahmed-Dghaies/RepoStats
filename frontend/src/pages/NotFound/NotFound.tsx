@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 const NotFound = () => {
   return (
-    <div className="w-full overflow-y-auto flex justify-center items-center p-5">
+    <div className="w-full overflow-y-auto flex justify-center items-center p-5 pt-0">
       <div className="flex flex-col gap-3 lg:w-2/3">
         <div className="flex justify-center">
           <img src={notFound} alt="Page not found illustration" className="w-sm" />
