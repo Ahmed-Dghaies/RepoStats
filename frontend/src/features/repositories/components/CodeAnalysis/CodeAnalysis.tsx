@@ -31,8 +31,6 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
         repository: repositoryDetails.name,
       });
 
-      console.log(results);
-
       setAnalysisState({
         ...results,
         status: "success",

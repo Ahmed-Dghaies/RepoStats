@@ -27,31 +27,31 @@ interface RequestsPayload {
 
 export class RepositoryServices {
   public static readonly getStaticAnalysis = async ({ owner, repository }, res: Response) => {
-    console.log(`[${new Date().toISOString()}] Starting analysis for ${owner}/${repository}`);
+    console.info(`[${new Date().toISOString()}] Starting analysis for ${owner}/${repository}`);
 
     // Create temporary directory
     const tmpDir = path.join(os.tmpdir(), `semgrep-${owner}-${repository}-${Date.now()}`);
     await fs.mkdir(tmpDir, { recursive: true });
-    console.log(`[${new Date().toISOString()}] Created temp dir: ${tmpDir}`);
+    console.info(`[${new Date().toISOString()}] Created temp dir: ${tmpDir}`);
 
     // Clone the repository
     const cloneUrl = `https://github.com/${owner}/${repository}.git`;
-    console.log(`[${new Date().toISOString()}] Cloning repository: ${cloneUrl}`);
+    console.info(`[${new Date().toISOString()}] Cloning repository: ${cloneUrl}`);
 
     const cloneProcess = spawn("git", ["clone", "--depth", "1", cloneUrl, tmpDir]);
 
     cloneProcess.stdout.on("data", (data) => {
-      console.log(`[${new Date().toISOString()}] GIT: ${data.toString().trim()}`);
+      console.info(`[${new Date().toISOString()}] GIT: ${data.toString().trim()}`);
     });
 
     cloneProcess.stderr.on("data", (data) => {
-      console.log(`[${new Date().toISOString()}] GIT ERR: ${data.toString().trim()}`);
+      console.info(`[${new Date().toISOString()}] GIT ERR: ${data.toString().trim()}`);
     });
 
     await new Promise((resolve, reject) => {
       cloneProcess.on("close", (code) => {
         if (code === 0) {
-          console.log(`[${new Date().toISOString()}] Repository cloned successfully`);
+          console.info(`[${new Date().toISOString()}] Repository cloned successfully`);
           resolve(true);
         } else {
           reject(new Error(`Git clone failed with code ${code}`));
@@ -60,7 +60,7 @@ export class RepositoryServices {
     });
 
     // Run Semgrep in Docker
-    console.log(`[${new Date().toISOString()}] Starting Semgrep analysis in Docker...`);
+    console.info(`[${new Date().toISOString()}] Starting Semgrep analysis in Docker...`);
     const dockerProcess = spawn("docker", [
       "run",
       "--rm",
@@ -78,17 +78,17 @@ export class RepositoryServices {
 
     // Log Docker output in real-time
     dockerProcess.stdout.on("data", (data) => {
-      console.log(`[${new Date().toISOString()}] DOCKER: ${data.toString().trim()}`);
+      console.info(`[${new Date().toISOString()}] DOCKER: ${data.toString().trim()}`);
     });
 
     dockerProcess.stderr.on("data", (data) => {
-      console.log(`[${new Date().toISOString()}] DOCKER ERR: ${data.toString().trim()}`);
+      console.info(`[${new Date().toISOString()}] DOCKER ERR: ${data.toString().trim()}`);
     });
 
     await new Promise((resolve, reject) => {
       dockerProcess.on("close", (code) => {
         if (code === 0) {
-          console.log(`[${new Date().toISOString()}] Semgrep analysis completed successfully`);
+          console.info(`[${new Date().toISOString()}] Semgrep analysis completed successfully`);
           resolve(true);
         } else {
           reject(new Error(`Semgrep failed with code ${code}`));
@@ -100,11 +100,11 @@ export class RepositoryServices {
     const resultsPath = path.join(tmpDir, "semgrep-results.json");
     const resultsJson = await fs.readFile(resultsPath, "utf-8");
     const results = JSON.parse(resultsJson);
-    console.log(`[${new Date().toISOString()}] Found ${results.results?.length || 0} issues`);
+    console.info(`[${new Date().toISOString()}] Found ${results.results?.length || 0} issues`);
 
     // Clean up
     await fs.rm(tmpDir, { recursive: true, force: true });
-    console.log(`[${new Date().toISOString()}] Cleaned up temp directory`);
+    console.info(`[${new Date().toISOString()}] Cleaned up temp directory`);
 
     return {
       results: results.results || [],

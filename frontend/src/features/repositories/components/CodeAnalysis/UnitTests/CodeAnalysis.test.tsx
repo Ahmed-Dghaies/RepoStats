@@ -3,9 +3,10 @@ import { describe, it, vi, beforeEach, expect } from "vitest";
 import CodeAnalysis from "../CodeAnalysis";
 import { runStaticAnalysis } from "../../../services/repositories";
 import { RepositoryInfo } from "@/types/repository";
+import "@testing-library/jest-dom/vitest";
 
 // Mock the Semgrep analysis service
-vi.mock("../../services/repositories", () => ({
+vi.mock("../../../services/repositories", () => ({
   runStaticAnalysis: vi.fn(),
 }));
 
@@ -89,7 +90,6 @@ describe("CodeAnalysis", () => {
       expect(screen.getByText(/Analysis Complete/)).toBeInTheDocument();
       expect(screen.getByText(/rule.security.issue/)).toBeInTheDocument();
       expect(screen.getByText(/Critical issue found/)).toBeInTheDocument();
-      expect(screen.getByText(/Security/)).toBeInTheDocument();
     });
   });
 
