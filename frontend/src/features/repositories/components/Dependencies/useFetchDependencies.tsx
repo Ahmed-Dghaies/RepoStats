@@ -1,4 +1,3 @@
-import { fetchFileContent } from "@/features/repositories/services/repositories";
 import { RepositoryInfo } from "@/types/repository";
 import { useEffect, useState, useRef } from "react";
 import { fetchPackagesSummary } from "./service";
@@ -15,33 +14,14 @@ export const useFetchDependencies = (repositoryDetails: RepositoryInfo | null) =
       if (fetchedRepoRef.current === repositoryDetails) return;
       setLoading(true);
       try {
-        const packageFile = await fetchFileContent({ repositoryDetails, path: "package.json" });
-        const packageLockFile = await fetchFileContent({
+        const scoredDependencies = await fetchPackagesSummary({
           repositoryDetails,
-          path: "package-lock.json",
+          projectType: repositoryDetails.projectType,
         });
 
-        if (packageFile) {
-          let dependencies = {};
-          try {
-            dependencies = JSON.parse(packageFile).dependencies;
-          } catch (error) {
-            console.error("Error parsing package.json:", error);
-          }
-          const lockFileContent = packageLockFile ?? "{}";
-          const scoredDependencies = await fetchPackagesSummary({
-            dependencies,
-            lockFileContent,
-          });
-
-          setDependenciesList(scoredDependencies);
-          fetchedRepoRef.current = repositoryDetails;
-          setLoading(false);
-          return;
-        }
-
-        setDependenciesList([]);
+        setDependenciesList(scoredDependencies);
         fetchedRepoRef.current = repositoryDetails;
+        setLoading(false);
       } catch (error) {
         setLoading(false);
         fetchedRepoRef.current = null;

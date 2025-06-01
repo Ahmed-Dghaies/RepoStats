@@ -33,7 +33,7 @@ const Dependencies = ({ repositoryDetails }: { repositoryDetails: RepositoryInfo
         className="h-full overflow-auto flex flex-col gap-3 w-full md:w-2/3 mb-3 overflow-x-hidden pr-1 min-h-96"
       >
         {dependenciesCheckIsAvailable === false ? (
-          <UnderConstruction content="For the time being, this feature is only available for node repositories" />
+          <UnderConstruction content="For the time being, this feature is only available for Node, Python or PHP repositories" />
         ) : (
           dependenciesList.map((dependency) => (
             <Dependency packageInfo={dependency} key={dependency.name} />
