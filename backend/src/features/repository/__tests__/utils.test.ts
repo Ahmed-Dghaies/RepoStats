@@ -34,18 +34,18 @@ describe("Utility Functions", () => {
           mode: "100644",
         },
         {
-          path: "dir1/file2.txt",
-          type: "blob",
-          sha: "67890",
-          url: "https://example.com/dir1/file2.txt",
-          mode: "100644",
-        },
-        {
           path: "dir1",
           type: "tree",
           sha: "abcdef",
           url: "https://example.com/dir1",
           mode: "040000",
+        },
+        {
+          path: "dir1/file2.txt",
+          type: "blob",
+          sha: "67890",
+          url: "https://example.com/dir1/file2.txt",
+          mode: "100644",
         },
       ];
 
