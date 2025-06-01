@@ -28,7 +28,7 @@ export const useFetchDependencies = (repositoryDetails: RepositoryInfo | null) =
           } catch (error) {
             console.error("Error parsing package.json:", error);
           }
-          const lockFileContent = packageLockFile || "{}";
+          const lockFileContent = packageLockFile ?? "{}";
           const scoredDependencies = await fetchPackagesSummary({
             dependencies,
             lockFileContent,

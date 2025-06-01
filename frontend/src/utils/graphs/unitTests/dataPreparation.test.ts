@@ -8,24 +8,24 @@ import {
   formatPunchCardData,
 } from "../dataPreparation";
 import { GraphStep } from "@/types/graphs";
-import { TreeNode } from "@/types/repository";
+import { TreeItem } from "@/types/repository";
 import { formatDateLabelByStep } from "@/utils/general/time";
 
 describe("createTreeStructure", () => {
   it("should generate a correct tree structure for directories and files", () => {
-    const tree: TreeNode = {
-      name: "root",
-      type: "directory",
+    const tree: TreeItem = {
+      path: "root",
+      type: "tree",
       children: [
-        { name: "file1.txt", type: "file", children: [] },
+        { path: "file1.txt", type: "blob", children: [] },
         {
-          name: "subdir",
-          type: "directory",
-          children: [{ name: "file2.txt", type: "file", children: [] }],
+          path: "subdir",
+          type: "tree",
+          children: [{ path: "file2.txt", type: "blob", children: [] }],
         },
       ],
     };
-    const result = createTreeStructure(tree);
+    const result = createTreeStructure([tree]);
     expect(result).toContain("root/");
     expect(result).toContain("├── file1.txt");
     expect(result).toContain("└── subdir/");

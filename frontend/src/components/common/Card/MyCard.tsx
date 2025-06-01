@@ -37,7 +37,7 @@ const MyCard = ({
   children,
 }: MyCardProps) => {
   return (
-    <Card className={`${className} py-3 gap-6`}>
+    <Card className={`${className} py-3 gap-4`}>
       <CardHeader className="flex justify-between items-center">
         <CardTitle className="pr-2 text-xl">{title}</CardTitle>
         <div className="flex gap-3">

@@ -2,9 +2,13 @@ import axios, { AxiosResponse } from "axios";
 import { githubAPI } from "../../config/githubService";
 import { Response } from "express";
 import { GithubUser } from "../user/types";
-import { base64ToMarkdown, locateDependencyFile } from "./utils";
+import { base64ToMarkdown, locateDependencyFile, processTree } from "./utils";
 import { GithubRepositoryDetails } from "../../types/repository";
 import { GitHubCommit, GitHubPR } from "../../types/github";
+import fs from "fs/promises";
+import path from "path";
+import os from "os";
+import { spawn } from "child_process";
 
 interface getCommitsPayload {
   owner: string;
@@ -22,6 +26,93 @@ interface RequestsPayload {
 }
 
 export class RepositoryServices {
+  public static readonly getStaticAnalysis = async ({ owner, repository }) => {
+    console.info(`[${new Date().toISOString()}] Starting analysis for ${owner}/${repository}`);
+
+    // Create temporary directory
+    const tmpDir = path.join(os.tmpdir(), `semgrep-${owner}-${repository}-${Date.now()}`);
+    await fs.mkdir(tmpDir, { recursive: true });
+    console.info(`[${new Date().toISOString()}] Created temp dir: ${tmpDir}`);
+
+    // Clone the repository
+    const cloneUrl = `https://github.com/${owner}/${repository}.git`;
+    console.info(`[${new Date().toISOString()}] Cloning repository: ${cloneUrl}`);
+
+    const cloneProcess = spawn("git", ["clone", "--depth", "1", cloneUrl, tmpDir]);
+
+    cloneProcess.stdout.on("data", (data) => {
+      console.info(`[${new Date().toISOString()}] GIT: ${data.toString().trim()}`);
+    });
+
+    cloneProcess.stderr.on("data", (data) => {
+      console.info(`[${new Date().toISOString()}] GIT ERR: ${data.toString().trim()}`);
+    });
+
+    await new Promise((resolve, reject) => {
+      cloneProcess.on("close", (code) => {
+        if (code === 0) {
+          console.info(`[${new Date().toISOString()}] Repository cloned successfully`);
+          resolve(true);
+        } else {
+          reject(new Error(`Git clone failed with code ${code}`));
+        }
+      });
+    });
+
+    // Run Semgrep in Docker
+    console.info(`[${new Date().toISOString()}] Starting Semgrep analysis in Docker...`);
+    const dockerProcess = spawn("docker", [
+      "run",
+      "--rm",
+      "-i",
+      "-v",
+      `${tmpDir}:/src`,
+      "returntocorp/semgrep",
+      "semgrep",
+      "--config=auto",
+      "--json",
+      "--verbose", // Get more detailed output
+      "--output=/src/semgrep-results.json",
+      "/src",
+    ]);
+
+    // Log Docker output in real-time
+    dockerProcess.stdout.on("data", (data) => {
+      console.info(`[${new Date().toISOString()}] DOCKER: ${data.toString().trim()}`);
+    });
+
+    dockerProcess.stderr.on("data", (data) => {
+      console.info(`[${new Date().toISOString()}] DOCKER ERR: ${data.toString().trim()}`);
+    });
+
+    await new Promise((resolve, reject) => {
+      dockerProcess.on("close", (code) => {
+        if (code === 0) {
+          console.info(`[${new Date().toISOString()}] Semgrep analysis completed successfully`);
+          resolve(true);
+        } else {
+          reject(new Error(`Semgrep failed with code ${code}`));
+        }
+      });
+    });
+
+    // Read results
+    const resultsPath = path.join(tmpDir, "semgrep-results.json");
+    const resultsJson = await fs.readFile(resultsPath, "utf-8");
+    const results = JSON.parse(resultsJson);
+    console.info(`[${new Date().toISOString()}] Found ${results.results?.length ?? 0} issues`);
+
+    // Clean up
+    await fs.rm(tmpDir, { recursive: true, force: true });
+    console.info(`[${new Date().toISOString()}] Cleaned up temp directory`);
+
+    return {
+      results: results.results ?? [],
+      errors: results.errors ?? [],
+      status: "success",
+    };
+  };
+
   public static readonly getSourceTree = async ({ owner, repository, branch }: RequestsPayload) => {
     let targetBranch = branch;
     if (!targetBranch) {
@@ -31,7 +122,10 @@ export class RepositoryServices {
     const response = await githubAPI.get(
       `/repos/${owner}/${repository}/git/trees/${targetBranch}?recursive=1`
     );
-    return response.data;
+
+    const data = await response.data;
+
+    return processTree(data.tree);
   };
 
   public static readonly getBranches = async ({ owner, repository }: RequestsPayload) => {
@@ -135,7 +229,7 @@ export class RepositoryServices {
 
         commits.forEach((commit: GitHubCommit) => {
           const date = new Date(commit.commit.author.date).toISOString().split("T")[0];
-          contributionsByDay[date] = (contributionsByDay[date] || 0) + 1;
+          contributionsByDay[date] = (contributionsByDay[date] ?? 0) + 1;
         });
 
         if (commits.length < perPage) break;

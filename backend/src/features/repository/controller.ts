@@ -3,19 +3,45 @@ import { RepositoryServices } from "./services";
 import { UserServices } from "../user/services";
 import { formatRepositorySize } from "./utils";
 import { GithubRepositoryDetails } from "../../types/repository";
-
-interface GitHubTreeItem {
-  path: string;
-  type: "tree" | "blob";
-}
-
-interface TreeNode {
-  name: string;
-  type: "directory" | "file";
-  children?: TreeNode[];
-}
+import validator from "validator";
 
 export class RepositoryController {
+  public static readonly getStaticAnalysis: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { owner, repository } = req.params;
+
+      if (!owner || !repository) {
+        res.status(400).json({ error: "Owner and repository parameters are required" });
+        return;
+      }
+
+      if (
+        !validator.matches(owner, /^[a-z0-9_-]+$/i) ||
+        !validator.matches(repository, /^[a-z0-9_-]+$/i)
+      ) {
+        res.status(400).json({ error: "Invalid characters in owner/repository name" });
+        return;
+      }
+
+      if (owner.length > 39 || repository.length > 39) {
+        res.status(400).json({ error: "Owner/repository name too long" });
+        return;
+      }
+
+      const staticAnalysis = await RepositoryServices.getStaticAnalysis({
+        owner: validator.escape(owner),
+        repository: validator.escape(repository),
+      });
+      res.json(staticAnalysis);
+    } catch (err) {
+      next(err);
+    }
+  };
+
   public static readonly getContributors: RequestHandler = async (
     req: Request,
     res: Response,
@@ -96,6 +122,7 @@ export class RepositoryController {
           success: false,
           message: "Missing required parameters: 'owner' and/or 'repository' are missing",
         });
+        return;
       }
 
       if (!branch) {
@@ -122,6 +149,7 @@ export class RepositoryController {
           success: false,
           message: "Missing required parameters: 'owner' and/or 'repository' are missing",
         });
+        return;
       }
 
       if (!branch) {
@@ -130,31 +158,7 @@ export class RepositoryController {
       }
 
       const sourceTree = await RepositoryServices.getSourceTree({ owner, repository, branch });
-      const { tree }: { tree: GitHubTreeItem[] } = sourceTree;
-      const root: TreeNode = { name: repository, type: "directory", children: [] };
-      tree.forEach((item) => {
-        const parts = item.path.split("/");
-        let current = root;
-
-        for (let i = 0; i < parts.length; i++) {
-          const part = parts[i];
-          const isLast = i === parts.length - 1;
-          let existing = current.children?.find((child) => child.name === part);
-          if (!existing) {
-            existing = {
-              name: part,
-              type: isLast && item.type === "blob" ? "file" : "directory",
-              children: [],
-            };
-            current.children?.push(existing);
-          }
-
-          if (!isLast) {
-            current = existing;
-          }
-        }
-      });
-      res.json(root);
+      res.json(sourceTree);
     } catch (err) {
       next(err);
     }

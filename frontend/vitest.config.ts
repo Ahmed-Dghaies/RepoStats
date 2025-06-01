@@ -7,6 +7,10 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "json", "html"],
     },
+    globals: true,
+    environment: "jsdom",
+    setupFiles: ["./vitest.setup.ts"],
+    include: ["src/**/*.{test,spec}.?(*.)?(c|m)[jt]s?(x)"],
   },
   resolve: {
     alias: {

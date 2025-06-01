@@ -30,7 +30,7 @@ const Dependencies = ({ repositoryDetails }: { repositoryDetails: RepositoryInfo
         active={loading}
         spinner
         text="Loading your content..."
-        className="h-full overflow-auto flex flex-col gap-3 w-full md:w-2/3 mb-3 overflow-x-hidden pr-1"
+        className="h-full overflow-auto flex flex-col gap-3 w-full md:w-2/3 mb-3 overflow-x-hidden pr-1 min-h-96"
       >
         {dependenciesCheckIsAvailable === false ? (
           <UnderConstruction content="For the time being, this feature is only available for node repositories" />

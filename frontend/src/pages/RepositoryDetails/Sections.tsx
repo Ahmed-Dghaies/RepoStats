@@ -16,6 +16,7 @@ const Sections = () => {
       url: "readme",
     },
     { name: "Dependencies", url: "dependencies" },
+    { name: "Code analysis", url: "code-analysis" },
   ];
 
   function handleSectionClick(url: string) {

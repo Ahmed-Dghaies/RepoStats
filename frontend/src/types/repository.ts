@@ -40,10 +40,10 @@ export interface RepositoryInfo {
   lastUpdated?: string;
 }
 
-export interface TreeNode {
-  name: string;
-  type: "directory" | "file";
-  children: TreeNode[];
+export interface TreeItem {
+  path: string;
+  type: "blob" | "tree";
+  children?: TreeItem[];
 }
 
 export interface PullRequest {

@@ -18,3 +18,11 @@ export interface GithubRepositoryDetails {
   forks_count: number;
   watchers_count: number;
 }
+
+export interface GitHubTreeItem {
+  path: string;
+  mode: string;
+  type: "blob" | "tree";
+  sha: string;
+  url: string;
+}

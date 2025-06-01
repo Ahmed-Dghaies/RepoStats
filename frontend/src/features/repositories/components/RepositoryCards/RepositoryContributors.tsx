@@ -4,6 +4,7 @@ import { Contributor, Repository } from "@/types/repository";
 import { fetchRepositoryContributors } from "@/features/repositories/services/repositories";
 import LoadingOverlay from "@achmadk/react-loading-overlay";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { capitalize } from "lodash";
 
 const RepositoryContributors = ({ owner, repository }: Partial<Repository>) => {
   const [contributors, setContributors] = useState<Contributor[]>([]);
@@ -26,7 +27,7 @@ const RepositoryContributors = ({ owner, repository }: Partial<Repository>) => {
     <Card
       title="Contributors"
       className="w-full sm:w-1/2 h-[300px] flex flex-col"
-      bodyClassName="pr-0 overflow-y-auto mr-2 mb-2 divide-y divide-gray-200 py-0 flex-grow"
+      bodyClassName="pr-0 pl-2 overflow-y-auto mr-2 mb-2 divide-y divide-gray-200 py-0 flex-grow"
     >
       <LoadingOverlay
         active={loading}
@@ -42,7 +43,7 @@ const RepositoryContributors = ({ owner, repository }: Partial<Repository>) => {
             <div className="flex items-center gap-x-3">
               <Avatar>
                 <AvatarImage src={avatarUrl} />
-                <AvatarFallback>User</AvatarFallback>
+                <AvatarFallback>{capitalize(login)[0]}</AvatarFallback>
               </Avatar>
               <div>
                 <div className="font-semibold text-md text-slate-800">{login}</div>

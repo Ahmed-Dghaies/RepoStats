@@ -1,4 +1,10 @@
-import { formatRepositorySize, base64ToMarkdown, locateDependencyFile } from "../utils";
+import { GitHubTreeItem } from "../../../types/repository";
+import {
+  formatRepositorySize,
+  base64ToMarkdown,
+  locateDependencyFile,
+  processTree,
+} from "../utils";
 
 describe("Utility Functions", () => {
   describe("formatRepositorySize", () => {
@@ -14,6 +20,50 @@ describe("Utility Functions", () => {
 
     test.each(testCases)("converts $input bytes to $expected", ({ input, expected }) => {
       expect(formatRepositorySize(input)).toBe(expected);
+    });
+  });
+
+  describe("processTree", () => {
+    it("processes tree correctly", () => {
+      const tree: GitHubTreeItem[] = [
+        {
+          path: "file1.txt",
+          type: "blob",
+          sha: "12345",
+          url: "https://example.com/file1.txt",
+          mode: "100644",
+        },
+        {
+          path: "dir1",
+          type: "tree",
+          sha: "abcdef",
+          url: "https://example.com/dir1",
+          mode: "040000",
+        },
+        {
+          path: "dir1/file2.txt",
+          type: "blob",
+          sha: "67890",
+          url: "https://example.com/dir1/file2.txt",
+          mode: "100644",
+        },
+      ];
+
+      const expectedTree = [
+        {
+          path: "dir1",
+          type: "tree",
+          children: [
+            {
+              children: undefined,
+              path: "file2.txt",
+              type: "blob",
+            },
+          ],
+        },
+        { path: "file1.txt", type: "blob", children: undefined },
+      ];
+      expect(processTree(tree)).toStrictEqual(expectedTree);
     });
   });
 

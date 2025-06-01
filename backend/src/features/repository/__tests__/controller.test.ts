@@ -248,25 +248,10 @@ describe("RepositoryController", () => {
       });
 
       const expectedTree = {
-        name: "testRepo",
-        type: "directory",
-        children: [
-          {
-            name: "file1.txt",
-            type: "file",
-            children: [],
-          },
-          {
-            name: "dir1",
-            type: "directory",
-            children: [
-              {
-                name: "file2.txt",
-                type: "file",
-                children: [],
-              },
-            ],
-          },
+        tree: [
+          { path: "file1.txt", type: "blob" },
+          { path: "dir1/file2.txt", type: "blob" },
+          { path: "dir1", type: "tree" },
         ],
       };
 
