@@ -1,5 +1,5 @@
 import backendApi from "@/utils/axios/axios";
-import { TreeNode, Contributor, RepositoryInfo, PullRequest } from "@/types/repository";
+import { TreeItem, Contributor, RepositoryInfo, PullRequest } from "@/types/repository";
 import { FormattedGraphData, FormattedLanguageData, GraphData } from "@/types/graphs";
 import {
   formatClonesData,
@@ -146,7 +146,7 @@ export const fetchRepositoryContributors = async ({
  * @param owner - The repository owner's username.
  * @param repository - The name of the repository.
  * @param branch - The branch to fetch the source tree from. If omitted, the default branch is used.
- * @returns The root {@link TreeNode} of the repository's source tree, or null if the tree cannot be retrieved.
+ * @returns The root {@link TreeItem} of the repository's source tree, or null if the tree cannot be retrieved.
  */
 export async function fetchGitHubRepoTree({
   owner,
@@ -156,14 +156,14 @@ export async function fetchGitHubRepoTree({
   owner: string;
   repository: string;
   branch?: string;
-}): Promise<TreeNode | null> {
+}): Promise<TreeItem[] | null> {
   if (!branch) {
     const repositoryDetails = await fetchRepositoryDetails({ owner, repository });
     if (repositoryDetails !== null) branch = repositoryDetails.defaultBranch;
   }
   return await backendApi
     .get(`/repository/${owner}/${repository}/${branch}/source-tree`)
-    .then((response: { data: TreeNode }) => {
+    .then((response: { data: TreeItem[] }) => {
       return response.data;
     })
     .catch((error: any) => {

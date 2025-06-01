@@ -4,17 +4,6 @@ import { UserServices } from "../user/services";
 import { formatRepositorySize } from "./utils";
 import { GithubRepositoryDetails } from "../../types/repository";
 
-interface GitHubTreeItem {
-  path: string;
-  type: "tree" | "blob";
-}
-
-interface TreeNode {
-  name: string;
-  type: "directory" | "file";
-  children?: TreeNode[];
-}
-
 export class RepositoryController {
   public static readonly getStaticAnalysis: RequestHandler = async (
     req: Request,
@@ -144,31 +133,7 @@ export class RepositoryController {
       }
 
       const sourceTree = await RepositoryServices.getSourceTree({ owner, repository, branch });
-      const { tree }: { tree: GitHubTreeItem[] } = sourceTree;
-      const root: TreeNode = { name: repository, type: "directory", children: [] };
-      tree.forEach((item) => {
-        const parts = item.path.split("/");
-        let current = root;
-
-        for (let i = 0; i < parts.length; i++) {
-          const part = parts[i];
-          const isLast = i === parts.length - 1;
-          let existing = current.children?.find((child) => child.name === part);
-          if (!existing) {
-            existing = {
-              name: part,
-              type: isLast && item.type === "blob" ? "file" : "directory",
-              children: [],
-            };
-            current.children?.push(existing);
-          }
-
-          if (!isLast) {
-            current = existing;
-          }
-        }
-      });
-      res.json(root);
+      res.json(sourceTree);
     } catch (err) {
       next(err);
     }

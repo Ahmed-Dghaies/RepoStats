@@ -34,7 +34,7 @@ const RepositoryGeneralInfo = ({ details }: { details: RepositoryInfo | null }) 
         tip: "Download repository (zip)",
       }}
       className="w-full sm:w-1/2 flex flex-col h-[300px] py-4"
-      bodyClassName="pr-2 pl-3 overflow-y-auto"
+      bodyClassName="pr-2 pl-3 overflow-y-auto mr-1"
     >
       {details !== null && (
         <>

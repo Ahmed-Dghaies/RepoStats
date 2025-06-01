@@ -1,27 +1,32 @@
 //data preparation
 import { GraphStep } from "@/types/graphs";
-import { TreeNode } from "@/types/repository";
+import { TreeItem } from "@/types/repository";
 import { formatDateLabelByStep } from "@/utils/general/time";
 
 export function createTreeStructure(
-  node: TreeNode,
+  node: TreeItem[],
   prefix: string = "",
   isLast: boolean = true
 ): string {
   let tree = "";
 
-  if (node.name) {
-    const currentPrefix = isLast ? "└── " : "├── ";
-    tree +=
-      prefix + currentPrefix + (node.type === "directory" ? node.name + "/" : node.name) + "\n";
-  }
+  node.forEach((child) => {
+    if (child.path) {
+      const currentPrefix = isLast ? "└── " : "├── ";
+      tree +=
+        prefix + currentPrefix + (child.type === "tree" ? child.path + "/" : child.path) + "\n";
+    }
 
-  if (node.type === "directory") {
-    const newPrefix = prefix + (isLast ? "    " : "│   ");
-    node.children.forEach((child, index) => {
-      tree += createTreeStructure(child, newPrefix, index === node.children.length - 1);
-    });
-  }
+    if (child.type === "tree") {
+      const newPrefix = prefix + (isLast ? "    " : "│   ");
+      if (child.children && child.children.length) {
+        const nbChildren = child.children.length;
+        child.children.forEach((subChild, index) => {
+          tree += createTreeStructure(subChild.children ?? [], newPrefix, index === nbChildren - 1);
+        });
+      }
+    }
+  });
 
   return tree;
 }

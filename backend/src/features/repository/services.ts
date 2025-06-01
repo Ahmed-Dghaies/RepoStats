@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { githubAPI } from "../../config/githubService";
 import { Response } from "express";
 import { GithubUser } from "../user/types";
-import { base64ToMarkdown, locateDependencyFile } from "./utils";
+import { base64ToMarkdown, locateDependencyFile, processTree } from "./utils";
 import { GithubRepositoryDetails } from "../../types/repository";
 import { GitHubCommit, GitHubPR } from "../../types/github";
 import fs from "fs/promises";
@@ -122,7 +122,10 @@ export class RepositoryServices {
     const response = await githubAPI.get(
       `/repos/${owner}/${repository}/git/trees/${targetBranch}?recursive=1`
     );
-    return response.data;
+
+    const data = await response.data;
+
+    return processTree(data.tree);
   };
 
   public static readonly getBranches = async ({ owner, repository }: RequestsPayload) => {

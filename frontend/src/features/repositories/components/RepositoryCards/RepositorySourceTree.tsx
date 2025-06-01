@@ -1,5 +1,5 @@
 import { Card } from "@/components/Common";
-import { Repository, TreeNode } from "@/types/repository";
+import { Repository, TreeItem } from "@/types/repository";
 import { useEffect, useState } from "react";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { createTreeStructure } from "@/utils/graphs/dataPreparation";
@@ -8,7 +8,7 @@ import FolderStructureDisplay from "./FolderStructureDisplay";
 import LoadingOverlay from "@achmadk/react-loading-overlay";
 
 const RepositorySourceTree = ({ owner, repository }: Partial<Repository>) => {
-  const [sourceTree, setSourceTree] = useState<TreeNode | null>(null);
+  const [sourceTree, setSourceTree] = useState<TreeItem[] | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -46,7 +46,7 @@ const RepositorySourceTree = ({ owner, repository }: Partial<Repository>) => {
         tip: "Copy project structure",
       }}
       className="w-full flex flex-col h-[300px]"
-      bodyClassName="p-2 overflow-y-auto mr-1 overflow-x-hidden pt-0 flex-grow"
+      bodyClassName="p-2 overflow-y-auto mr-1 overflow-x-hidden pt-0 flex-grow pr-0"
     >
       <LoadingOverlay
         active={loading}
@@ -54,7 +54,7 @@ const RepositorySourceTree = ({ owner, repository }: Partial<Repository>) => {
         text="Loading repository source tree..."
         className="h-full w-full overflow-x-hidden pr-1"
       >
-        {sourceTree && <FolderStructureDisplay node={sourceTree} />}
+        {sourceTree && <FolderStructureDisplay tree={sourceTree} />}
       </LoadingOverlay>
     </Card>
   );

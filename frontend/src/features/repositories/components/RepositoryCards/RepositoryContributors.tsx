@@ -4,6 +4,7 @@ import { Contributor, Repository } from "@/types/repository";
 import { fetchRepositoryContributors } from "@/features/repositories/services/repositories";
 import LoadingOverlay from "@achmadk/react-loading-overlay";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { capitalize } from "lodash";
 
 const RepositoryContributors = ({ owner, repository }: Partial<Repository>) => {
   const [contributors, setContributors] = useState<Contributor[]>([]);
@@ -42,7 +43,7 @@ const RepositoryContributors = ({ owner, repository }: Partial<Repository>) => {
             <div className="flex items-center gap-x-3">
               <Avatar>
                 <AvatarImage src={avatarUrl} />
-                <AvatarFallback>{login}</AvatarFallback>
+                <AvatarFallback>{capitalize(login)[0]}</AvatarFallback>
               </Avatar>
               <div>
                 <div className="font-semibold text-md text-slate-800">{login}</div>
