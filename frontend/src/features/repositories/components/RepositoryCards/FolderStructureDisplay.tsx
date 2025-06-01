@@ -44,11 +44,11 @@ function renderTree(
     if (item.type === "tree") {
       return (
         <li key={fullPath}>
-          <div className="flex items-center py-1">
+          <div className="flex items-center pb-1">
             <Button
               variant="ghost"
               size="sm"
-              className="h-6 w-6 p-0 mr-1"
+              className="h-6 w-6 p-0 mr-0"
               onClick={() => toggleFolder(fullPath)}
             >
               {isExpanded ? (
@@ -69,7 +69,7 @@ function renderTree(
       );
     } else {
       return (
-        <li key={fullPath} className="flex items-center py-1 pl-6">
+        <li key={fullPath} className="flex items-center pb-1 pl-6">
           <FileIcon className="h-4 w-4 mr-2 text-blue-500" />
           <span className="text-sm">{item.path}</span>
         </li>

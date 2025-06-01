@@ -34,11 +34,13 @@ export interface RepositoryInfo {
   createdAt: string;
   updatedAt: string;
   openIssues: number;
-  projectType: string;
+  projectType: ProjectType;
   readme: string | null;
   dependencyFile: string | null;
   lastUpdated?: string;
 }
+
+export type ProjectType = "node" | "python" | "php" | "rust" | "go" | "c++" | "unknown";
 
 export interface TreeItem {
   path: string;
