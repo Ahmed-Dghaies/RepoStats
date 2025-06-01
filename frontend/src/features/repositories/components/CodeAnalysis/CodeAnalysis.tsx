@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -19,11 +19,9 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
     errors: [],
     status: "idle",
   });
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleRunAnalysis = async () => {
     try {
-      setIsLoading(true);
       setAnalysisState({ results: [], errors: [], status: "running" });
 
       const results = await runStaticAnalysis({
@@ -41,19 +39,6 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
         errors: [error instanceof Error ? error.message : String(error)],
         status: "error",
       });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "ERROR":
-        return "bg-red-500";
-      case "WARNING":
-        return "bg-yellow-500";
-      default:
-        return "bg-blue-500";
     }
   };
 
@@ -71,8 +56,12 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
     return grouped;
   };
 
-  const groupedFindings = groupFindingsByCategory(analysisState.results);
-  const categories = Array.from(groupedFindings.keys());
+  const groupedFindings = useMemo(
+    () => groupFindingsByCategory(analysisState.results),
+    [analysisState.results]
+  );
+
+  const categories = useMemo(() => Array.from(groupedFindings.keys()), [groupedFindings]);
 
   return (
     <Card className="mx-2">
@@ -84,12 +73,14 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
           </div>
           <Button
             onClick={handleRunAnalysis}
-            disabled={isLoading}
+            disabled={analysisState.status === "running"}
             size="sm"
             className="hover:cursor-pointer"
           >
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isLoading ? "Analyzing..." : "Run Analysis"}
+            {analysisState.status === "running" && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
+            {analysisState.status === "running" ? "Analyzing..." : "Run Analysis"}
           </Button>
         </CardTitle>
       </CardHeader>
@@ -157,55 +148,14 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
 
                 <TabsContent value="all">
                   {analysisState.results.map((finding, index) => (
-                    <div key={index} className="mb-4 border-b pb-4 last:border-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge className={getSeverityColor(finding.extra.severity)}>
-                          {finding.extra.severity}
-                        </Badge>
-                        <span className="font-medium">{finding.check_id}</span>
-                      </div>
-                      <p className="mb-2">{finding.extra.message}</p>
-                      <div className="text-sm text-muted-foreground">
-                        <div>
-                          <span className="font-medium">File:</span> {finding.path}
-                        </div>
-                        <div>
-                          <span className="font-medium">Location:</span> Line {finding.start.line},
-                          Column {finding.start.col}
-                        </div>
-                        {finding.extra?.metadata?.category && (
-                          <div>
-                            <span className="font-medium">Category:</span>{" "}
-                            {finding.extra.metadata.category}
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    <FindingItem key={index} finding={finding} index={index} />
                   ))}
                 </TabsContent>
 
                 {categories.map((category) => (
                   <TabsContent key={category} value={category} className="overflow-y-auto">
                     {groupedFindings.get(category)?.map((finding, index) => (
-                      <div key={index} className="mb-4 border-b pb-4 last:border-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge className={getSeverityColor(finding.extra.severity)}>
-                            {finding.extra.severity}
-                          </Badge>
-                          <span className="font-medium">{finding.check_id}</span>
-                        </div>
-                        <p className="mb-2">{finding.extra.message}</p>
-                        <div className="text-sm text-muted-foreground">
-                          <div>
-                            <span className="font-medium">File:</span>{" "}
-                            <span className="break-all">{finding.path}</span>
-                          </div>
-                          <div>
-                            <span className="font-medium">Location:</span> Line {finding.start.line}
-                            , Column {finding.start.col}
-                          </div>
-                        </div>
-                      </div>
+                      <FindingItem key={index} finding={finding} index={index} />
                     ))}
                   </TabsContent>
                 ))}
@@ -215,6 +165,44 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
         )}
       </CardContent>
     </Card>
+  );
+};
+
+const FindingItem = ({ finding, index }: { finding: SemgrepFinding; index: number }) => {
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case "ERROR":
+        return "bg-red-500";
+      case "WARNING":
+        return "bg-yellow-500";
+      default:
+        return "bg-blue-500";
+    }
+  };
+
+  return (
+    <div key={index} className="mb-4 border-b pb-4 last:border-0">
+      <div className="flex items-center gap-2 mb-2">
+        <Badge className={getSeverityColor(finding.extra.severity)}>{finding.extra.severity}</Badge>
+        <span className="font-medium">{finding.check_id}</span>
+      </div>
+      <p className="mb-2">{finding.extra.message}</p>
+      <div className="text-sm text-muted-foreground">
+        <div>
+          <span className="font-medium">File:</span>{" "}
+          <span className="break-all">{finding.path}</span>
+        </div>
+        <div>
+          <span className="font-medium">Location:</span> Line {finding.start.line}, Column{" "}
+          {finding.start.col}
+        </div>
+        {finding.extra?.metadata?.category && (
+          <div>
+            <span className="font-medium">Category:</span> {finding.extra.metadata.category}
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

@@ -3,6 +3,7 @@ import { RepositoryServices } from "./services";
 import { UserServices } from "../user/services";
 import { formatRepositorySize } from "./utils";
 import { GithubRepositoryDetails } from "../../types/repository";
+import validator from "validator";
 
 export class RepositoryController {
   public static readonly getStaticAnalysis: RequestHandler = async (
@@ -12,7 +13,29 @@ export class RepositoryController {
   ): Promise<void> => {
     try {
       const { owner, repository } = req.params;
-      const staticAnalysis = await RepositoryServices.getStaticAnalysis({ owner, repository }, res);
+
+      if (!owner || !repository) {
+        res.status(400).json({ error: "Owner and repository parameters are required" });
+        return;
+      }
+
+      if (
+        !validator.matches(owner, /^[a-z0-9_-]+$/i) ||
+        !validator.matches(repository, /^[a-z0-9_-]+$/i)
+      ) {
+        res.status(400).json({ error: "Invalid characters in owner/repository name" });
+        return;
+      }
+
+      if (owner.length > 39 || repository.length > 39) {
+        res.status(400).json({ error: "Owner/repository name too long" });
+        return;
+      }
+
+      const staticAnalysis = await RepositoryServices.getStaticAnalysis({
+        owner: validator.escape(owner),
+        repository: validator.escape(repository),
+      });
       res.json(staticAnalysis);
     } catch (err) {
       next(err);
@@ -99,6 +122,7 @@ export class RepositoryController {
           success: false,
           message: "Missing required parameters: 'owner' and/or 'repository' are missing",
         });
+        return;
       }
 
       if (!branch) {
@@ -125,6 +149,7 @@ export class RepositoryController {
           success: false,
           message: "Missing required parameters: 'owner' and/or 'repository' are missing",
         });
+        return;
       }
 
       if (!branch) {

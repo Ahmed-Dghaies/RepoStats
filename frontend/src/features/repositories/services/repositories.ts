@@ -109,8 +109,15 @@ export const runStaticAnalysis = async ({
   owner: string;
   repository: string;
 }): Promise<SemgrepResult> => {
-  const result = await backendApi.get(`/repository/${owner}/${repository}/static-analysis`);
-  return result.data;
+  return await backendApi
+    .get(`/repository/${owner}/${repository}/static-analysis`)
+    .then((response: { data: SemgrepResult }) => {
+      return response.data;
+    })
+    .catch((error: any) => {
+      console.error(error);
+      return { results: [], errors: [error.message || "Analysis failed"], status: "error" };
+    });
 };
 
 export const downloadRepository = async ({

@@ -22,7 +22,7 @@ export function createTreeStructure(
       if (child.children && child.children.length) {
         const nbChildren = child.children.length;
         child.children.forEach((subChild, index) => {
-          tree += createTreeStructure(subChild.children ?? [], newPrefix, index === nbChildren - 1);
+          tree += createTreeStructure([subChild], newPrefix, index === nbChildren - 1);
         });
       }
     }

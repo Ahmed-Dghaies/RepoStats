@@ -38,7 +38,7 @@ describe("CodeAnalysis", () => {
 
   it("renders idle state initially", () => {
     render(<CodeAnalysis repositoryDetails={mockRepositoryDetails} />);
-    expect(screen.getByText(/"Run Analysis"/)).toBeInTheDocument();
+    expect(screen.getByText(/Run Analysis/)).toBeInTheDocument();
   });
 
   it("shows loading state while running", async () => {

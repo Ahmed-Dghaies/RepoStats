@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, ChevronDown, FileIcon, FolderIcon } from "lucide-react";
-
-interface TreeItem {
-  path: string;
-  type: "blob" | "tree";
-  children?: TreeItem[];
-}
+import { TreeItem } from "@/types/repository";
 
 const FolderStructureDisplay = ({ tree }: { tree: TreeItem[] }) => {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());

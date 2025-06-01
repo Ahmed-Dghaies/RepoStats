@@ -26,7 +26,7 @@ interface RequestsPayload {
 }
 
 export class RepositoryServices {
-  public static readonly getStaticAnalysis = async ({ owner, repository }, res: Response) => {
+  public static readonly getStaticAnalysis = async ({ owner, repository }) => {
     console.info(`[${new Date().toISOString()}] Starting analysis for ${owner}/${repository}`);
 
     // Create temporary directory
