@@ -19,7 +19,7 @@ export function createTreeStructure(
 
     if (child.type === "tree") {
       const newPrefix = prefix + (isLast ? "    " : "│   ");
-      if (child.children && child.children.length) {
+      if (child.children?.length) {
         const nbChildren = child.children.length;
         child.children.forEach((subChild, index) => {
           tree += createTreeStructure([subChild], newPrefix, index === nbChildren - 1);

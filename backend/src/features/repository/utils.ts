@@ -47,10 +47,9 @@ export const processTree = (items: GitHubTreeItem[]) => {
   const root: any[] = [];
   const map = new Map();
 
-  // First pass: create all nodes
   items.forEach((item) => {
     const parts = item.path.split("/");
-    const fileName = parts.pop() || "";
+    const fileName = parts.pop() ?? "";
     const parentPath = parts.join("/");
 
     const node = {
@@ -66,15 +65,13 @@ export const processTree = (items: GitHubTreeItem[]) => {
     }
   });
 
-  // Second pass: build the tree
   items.forEach((item) => {
     const parts = item.path.split("/");
     if (parts.length > 1) {
-      const fileName = parts.pop() || "";
       const parentPath = parts.join("/");
       const parent = map.get(parentPath);
 
-      if (parent && parent.children) {
+      if (parent?.children) {
         const node = map.get(item.path);
         if (node) {
           parent.children.push(node);
@@ -83,7 +80,6 @@ export const processTree = (items: GitHubTreeItem[]) => {
     }
   });
 
-  // Sort the tree: folders first, then files, both alphabetically
   const sortTree = (nodes: any[]) => {
     nodes.sort((a, b) => {
       if (a.type === "tree" && b.type !== "tree") return -1;

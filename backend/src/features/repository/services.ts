@@ -100,15 +100,15 @@ export class RepositoryServices {
     const resultsPath = path.join(tmpDir, "semgrep-results.json");
     const resultsJson = await fs.readFile(resultsPath, "utf-8");
     const results = JSON.parse(resultsJson);
-    console.info(`[${new Date().toISOString()}] Found ${results.results?.length || 0} issues`);
+    console.info(`[${new Date().toISOString()}] Found ${results.results?.length ?? 0} issues`);
 
     // Clean up
     await fs.rm(tmpDir, { recursive: true, force: true });
     console.info(`[${new Date().toISOString()}] Cleaned up temp directory`);
 
     return {
-      results: results.results || [],
-      errors: results.errors || [],
+      results: results.results ?? [],
+      errors: results.errors ?? [],
       status: "success",
     };
   };
@@ -229,7 +229,7 @@ export class RepositoryServices {
 
         commits.forEach((commit: GitHubCommit) => {
           const date = new Date(commit.commit.author.date).toISOString().split("T")[0];
-          contributionsByDay[date] = (contributionsByDay[date] || 0) + 1;
+          contributionsByDay[date] = (contributionsByDay[date] ?? 0) + 1;
         });
 
         if (commits.length < perPage) break;

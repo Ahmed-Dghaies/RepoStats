@@ -116,7 +116,7 @@ export const runStaticAnalysis = async ({
     })
     .catch((error: any) => {
       console.error(error);
-      return { results: [], errors: [error.message || "Analysis failed"], status: "error" };
+      return { results: [], errors: [error.message ?? "Analysis failed"], status: "error" };
     });
 };
 

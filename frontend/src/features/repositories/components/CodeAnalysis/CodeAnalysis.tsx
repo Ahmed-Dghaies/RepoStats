@@ -46,7 +46,7 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
     const grouped = new Map<string, SemgrepFinding[]>();
 
     findings.forEach((finding) => {
-      const category = finding.extra?.metadata?.category || "Other";
+      const category = finding.extra?.metadata?.category ?? "Other";
       if (!grouped.has(category)) {
         grouped.set(category, []);
       }
@@ -109,7 +109,7 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
             <AlertTitle>Analysis Failed</AlertTitle>
             <AlertDescription>
               {analysisState.errors.map((error, i) => (
-                <div key={i}>{error}</div>
+                <div key={`error-${i}`}>{error}</div>
               ))}
             </AlertDescription>
           </Alert>
@@ -136,7 +136,7 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
                 </AlertDescription>
               </Alert>
             ) : (
-              <Tabs defaultValue={categories[0] || "all"}>
+              <Tabs defaultValue={categories[0] ?? "all"}>
                 <TabsList className="mb-4 overflow-x-auto">
                   <TabsTrigger value="all">All ({analysisState.results.length})</TabsTrigger>
                   {categories.map((category) => (
@@ -148,14 +148,18 @@ const CodeAnalysis = ({ repositoryDetails }: CodeAnalysisProps) => {
 
                 <TabsContent value="all">
                   {analysisState.results.map((finding, index) => (
-                    <FindingItem key={index} finding={finding} index={index} />
+                    <FindingItem key={`all-findings-${index}`} finding={finding} index={index} />
                   ))}
                 </TabsContent>
 
                 {categories.map((category) => (
                   <TabsContent key={category} value={category} className="overflow-y-auto">
                     {groupedFindings.get(category)?.map((finding, index) => (
-                      <FindingItem key={index} finding={finding} index={index} />
+                      <FindingItem
+                        key={`categories-findings-${category}-${index}`}
+                        finding={finding}
+                        index={index}
+                      />
                     ))}
                   </TabsContent>
                 ))}
@@ -181,7 +185,7 @@ const FindingItem = ({ finding, index }: { finding: SemgrepFinding; index: numbe
   };
 
   return (
-    <div key={index} className="mb-4 border-b pb-4 last:border-0">
+    <div key={`finding-${finding.check_id}-${index}`} className="mb-4 border-b pb-4 last:border-0">
       <div className="flex items-center gap-2 mb-2">
         <Badge className={getSeverityColor(finding.extra.severity)}>{finding.extra.severity}</Badge>
         <span className="font-medium">{finding.check_id}</span>
